@@ -58,18 +58,18 @@ export function DemoRoleSwitcher() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-[#D4D4D4] bg-white hover:bg-[#F8F8F8] transition-all shadow-sm text-xs font-medium text-[#171717]"
+        className="flex max-w-[220px] items-center gap-1.5 rounded-full border border-[#D4D4D4] bg-white px-2 py-1.5 text-[10px] font-medium text-[#171717] shadow-sm transition-all hover:bg-[#F8F8F8] sm:gap-2 sm:px-3 sm:text-xs"
       >
-        <span className="w-2 h-2 rounded-full bg-[#16A34A] animate-pulse" />
-        <span className="font-semibold text-[#111111]">Demo Mode:</span>
-        <span className="bg-[#F3F3F3] px-2 py-0.5 rounded text-[#525252]">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-[#16A34A] animate-pulse" />
+        <span className="hidden font-semibold text-[#111111] sm:inline">Demo Mode:</span>
+        <span className="truncate rounded bg-[#F3F3F3] px-1.5 py-0.5 text-[#525252] sm:px-2">
           {currentRole.replace("_", " ")}
         </span>
-        <ChevronDown className="w-3.5 h-3.5 text-[#737373]" />
+        <ChevronDown className="h-3.5 w-3.5 shrink-0 text-[#737373]" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 rounded-lg border border-[#E5E5E5] bg-white shadow-xl p-3 z-50 animate-in fade-in-0 zoom-in-95">
+        <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-1.5rem))] rounded-lg border border-[#E5E5E5] bg-white shadow-xl p-3 z-50 animate-in fade-in-0 zoom-in-95">
           <div className="flex items-center justify-between pb-2 border-b border-[#E5E5E5] mb-2">
             <div>
               <p className="text-xs font-bold text-[#111111]">Hackathon Role Switcher</p>

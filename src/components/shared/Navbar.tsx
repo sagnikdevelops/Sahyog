@@ -36,23 +36,23 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-[#E5E5E5] bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-      <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Brand Logo & Tagline */}
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-lg bg-[#111111] flex items-center justify-center text-white shadow-sm group-hover:bg-[#262626] transition-colors">
-              <Handshake className="w-5 h-5 text-white" />
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-3 py-3 sm:px-6 lg:h-16 lg:flex-row lg:items-center lg:justify-between lg:px-8 lg:py-0">
+        <div className="flex items-center justify-between gap-3 lg:gap-6">
+          {/* Brand Logo & Tagline */}
+          <Link href="/" className="group flex min-w-0 items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#111111] text-white shadow-sm transition-colors group-hover:bg-[#262626]">
+              <Handshake className="h-5 w-5 text-white" />
             </div>
-            <div className="flex flex-col">
+            <div className="flex min-w-0 flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="text-xl font-bold tracking-tight text-[#111111]">
+                <span className="text-lg font-bold tracking-tight text-[#111111] sm:text-xl">
                   Sahyog
                 </span>
-                <span className="text-[10px] font-semibold uppercase tracking-wider bg-[#F3F3F3] text-[#525252] px-1.5 py-0.5 rounded border border-[#E5E5E5]">
+                <span className="rounded border border-[#E5E5E5] bg-[#F3F3F3] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wider text-[#525252] sm:text-[10px]">
                   Cooperative
                 </span>
               </div>
-              <span className="text-[10px] text-[#737373] hidden sm:inline-block">
+              <span className="hidden text-[10px] text-[#737373] sm:inline-block">
                 Connecting Cooperative Skills with Everyday Needs
               </span>
             </div>
@@ -66,7 +66,7 @@ export function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                  className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                     isActive
                       ? "bg-[#F3F3F3] text-[#111111] font-semibold"
                       : "text-[#525252] hover:text-[#111111] hover:bg-[#F8F8F8]"
@@ -80,15 +80,15 @@ export function Navbar() {
         </div>
 
         {/* Right Action Bar */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 lg:gap-3">
           {/* Emergency Quick Action */}
-          <Link href="/customer/book?urgency=EMERGENCY">
+          <Link href="/customer/book?urgency=EMERGENCY" className="hidden sm:inline-flex">
             <Button
               variant="emergency"
               size="sm"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs shadow-sm"
+              className="items-center gap-1.5 text-[10px] shadow-sm sm:text-xs"
             >
-              <Flame className="w-3.5 h-3.5 fill-white" />
+              <Flame className="h-3.5 w-3.5 fill-white" />
               {t("nav.emergencyService")}
             </Button>
           </Link>
@@ -112,7 +112,7 @@ export function Navbar() {
                 : "/customer"
             }
           >
-            <Button variant="default" size="sm" className="text-xs">
+            <Button variant="default" size="sm" className="text-[10px] sm:text-xs">
               {currentRole === "WORKER"
                 ? "Worker App"
                 : currentRole === "SOCIETY_ADMIN" || currentRole === "FEDERATION_ADMIN"
@@ -124,10 +124,10 @@ export function Navbar() {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-md text-[#525252] hover:text-[#111111]"
+            className="rounded-md p-2 text-[#525252] hover:text-[#111111] lg:hidden"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5 text-[#111111]" />}
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5 text-[#111111]" />}
           </button>
         </div>
       </div>

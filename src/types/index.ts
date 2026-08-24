@@ -7,6 +7,12 @@ export type UserRole =
   | "FEDERATION_ADMIN"
   | "SUPER_ADMIN";
 
+export interface AuthSession {
+  userId: string;
+  role: UserRole;
+  isAuthenticated: boolean;
+}
+
 export type VerificationStatus =
   | "UNVERIFIED"
   | "DOCUMENT_PENDING"
@@ -127,7 +133,12 @@ export interface Certification {
   expiryDate?: string;
   documentUrl?: string;
   isVerified: boolean;
+  certificationStatus: "PENDING" | "APPROVED" | "REJECTED";
+  adminNotes?: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
 }
+
 
 export interface WorkerAvailability {
   id: string;

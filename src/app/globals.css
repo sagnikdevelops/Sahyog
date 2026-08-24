@@ -34,6 +34,30 @@
     @apply bg-white text-sahyog-text font-sans antialiased;
     background-color: #FFFFFF;
     color: #171717;
+    overflow-x: hidden;
+  }
+
+  html {
+    overflow-x: hidden;
+  }
+
+  img,
+  svg,
+  video,
+  canvas {
+    display: block;
+    max-width: 100%;
+  }
+
+  button,
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@media (max-width: 640px) {
+  .whitespace-nowrap {
+    white-space: normal;
   }
 }
 
