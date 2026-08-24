@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { Handshake, ShieldCheck, HeartHandshake, Scale, Users, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 

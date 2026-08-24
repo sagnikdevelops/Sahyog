@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { INITIAL_WORKERS } from "@/lib/store/demoStore";
 import { rankMatchingWorkers } from "@/lib/matching/deterministicScorer";
 

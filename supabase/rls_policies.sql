@@ -1,5 +1,4 @@
-﻿-- Sahyog Row Level Security (RLS) Policies
--- Safe to re-run: existing policies are dropped first.
+-- Sahyog Row Level Security (RLS) Policies
 
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE workers ENABLE ROW LEVEL SECURITY;
@@ -9,14 +8,6 @@ ALTER TABLE payouts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE ratings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE disputes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
-
-DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON profiles;
-DROP POLICY IF EXISTS "Users can update own profile" ON profiles;
-DROP POLICY IF EXISTS "Anyone can view approved workers" ON workers;
-DROP POLICY IF EXISTS "Workers can update own worker record" ON workers;
-DROP POLICY IF EXISTS "Users can view relevant bookings" ON bookings;
-DROP POLICY IF EXISTS "Customers can insert bookings" ON bookings;
-DROP POLICY IF EXISTS "Participants and admins can update bookings" ON bookings;
 
 -- 1. Profiles Policy: Users can view public profiles; edit own profile
 CREATE POLICY "Public profiles are viewable by everyone" ON profiles FOR SELECT USING (true);

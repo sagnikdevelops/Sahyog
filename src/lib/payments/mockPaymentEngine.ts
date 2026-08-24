@@ -1,4 +1,4 @@
-﻿// Sahyog - Payment & Invoicing Engine
+// Sahyog - Payment & Invoicing Engine
 import { Payment, PaymentMethod, PaymentStatus, Payout, PayoutStatus } from "@/types";
 import { COMMISSION_RATES } from "@/constants";
 import { generateInvoiceNumber, generateTransactionRef } from "@/lib/utils";

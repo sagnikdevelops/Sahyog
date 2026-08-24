@@ -1,4 +1,4 @@
-﻿# Sahyog Database Architecture (Supabase PostgreSQL + PostGIS)
+# Sahyog Database Architecture (Supabase PostgreSQL + PostGIS)
 
 ## Overview
 The Sahyog database is built on PostgreSQL with the PostGIS extension for spatial queries (worker location and customer coordinates).

@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { INITIAL_BOOKINGS } from "@/lib/store/demoStore";
 
 export async function GET() {

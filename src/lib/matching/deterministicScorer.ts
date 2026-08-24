@@ -1,4 +1,4 @@
-﻿// Sahyog Deterministic Worker Matching Engine
+// Sahyog Deterministic Worker Matching Engine
 // Formula: Total Score (100 pts) = 40% Skill + 30% Proximity + 20% Availability + 10% Workload
 import { WorkerProfile, WorkerMatchCandidate, UrgencyLevel } from "@/types";
 import { calculateDistanceKm } from "@/lib/utils";

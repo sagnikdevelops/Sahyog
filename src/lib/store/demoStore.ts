@@ -1,4 +1,4 @@
-﻿// Sahyog - Complete Seed Data & Initial Store
+// Sahyog - Complete Seed Data & Initial Store
 import {
   Profile,
   WorkerProfile,

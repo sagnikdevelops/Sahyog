@@ -1,4 +1,4 @@
-﻿-- Sahyog PostgreSQL + PostGIS Database Schema
+-- Sahyog PostgreSQL + PostGIS Database Schema
 -- Cooperative Digital Service Marketplace Platform
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

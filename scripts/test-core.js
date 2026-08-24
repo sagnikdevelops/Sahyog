@@ -1,4 +1,4 @@
-﻿// Sahyog Automated Core Verification Test Suite
+// Sahyog Automated Core Verification Test Suite
 
 console.log("==========================================");
 console.log("Sahyog Core Logic & Algorithm Test Suite");

@@ -1,4 +1,4 @@
-﻿// Sahyog - Central Constants & Seed Configurations
+// Sahyog - Central Constants & Seed Configurations
 import { ServiceCategory, Service, UserRole } from "@/types";
 
 export const APP_NAME = "Sahyog";

@@ -1,4 +1,4 @@
-﻿import { z } from "zod";
+import { z } from "zod";
 
 export const bookingRequestSchema = z.object({
   serviceId: z.string().min(1, "Please select a service"),

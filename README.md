@@ -1,4 +1,4 @@
-﻿# Sahyog (सहयोग)
+# Sahyog (सहयोग)
 > **Connecting Cooperative Skills with Everyday Needs**
 
 A cooperative-owned digital service marketplace platform designed to connect skilled workers registered with **Labour Cooperative Federations** and **Labour Cooperative Societies** (electricians, plumbers, carpenters, painters, cleaners, caregivers, drivers, gardeners, appliance technicians) with households, businesses, institutions, and communities.

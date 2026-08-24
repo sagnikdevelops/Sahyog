@@ -1,4 +1,4 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { processSimulatedPayment } from "@/lib/payments/mockPaymentEngine";
 
 export async function POST(request: Request) {

@@ -1,4 +1,4 @@
-﻿// Sahyog - Central Type Definitions
+// Sahyog - Central Type Definitions
 
 export type UserRole =
   | "CUSTOMER"

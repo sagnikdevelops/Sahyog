@@ -1,4 +1,4 @@
-﻿# Sahyog Beginner-Friendly Development Guide
+# Sahyog Beginner-Friendly Development Guide
 
 ## Code Organization Principles
 We are CSE freshmen and beginners! This codebase is engineered to be crystal clear, maintainable, and easy to modify:

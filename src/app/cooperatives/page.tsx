@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { COOPERATIVE_SOCIETIES, FEDERATION } from "@/constants";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

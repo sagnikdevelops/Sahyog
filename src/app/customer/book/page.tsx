@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { Suspense } from "react";
 import { BookingWizard } from "@/components/customer/BookingWizard";

@@ -1,4 +1,4 @@
-﻿-- Sahyog Seed Data for Supabase PostgreSQL
+-- Sahyog Seed Data for Supabase PostgreSQL
 -- 1. Insert Federation
 INSERT INTO federations (id, name, registration_no, state, contact_email, phone)
 VALUES ('fed_delhi_ncr', 'National Capital Region Labour Cooperative Federation', 'FED/NCR/2015/0014', 'Delhi & NCR', 'contact@ncrfederation.org', '+91 11 2649 8871')

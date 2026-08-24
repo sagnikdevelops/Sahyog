@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import Link from "next/link";
 import { Handshake, ShieldCheck, HeartHandshake, MapPin, Phone, Mail } from "lucide-react";
 

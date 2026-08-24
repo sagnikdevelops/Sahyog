@@ -1,4 +1,4 @@
-﻿// Sahyog - Internationalization Translations (English & Hindi)
+// Sahyog - Internationalization Translations (English & Hindi)
 
 export type Language = "en" | "hi";
 
