@@ -231,6 +231,7 @@ export const INITIAL_WORKERS: WorkerProfile[] = [
         issuingBody: "Skill India / NSDC",
         issueDate: "2021-06-10",
         isVerified: true,
+        certificationStatus: "APPROVED",
       },
       {
         id: "cert_2",
@@ -239,6 +240,7 @@ export const INITIAL_WORKERS: WorkerProfile[] = [
         issuingBody: "Noida Shramik Utthan Labour Society",
         issueDate: "2023-01-15",
         isVerified: true,
+        certificationStatus: "APPROVED",
       },
     ],
     availability: [
@@ -335,6 +337,7 @@ export const INITIAL_WORKERS: WorkerProfile[] = [
         issuingBody: "NCVT / ITI Noida",
         issueDate: "2016-07-12",
         isVerified: true,
+        certificationStatus: "APPROVED",
       },
     ],
     availability: [
@@ -409,6 +412,7 @@ export const INITIAL_WORKERS: WorkerProfile[] = [
         issuingBody: "Vishwakarma Shramik Sangh",
         issueDate: "2018-03-20",
         isVerified: true,
+        certificationStatus: "APPROVED",
       },
     ],
     availability: [
@@ -568,6 +572,7 @@ export const INITIAL_WORKERS: WorkerProfile[] = [
         issuingBody: "Healthcare Sector Skill Council (HSSC)",
         issueDate: "2020-11-15",
         isVerified: true,
+        certificationStatus: "APPROVED",
       },
     ],
     availability: [],

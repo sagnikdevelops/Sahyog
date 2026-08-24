@@ -102,6 +102,17 @@ export function Navbar() {
           {/* Language Switcher */}
           <LanguageSwitcher />
 
+          <Link href="/auth/login">
+            <Button variant="outline" size="sm" className="text-[10px] sm:text-xs">
+              {t("nav.login")}
+            </Button>
+          </Link>
+          <Link href="/auth/register">
+            <Button variant="ghost" size="sm" className="text-[10px] sm:text-xs">
+              {t("nav.register")}
+            </Button>
+          </Link>
+
           {/* Portal Switcher Button */}
           <Link
             href={
@@ -157,6 +168,18 @@ export function Navbar() {
               Book Emergency Service Now
             </Button>
           </Link>
+          <div className="grid grid-cols-2 gap-2">
+            <Link href="/auth/login" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="outline" className="w-full text-xs">
+                {t("nav.login")}
+              </Button>
+            </Link>
+            <Link href="/auth/register" onClick={() => setMobileMenuOpen(false)}>
+              <Button variant="secondary" className="w-full text-xs">
+                {t("nav.register")}
+              </Button>
+            </Link>
+          </div>
         </div>
       )}
     </header>

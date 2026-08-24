@@ -30,12 +30,24 @@ import {
 import { DEMO_USERS, SERVICES, SERVICE_CATEGORIES } from "@/constants";
 import { generateBookingNumber } from "@/lib/utils";
 import { processSimulatedPayment } from "@/lib/payments/mockPaymentEngine";
+import {
+  cloneWorkerTemplateForRegistration,
+  createRegisteredCustomerProfile,
+  findDemoUserByEmail,
+  generateUserId,
+} from "@/lib/auth/authHelpers";
 
 interface StateContextType {
   currentUser: Profile;
   currentRole: UserRole;
   setCurrentRole: (role: UserRole) => void;
   switchDemoUser: (role: UserRole) => void;
+  registerDemoUser: (params: {
+    fullName: string;
+    email: string;
+    role: "CUSTOMER" | "WORKER";
+  }) => Profile;
+  loginDemoByEmail: (email: string) => { role: UserRole; targetUrl: string } | null;
   
   customers: Profile[];
   workers: WorkerProfile[];
@@ -242,6 +254,49 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
 
   const setCurrentRole = (role: UserRole) => {
     switchDemoUser(role);
+  };
+
+  const registerDemoUser = (params: {
+    fullName: string;
+    email: string;
+    role: "CUSTOMER" | "WORKER";
+  }): Profile => {
+    const fullName = params.fullName.trim();
+    const email = params.email.trim();
+
+    if (params.role === "CUSTOMER") {
+      const id = generateUserId("cust");
+      const profile = createRegisteredCustomerProfile({
+        id,
+        fullName,
+        email,
+        template: INITIAL_CUSTOMERS[0],
+      });
+      setCustomers((prev) => [...prev, profile]);
+      setCurrentUser(profile);
+      setCurrentRoleState("CUSTOMER");
+      return profile;
+    }
+
+    const id = generateUserId("worker");
+    const worker = cloneWorkerTemplateForRegistration({
+      id,
+      fullName,
+      email,
+      template: INITIAL_WORKERS[0],
+    });
+    setWorkers((prev) => [...prev, worker]);
+    setCurrentUser({ ...worker.profile, role: "WORKER" });
+    setCurrentRoleState("WORKER");
+    return worker.profile;
+  };
+
+  const loginDemoByEmail = (email: string): { role: UserRole; targetUrl: string } | null => {
+    const match = findDemoUserByEmail(email, customers, workers);
+    if (!match) return null;
+    setCurrentUser(match.profile);
+    setCurrentRoleState(match.role);
+    return { role: match.role, targetUrl: match.targetUrl };
   };
 
   const addNotification = (notif: Omit<Notification, "id" | "createdAt" | "isRead">) => {
@@ -824,6 +879,8 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         currentRole,
         setCurrentRole,
         switchDemoUser,
+        registerDemoUser,
+        loginDemoByEmail,
         customers,
         workers,
         bookings,

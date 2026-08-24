@@ -41,3 +41,25 @@ export const serviceCompletionSchema = z.object({
   completionNotes: z.string().min(10, "Please provide brief notes on work performed"),
   photoUrl: z.string().optional(),
 });
+
+export const demoRegistrationSchema = z
+  .object({
+    fullName: z.string().trim().min(1, "auth.validation.fullNameRequired"),
+    email: z
+      .string()
+      .trim()
+      .min(1, "auth.validation.emailRequired")
+      .email("auth.validation.emailInvalid"),
+    password: z
+      .string()
+      .min(1, "auth.validation.passwordRequired")
+      .min(8, "auth.validation.passwordMin"),
+    confirmPassword: z.string().min(1, "auth.validation.confirmRequired"),
+    role: z.enum(["CUSTOMER", "WORKER"]),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "auth.validation.passwordMismatch",
+    path: ["confirmPassword"],
+  });
+
+export type DemoRegistrationForm = z.infer<typeof demoRegistrationSchema>;
