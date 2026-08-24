@@ -1,0 +1,216 @@
+﻿// Sahyog - Internationalization Translations (English & Hindi)
+
+export type Language = "en" | "hi";
+
+export const translations = {
+  en: {
+    // Brand
+    "brand.name": "Sahyog",
+    "brand.tagline": "Connecting Cooperative Skills with Everyday Needs",
+    "brand.description": "A cooperative-owned digital service marketplace connecting skilled workers of Labour Cooperatives with households and businesses.",
+
+    // Navigation
+    "nav.home": "Home",
+    "nav.services": "Services",
+    "nav.about": "About Us",
+    "nav.cooperatives": "Cooperatives",
+    "nav.bookService": "Book a Service",
+    "nav.customerPortal": "Customer Portal",
+    "nav.workerPortal": "Worker Portal",
+    "nav.adminPortal": "Admin Dashboard",
+    "nav.login": "Sign In",
+    "nav.logout": "Sign Out",
+    "nav.emergencyService": "Emergency Service",
+
+    // Landing Page
+    "hero.badge": "100% Cooperative Owned & Verified",
+    "hero.title": "Skilled Hands. Trusted Work. Fair Cooperative Wages.",
+    "hero.subtitle": "Book verified plumbers, electricians, carpenters, cleaners, and caregivers directly from registered Labour Cooperative Federations. Transparent pricing, no middleman exploitation.",
+    "hero.searchPlaceholder": "What service do you need today? (e.g. Electrician, Plumbing leak)",
+    "hero.findWorkers": "Find Workers",
+    "hero.howItWorks": "How Sahyog Works",
+    "hero.stats.workers": "1,500+ Verified Workers",
+    "hero.stats.coops": "48+ Cooperative Societies",
+    "hero.stats.jobs": "12,000+ Completed Services",
+    "hero.stats.rating": "4.9/5 Trust Rating",
+
+    // Three Pillars
+    "pillars.customer.title": "For Households & Businesses",
+    "pillars.customer.desc": "Get verified, skill-certified professionals with guaranteed pricing and cooperative quality oversight.",
+    "pillars.worker.title": "For Skilled Workers",
+    "pillars.worker.desc": "Fair wages, prompt digital payouts, social security welfare and accident insurance through Labour Cooperatives.",
+    "pillars.coop.title": "For Cooperative Societies",
+    "pillars.coop.desc": "Digitally organize, deploy, and monitor workforce utilization, revenue streams, and member welfare programs.",
+
+    // Booking Lifecycle
+    "booking.status.REQUESTED": "Requested",
+    "booking.status.MATCHING": "Matching Worker",
+    "booking.status.ASSIGNED": "Worker Assigned",
+    "booking.status.ACCEPTED": "Worker Accepted",
+    "booking.status.SCHEDULED": "Scheduled",
+    "booking.status.WORKER_EN_ROUTE": "Worker En Route",
+    "booking.status.SERVICE_STARTED": "Service in Progress",
+    "booking.status.SERVICE_COMPLETED": "Service Completed",
+    "booking.status.PAYMENT_PENDING": "Payment Pending",
+    "booking.status.PAYMENT_COMPLETED": "Paid & Settled",
+    "booking.status.PAYOUT_PENDING": "Payout Processing",
+    "booking.status.PAYOUT_COMPLETED": "Payout Transferred",
+    "booking.status.CANCELLED": "Cancelled",
+    "booking.status.DISPUTED": "Dispute Under Review",
+    "booking.status.REFUNDED": "Refunded",
+
+    // Actions
+    "action.bookNow": "Book Now",
+    "action.confirmBooking": "Confirm Booking",
+    "action.cancelBooking": "Cancel Booking",
+    "action.acceptJob": "Accept Job",
+    "action.rejectJob": "Decline Job",
+    "action.startTravel": "Start Travel",
+    "action.startService": "Start Service",
+    "action.completeService": "Complete Service",
+    "action.payNow": "Pay Now",
+    "action.rateWorker": "Rate & Review",
+    "action.raiseDispute": "Raise a Dispute",
+    "action.viewInvoice": "View Digital Invoice",
+    "action.verifyWorker": "Verify Worker",
+    "action.reassignWorker": "Reassign Worker",
+    "action.toggleOnline": "Online / Available",
+    "action.toggleOffline": "Offline",
+
+    // Roles
+    "role.CUSTOMER": "Customer",
+    "role.WORKER": "Cooperative Worker",
+    "role.SOCIETY_ADMIN": "Society Admin",
+    "role.FEDERATION_ADMIN": "Federation Admin",
+    "role.SUPER_ADMIN": "Super Admin",
+
+    // Worker Verification
+    "verification.UNVERIFIED": "Unverified",
+    "verification.DOCUMENT_PENDING": "Documents Pending",
+    "verification.COOPERATIVE_VERIFIED": "Verified by Cooperative",
+    "verification.SKILL_VERIFIED": "Skill & Trade Certified",
+    "verification.BACKGROUND_CHECKED": "Background Verified",
+    "verification.APPROVED": "Fully Approved",
+    "verification.SUSPENDED": "Suspended",
+
+    // Common
+    "common.emergency": "Emergency",
+    "common.normal": "Scheduled / Standard",
+    "common.distance": "Distance",
+    "common.rating": "Rating",
+    "common.experience": "Experience",
+    "common.society": "Labour Cooperative Society",
+    "common.federation": "Labour Cooperative Federation",
+    "common.amount": "Total Amount",
+    "common.date": "Date",
+    "common.time": "Time",
+    "common.location": "Location",
+    "common.viewDetails": "View Details",
+    "common.quickDemo": "Hackathon Demo Switcher",
+  },
+  hi: {
+    // Brand
+    "brand.name": "सहयोग",
+    "brand.tagline": "सहकारी कौशल और दैनिक आवश्यकताओं का सुगम संगम",
+    "brand.description": "श्रम सहकारी समितियों के कुशल कामगारों को सीधे घरों और संस्थानों से जोड़ने वाला सहकारी डिजिटल सेवा मंच।",
+
+    // Navigation
+    "nav.home": "होम",
+    "nav.services": "सेवाएं",
+    "nav.about": "हमारे बारे में",
+    "nav.cooperatives": "सहकारी समितियां",
+    "nav.bookService": "सेवा बुक करें",
+    "nav.customerPortal": "ग्राहक पोर्टल",
+    "nav.workerPortal": "कामगार पोर्टल",
+    "nav.adminPortal": "प्रबंधन डैशबोर्ड",
+    "nav.login": "लॉग इन",
+    "nav.logout": "लॉग आउट",
+    "nav.emergencyService": "आपातकालीन सेवा",
+
+    // Landing Page
+    "hero.badge": "१००% सहकारी स्वामित्व व सत्यापित",
+    "hero.title": "कुशल हाथ। विश्वसनीय कार्य। सम्मानजनक सहकारी पारिश्रमिक।",
+    "hero.subtitle": "रजिस्टर्ड श्रम सहकारी समितियों से सीधे सत्यापित प्लंबर, इलेक्ट्रीशियन, बढ़ई, सफाईकर्मी और देखभालकर्ताओं को बुक करें। बिचौलियों के शोषण से मुक्त, पारदर्शी सेवा।",
+    "hero.searchPlaceholder": "आज आपको कौन सी सेवा चाहिए? (उदा. बिजली मिस्त्री, नल लीकेज)",
+    "hero.findWorkers": "कामगार खोजें",
+    "hero.howItWorks": "सहयोग कैसे काम करता है",
+    "hero.stats.workers": "१,५००+ सत्यापित कामगार",
+    "hero.stats.coops": "४८+ सहकारी समितियां",
+    "hero.stats.jobs": "१२,०००+ पूर्ण सेवाएं",
+    "hero.stats.rating": "४.९/५ विश्वास रेटिंग",
+
+    // Three Pillars
+    "pillars.customer.title": "परिवारों व संस्थानों के लिए",
+    "pillars.customer.desc": "उचित मूल्य, सहकारी गुणवत्ता और प्रशिक्षित कामगारों की गारंटीड सेवा।",
+    "pillars.worker.title": "कुशल कामगारों के लिए",
+    "pillars.worker.desc": "उचित मजदूरी, त्वरित डिजिटल भुगतान, सामाजिक सुरक्षा व दुर्घटना बीमा संरक्षण।",
+    "pillars.coop.title": "सहकारी समितियों के लिए",
+    "pillars.coop.desc": "कार्यबल का डिजिटल प्रबंधन, पारदर्शी आय निगरानी और सदस्य कल्याण योजनाएं।",
+
+    // Booking Lifecycle
+    "booking.status.REQUESTED": "अनुरोध प्राप्त",
+    "booking.status.MATCHING": "कामगार खोज जारी",
+    "booking.status.ASSIGNED": "कामगार आवंटित",
+    "booking.status.ACCEPTED": "कामगार ने स्वीकारा",
+    "booking.status.SCHEDULED": "नियत समय तय",
+    "booking.status.WORKER_EN_ROUTE": "कामगार रास्ते में है",
+    "booking.status.SERVICE_STARTED": "कार्य प्रारंभ",
+    "booking.status.SERVICE_COMPLETED": "कार्य संपन्न",
+    "booking.status.PAYMENT_PENDING": "भुगतान प्रतीक्षित",
+    "booking.status.PAYMENT_COMPLETED": "भुगतान संपन्न",
+    "booking.status.PAYOUT_PENDING": "मजदूरी अंतरण प्रक्रिया",
+    "booking.status.PAYOUT_COMPLETED": "मजदूरी अंतरित",
+    "booking.status.CANCELLED": "रद्द किया गया",
+    "booking.status.DISPUTED": "विवाद समीक्षाधीन",
+    "booking.status.REFUNDED": "वापसी संपन्न",
+
+    // Actions
+    "action.bookNow": "अभी बुक करें",
+    "action.confirmBooking": "बुकिंग पक्की करें",
+    "action.cancelBooking": "बुकिंग रद्द करें",
+    "action.acceptJob": "कार्य स्वीकारें",
+    "action.rejectJob": "कार्य अस्वीकारें",
+    "action.startTravel": "प्रस्थान करें",
+    "action.startService": "कार्य शुरू करें",
+    "action.completeService": "कार्य पूर्ण करें",
+    "action.payNow": "भुगतान करें",
+    "action.rateWorker": "रेटिंग व समीक्षा दें",
+    "action.raiseDispute": "विवाद दर्ज करें",
+    "action.viewInvoice": "डिजिटल बिल देखें",
+    "action.verifyWorker": "कामगार सत्यापित करें",
+    "action.reassignWorker": "पुनः आवंटित करें",
+    "action.toggleOnline": "ऑनलाइन / उपलब्ध",
+    "action.toggleOffline": "ऑफ़लाइन",
+
+    // Roles
+    "role.CUSTOMER": "ग्राहक",
+    "role.WORKER": "सहकारी कामगार",
+    "role.SOCIETY_ADMIN": "समिति प्रबंधक",
+    "role.FEDERATION_ADMIN": "फेडरेशन प्रबंधक",
+    "role.SUPER_ADMIN": "सुपर एडमिन",
+
+    // Worker Verification
+    "verification.UNVERIFIED": "असत्यापित",
+    "verification.DOCUMENT_PENDING": "दस्तावेज प्रतीक्षित",
+    "verification.COOPERATIVE_VERIFIED": "सहकारी समिति द्वारा सत्यापित",
+    "verification.SKILL_VERIFIED": "कौशल प्रमाणित",
+    "verification.BACKGROUND_CHECKED": "पृष्ठभूमि जांच पूर्ण",
+    "verification.APPROVED": "पूर्णतः स्वीकृत",
+    "verification.SUSPENDED": "निलंबित",
+
+    // Common
+    "common.emergency": "आपातकालीन",
+    "common.normal": "सामान्य",
+    "common.distance": "दूरी",
+    "common.rating": "रेटिंग",
+    "common.experience": "अनुभव",
+    "common.society": "श्रम सहकारी समिति",
+    "common.federation": "श्रम सहकारी संघ (फेडरेशन)",
+    "common.amount": "कुल राशि",
+    "common.date": "दिनांक",
+    "common.time": "समय",
+    "common.location": "स्थान",
+    "common.viewDetails": "विवरण देखें",
+    "common.quickDemo": "हैकाथॉन डेमो स्विच करें",
+  },
+};
