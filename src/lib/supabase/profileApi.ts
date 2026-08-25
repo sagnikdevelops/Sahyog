@@ -12,6 +12,18 @@ export function isUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
+export async function ensureWorkerRow(workerId: string): Promise<{ error?: string }> {
+  if (!isSupabaseConfigured || !supabase) return { error: "Supabase is not configured" };
+
+  const { error } = await supabase
+    .from("workers")
+    .upsert({ id: workerId }, { onConflict: "id" })
+    .select()
+    .maybeSingle();
+
+  return error ? { error: error.message } : {};
+}
+
 export async function fetchProfileByAuthId(userId: string): Promise<Profile | null> {
   if (!isSupabaseConfigured || !supabase) return null;
   const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
@@ -87,6 +99,10 @@ export async function persistProfile(profile: Partial<Profile> & { id: string })
 
 export async function persistWorkerBio(workerId: string, bio: string): Promise<{ error?: string }> {
   if (!isSupabaseConfigured || !supabase) return { error: "Supabase is not configured" };
+
+  const rowCheck = await ensureWorkerRow(workerId);
+  if (rowCheck.error) return { error: rowCheck.error };
+
   const [{ error: workerError }, { error: profileError }] = await Promise.all([
     supabase.from("workers").update({ bio, updated_at: new Date().toISOString() }).eq("id", workerId),
     supabase.from("profiles").update({ bio, updated_at: new Date().toISOString() }).eq("id", workerId),
@@ -121,6 +137,10 @@ export async function removeAvatarFile(userId: string): Promise<{ error?: string
 
 export async function persistWorkerSkill(workerId: string, skill: Omit<WorkerSkill, "id" | "workerId"> & { id?: string }): Promise<{ skill?: WorkerSkill; error?: string }> {
   if (!isSupabaseConfigured || !supabase) return { error: "Supabase is not configured" };
+
+  const rowCheck = await ensureWorkerRow(workerId);
+  if (rowCheck.error) return { error: rowCheck.error };
+
   const payload = {
     worker_id: workerId,
     skill_id: skill.skillId,
@@ -152,6 +172,10 @@ export async function persistCertification(
   cert: Omit<Certification, "id" | "workerId" | "isVerified" | "certificationStatus"> & { id?: string }
 ): Promise<{ certification?: Certification; error?: string }> {
   if (!isSupabaseConfigured || !supabase) return { error: "Supabase is not configured" };
+
+  const rowCheck = await ensureWorkerRow(workerId);
+  if (rowCheck.error) return { error: rowCheck.error };
+
   const payload = {
     worker_id: workerId,
     title: cert.title,

@@ -210,6 +210,12 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   const currentRole = isDemoMode ? demoRole : realUser?.role ?? "CUSTOMER";
   const authenticatedUser = realUser;
 
+  const clearDemoPersistence = () => {
+    if (typeof window !== "undefined") {
+      window.localStorage.removeItem(STORAGE_KEY);
+    }
+  };
+
   const applyRealUser = async (profile: Profile) => {
     setRealUser(profile);
     if (profile.role === "CUSTOMER") {
@@ -227,6 +233,8 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   const resolveAuthUser = async () => {
     if (!isSupabaseConfigured || !supabase) {
       setRealUser(null);
+      setIsDemoMode(false);
+      clearDemoPersistence();
       setAuthReady(true);
       return;
     }
@@ -234,9 +242,15 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase.auth.getUser();
       if (error || !data?.user) {
         setRealUser(null);
+        setIsDemoMode(false);
+        clearDemoPersistence();
         setAuthReady(true);
         return;
       }
+
+      setIsDemoMode(false);
+      clearDemoPersistence();
+
       const profile = await fetchProfileByAuthId(data.user.id);
       if (profile) {
         await applyRealUser(profile);
@@ -252,6 +266,8 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       }
     } catch {
       setRealUser(null);
+      setIsDemoMode(false);
+      clearDemoPersistence();
     } finally {
       setAuthReady(true);
     }
@@ -1051,7 +1067,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetToSeedData = () => {
-    localStorage.removeItem(STORAGE_KEY);
+    clearDemoPersistence();
     setCustomers(INITIAL_CUSTOMERS);
     setWorkers(INITIAL_WORKERS);
     setBookings(INITIAL_BOOKINGS);
@@ -1075,6 +1091,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     }
     setRealUser(null);
     setIsDemoMode(false);
+    clearDemoPersistence();
     if (typeof window !== "undefined") {
       window.location.assign("/");
     }
