@@ -81,7 +81,7 @@ export function Navbar() {
         </div>
 
         {/* Right Action Bar */}
-        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 lg:gap-3">
+        <div className="flex items-center justify-end gap-1.5 sm:gap-2 lg:gap-3">
           {/* Emergency Quick Action */}
           <Link href="/customer/book?urgency=EMERGENCY" className="hidden sm:inline-flex">
             <Button
