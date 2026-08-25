@@ -946,3 +946,334 @@ export const INITIAL_AUDIT_LOGS: AuditLog[] = [
     createdAt: "2026-08-24T12:00:00Z",
   },
 ];
+
+// Supabase-backed profile helpers
+import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
+
+const LOCAL_STORAGE_ACTIVE_KEY = "sahyog_active_profiles_v1";
+
+type Mode = "customer" | "worker" | "cooperative" | "federation";
+
+const roleForMode = (mode: Mode) => {
+  switch (mode) {
+    case "customer":
+      return "CUSTOMER";
+    case "worker":
+      return "WORKER";
+    case "cooperative":
+      return "SOCIETY_ADMIN"; // cooperative/admin mode
+    case "federation":
+      return "FEDERATION_ADMIN";
+  }
+};
+
+function loadActiveMap(): Record<string, string | null> {
+  try {
+    if (typeof window === "undefined" || !window.localStorage) return {};
+    const raw = window.localStorage.getItem(LOCAL_STORAGE_ACTIVE_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw);
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveActiveMap(map: Record<string, string | null>) {
+  try {
+    if (typeof window === "undefined" || !window.localStorage) return;
+    window.localStorage.setItem(LOCAL_STORAGE_ACTIVE_KEY, JSON.stringify(map));
+  } catch (e) {
+    // ignore
+  }
+}
+
+export async function fetchProfilesByMode(mode: Mode): Promise<Profile[] | WorkerProfile[]> {
+  const role = roleForMode(mode);
+  if (isSupabaseConfigured && supabase) {
+    try {
+      if (role === "WORKER") {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select(`*, workers(*)`)
+          .eq("role", role);
+        if (error) {
+          console.error("Error fetching worker profiles:", error);
+          return [];
+        }
+        // Map Postgres rows to WorkerProfile[] shape expected by the app
+        const mapped = (data || []).map((row: any) => ({
+          id: row.id,
+          profile: {
+            id: row.id,
+            email: row.email,
+            fullName: row.full_name || row.fullName || "",
+            phone: row.phone,
+            role: row.role,
+            address: row.address,
+            city: row.city,
+            state: row.state,
+            postalCode: row.postal_code || row.postalCode,
+            lat: row.location?.coordinates?.[1] ?? row.lat ?? undefined,
+            lng: row.location?.coordinates?.[0] ?? row.lng ?? undefined,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
+          },
+          cooperativeId: row.workers?.[0]?.cooperative_id ?? null,
+          cooperativeName: null,
+          federationName: null,
+          verificationStatus: row.workers?.[0]?.verification_status ?? "UNVERIFIED",
+          experienceYears: row.workers?.[0]?.experience_years ?? 0,
+          serviceRadiusKm: Number(row.workers?.[0]?.service_radius_km ?? 10),
+          isAvailable: !!row.workers?.[0]?.is_available,
+          currentLat: row.workers?.[0]?.current_location?.coordinates?.[1] ?? undefined,
+          currentLng: row.workers?.[0]?.current_location?.coordinates?.[0] ?? undefined,
+          ratingAvg: Number(row.workers?.[0]?.rating_avg ?? 0),
+          ratingCount: row.workers?.[0]?.rating_count ?? 0,
+          completedServicesCount: row.workers?.[0]?.completed_services_count ?? 0,
+          bio: row.workers?.[0]?.bio ?? "",
+        }));
+        return mapped;
+      } else {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("role", role);
+        if (error) {
+          console.error("Error fetching profiles:", error);
+          return [];
+        }
+
+        const rows = data || [];
+        const normalize = (row: any) => {
+          const id = row.id || row.profile_id || row.user_id;
+          const email = row.email || row.email_address || "";
+          const fullName = row.full_name ?? row.fullName ?? row.name ?? "";
+          const phone = row.phone ?? row.mobile ?? null;
+          const roleField = row.role ?? row.user_role ?? role;
+          const address = row.address ?? null;
+          const city = row.city ?? null;
+          const state = row.state ?? null;
+          const postalCode = row.postal_code ?? row.postalCode ?? null;
+
+          // location can come as PostGIS geometry (GeoJSON-like) or separate lat/lng columns
+          let lat: number | undefined = undefined;
+          let lng: number | undefined = undefined;
+          try {
+            const loc = row.location ?? row.current_location ?? row.location_geojson;
+            if (loc) {
+              // GeoJSON Point uses coordinates: [lng, lat]
+              const coords = loc.coordinates ?? loc?.coordinates?.[0] ? loc.coordinates : null;
+              if (Array.isArray(coords) && coords.length >= 2 && typeof coords[0] === "number") {
+                lng = coords[0];
+                lat = coords[1];
+              } else if (Array.isArray(loc) && loc.length >= 2 && typeof loc[0] === "number") {
+                // sometimes loc itself is an array
+                lng = loc[0];
+                lat = loc[1];
+              }
+            }
+          } catch (e) {
+            // ignore parsing issues
+          }
+
+          // Fallback to explicit lat/lng columns
+          if (lat === undefined && lng === undefined) {
+            if (typeof row.lat === "number" || typeof row.lat === "string") {
+              lat = Number(row.lat);
+            }
+            if (typeof row.lng === "number" || typeof row.lng === "string") {
+              lng = Number(row.lng);
+            }
+          }
+
+          const createdAt = row.created_at ?? row.createdAt ?? null;
+          const updatedAt = row.updated_at ?? row.updatedAt ?? null;
+
+          return {
+            id,
+            email,
+            fullName,
+            phone,
+            role: roleField,
+            address,
+            city,
+            state,
+            postalCode,
+            lat,
+            lng,
+            createdAt,
+            updatedAt,
+          };
+        };
+
+        return rows.map(normalize);
+      }
+    } catch (err) {
+      console.error(err);
+      return [];
+    }
+  }
+
+  // Fallback to demo data when Supabase not configured
+  switch (mode) {
+    case "customer":
+      return INITIAL_CUSTOMERS;
+    case "worker":
+      return INITIAL_WORKERS;
+    case "cooperative":
+      // demo doesn't have society admins; return empty
+      return [];
+    case "federation":
+      return [];
+  }
+}
+
+export async function createProfileForMode(mode: Mode, payload: Partial<Profile> & { password?: string }): Promise<Profile | WorkerProfile | null> {
+  const role = roleForMode(mode);
+
+  if (isSupabaseConfigured && supabase) {
+    try {
+      // Use a server-side endpoint (service role) to create profiles safely.
+      const res = await fetch("/api/workers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode, payload }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        console.error("Profile create API error:", json);
+        // fall through to fallback behavior below
+      } else {
+        const created = json.profile ?? json;
+        if (!created) {
+          console.warn("Profile create API returned no profile, falling back to local.");
+        } else {
+          // If server returned a WorkerProfile-shaped object when creating worker, return it directly
+          if (role === "WORKER") {
+            // server returns { profile: WorkerProfile }
+            return created;
+          }
+          // else created is a Profile-like object
+          return created;
+        }
+      }
+    } catch (err) {
+      console.error("Error calling profile create API:", err);
+      // continue to fallback local creation
+    }
+  }
+
+  // Fallback: return a local demo-style object (not persisted)
+  const id = `local_${Date.now()}`;
+  if (role === "WORKER") {
+    const w: WorkerProfile = {
+      id,
+      profile: {
+        id,
+        email: payload.email || `${id}@local`,
+        fullName: payload.fullName || "Local Worker",
+        phone: payload.phone || "",
+        role: "WORKER",
+        address: payload.address || "",
+        city: payload.city || "",
+        state: payload.state || "",
+        postalCode: payload.postalCode || "",
+        lat: undefined,
+        lng: undefined,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      },
+      cooperativeId: null,
+      cooperativeName: null,
+      federationName: null,
+      verificationStatus: "UNVERIFIED",
+      experienceYears: 0,
+      serviceRadiusKm: 10,
+      isAvailable: true,
+      currentLat: undefined,
+      currentLng: undefined,
+      ratingAvg: 0,
+      ratingCount: 0,
+      completedServicesCount: 0,
+      bio: "",
+    };
+    return w;
+  }
+
+  const p: Profile = {
+    id,
+    email: payload.email || `${id}@local`,
+    fullName: payload.fullName || "Local User",
+    phone: payload.phone || "",
+    role,
+    address: payload.address || "",
+    city: payload.city || "",
+    state: payload.state || "",
+    postalCode: payload.postalCode || "",
+    lat: undefined,
+    lng: undefined,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  return p;
+}
+
+export function getActiveProfileId(mode: Mode): string | null {
+  const map = loadActiveMap();
+  return map[mode] ?? null;
+}
+
+export function setActiveProfileId(mode: Mode, profileId: string | null) {
+  const map = loadActiveMap();
+  map[mode] = profileId;
+  saveActiveMap(map);
+}
+
+export async function getActiveProfile(mode: Mode): Promise<Profile | WorkerProfile | null> {
+  const id = getActiveProfileId(mode);
+  if (!id) return null;
+  const profiles = await fetchProfilesByMode(mode);
+  const list = profiles || [];
+  // @ts-ignore
+  return list.find((p: any) => p.id === id) ?? null;
+}
+
+export async function logoutCurrent() {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.warn("Logout failed:", e);
+    }
+  }
+  // clear active map locally
+  saveActiveMap({});
+}
+
+export async function changePassword(newPassword: string) {
+  if (isSupabaseConfigured && supabase) {
+    try {
+      const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        console.error("Password change error:", error);
+        return { error };
+      }
+      return { data };
+    } catch (e) {
+      console.error(e);
+      return { error: e };
+    }
+  }
+  // fallback
+  return { data: null };
+}
+
+export default {
+  fetchProfilesByMode,
+  createProfileForMode,
+  getActiveProfileId,
+  setActiveProfileId,
+  getActiveProfile,
+  logoutCurrent,
+  changePassword,
+};

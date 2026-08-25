@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 
 export function DemoRoleSwitcher() {
-  const { currentRole, currentUser, switchDemoUser, resetToSeedData } = useAppState();
+  const { currentRole, currentUser, authenticatedUser, switchDemoUser, resetToSeedData } = useAppState();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
@@ -73,7 +73,7 @@ export function DemoRoleSwitcher() {
           <div className="flex items-center justify-between pb-2 border-b border-[#E5E5E5] mb-2">
             <div>
               <p className="text-xs font-bold text-[#111111]">Hackathon Role Switcher</p>
-              <p className="text-[11px] text-[#737373]">Current: {currentUser.fullName}</p>
+              <p className="text-[11px] text-[#737373]">Current: {authenticatedUser?.fullName ?? currentUser.fullName}</p>
             </div>
             <button
               onClick={() => {

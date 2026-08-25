@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/i18n";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { DemoRoleSwitcher } from "./DemoRoleSwitcher";
 import { NotificationCenter } from "./NotificationCenter";
+import ProfileMenu from "./ProfileMenu";
 import { Button } from "@/components/ui/button";
 import {
   Handshake,
@@ -101,6 +102,8 @@ export function Navbar() {
 
           {/* Language Switcher */}
           <LanguageSwitcher />
+
+          <ProfileMenu />
 
           <Link href="/auth/login">
             <Button variant="outline" size="sm" className="text-[10px] sm:text-xs">

@@ -18,6 +18,7 @@ import {
   UrgencyLevel,
   DemandInsight,
 } from "@/types";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
 import {
   INITIAL_CUSTOMERS,
   INITIAL_WORKERS,
@@ -26,6 +27,13 @@ import {
   INITIAL_DISPUTES,
   INITIAL_DEMAND_INSIGHTS,
   INITIAL_AUDIT_LOGS,
+  fetchProfilesByMode,
+  createProfileForMode,
+  getActiveProfileId,
+  setActiveProfileId,
+  getActiveProfile,
+  logoutCurrent,
+  changePassword,
 } from "./demoStore";
 import { DEMO_USERS, SERVICES, SERVICE_CATEGORIES } from "@/constants";
 import { generateBookingNumber } from "@/lib/utils";
@@ -48,6 +56,9 @@ interface StateContextType {
     role: "CUSTOMER" | "WORKER";
   }) => Profile;
   loginDemoByEmail: (email: string) => { role: UserRole; targetUrl: string } | null;
+  logout: () => Promise<void>;
+  changePassword: (newPassword: string) => Promise<any>;
+  authenticatedUser?: Profile | null;
   
   customers: Profile[];
   workers: WorkerProfile[];
@@ -144,11 +155,47 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(INITIAL_AUDIT_LOGS);
   const [demandInsights, setDemandInsights] = useState<DemandInsight[]>(INITIAL_DEMAND_INSIGHTS);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [authenticatedUser, setAuthenticatedUser] = useState<Profile | null>(null);
 
   // Load from localStorage if present
   useEffect(() => {
+    // After initial load, attempt to resolve authenticated user from Supabase and map to profile
+    const resolveAuthUser = async () => {
+      if (!isSupabaseConfigured || !supabase) return;
+      try {
+        const { data, error } = await supabase.auth.getUser();
+        if (error || !data?.user) return;
+        const email = data.user.email;
+        if (!email) return;
+        // fetch profile by email
+        const { data: profileRows, error: pErr } = await supabase.from("profiles").select("*").eq("email", email).limit(1).single();
+        if (pErr || !profileRows) {
+          return;
+        }
+        const prof = profileRows;
+        const mapped: Profile = {
+          id: prof.id,
+          email: prof.email,
+          fullName: prof.full_name ?? prof.fullName ?? "",
+          phone: prof.phone,
+          role: prof.role,
+          address: prof.address,
+          city: prof.city,
+          state: prof.state,
+          postalCode: prof.postal_code ?? prof.postalCode,
+          lat: prof.location?.coordinates?.[1] ?? prof.lat ?? undefined,
+          lng: prof.location?.coordinates?.[0] ?? prof.lng ?? undefined,
+          createdAt: prof.created_at,
+          updatedAt: prof.updated_at,
+        };
+        setAuthenticatedUser(mapped);
+      } catch (e) {
+        // ignore
+      }
+    };
+
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed.customers) setCustomers(parsed.customers);
@@ -166,6 +213,9 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.warn("Failed to load Sahyog saved state, using defaults:", e);
     }
+
+    // resolve authenticated user (async)
+    resolveAuthUser().catch(() => {});
     setIsLoaded(true);
   }, []);
 
@@ -186,7 +236,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         currentUser,
         currentRole,
       };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+      if (typeof window !== "undefined") window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
     } catch (e) {
       console.warn("Failed to save state to localStorage:", e);
     }
@@ -207,48 +257,86 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
 
   const switchDemoUser = (role: UserRole) => {
     setCurrentRoleState(role);
-    if (role === "CUSTOMER") {
-      setCurrentUser(INITIAL_CUSTOMERS[0]);
-    } else if (role === "WORKER") {
-      const w = workers[0];
-      setCurrentUser({
-        ...w.profile,
-        role: "WORKER",
+
+    const mode = (() => {
+      if (role === "CUSTOMER") return "customer";
+      if (role === "WORKER") return "worker";
+      if (role === "SOCIETY_ADMIN") return "cooperative";
+      if (role === "FEDERATION_ADMIN") return "federation";
+      return "customer";
+    })();
+
+    // Try to fetch persisted profiles (Supabase) first, fallback to demo data
+    try {
+      // fetchProfilesByMode returns either Profile[] or WorkerProfile[]
+      // Do not await here to keep function synchronous for callers; update state when promise resolves
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      fetchProfilesByMode(mode as any).then((list: any) => {
+        if (!list || (Array.isArray(list) && list.length === 0)) {
+          // fallback to prior demo defaults
+          if (role === "CUSTOMER") setCurrentUser(INITIAL_CUSTOMERS[0]);
+          else if (role === "WORKER") {
+            const w = workers[0];
+            setCurrentUser({ ...w.profile, role: "WORKER" });
+          } else if (role === "SOCIETY_ADMIN") {
+            setCurrentUser({
+              id: "admin_demo_1",
+              email: "admin.demo@example.com",
+              fullName: "Sunita Deshmukh",
+              phone: "+91 98222 33445",
+              role: "SOCIETY_ADMIN",
+              address: "Labour Cooperative Bhawan, Sector 62",
+              city: "Noida",
+              state: "Uttar Pradesh",
+              postalCode: "201301",
+              lat: 28.629,
+              lng: 77.362,
+              createdAt: "2026-07-01T00:00:00Z",
+              updatedAt: "2026-07-01T00:00:00Z",
+            });
+          } else if (role === "FEDERATION_ADMIN") {
+            setCurrentUser({
+              id: "fed_demo_1",
+              email: "federation.demo@example.com",
+              fullName: "Dr. Rajeshwar Patil",
+              phone: "+91 98333 44556",
+              role: "FEDERATION_ADMIN",
+              address: "National Cooperative Union Complex, Siri Fort",
+              city: "New Delhi",
+              state: "Delhi",
+              postalCode: "110049",
+              lat: 28.552,
+              lng: 77.218,
+              createdAt: "2026-07-01T00:00:00Z",
+              updatedAt: "2026-07-01T00:00:00Z",
+            });
+          }
+          return;
+        }
+
+        // select active profile id if set, else pick first
+        const activeId = getActiveProfileId(mode as any);
+        let selected: any = null;
+        if (activeId) selected = (list as any[]).find((p) => p.id === activeId || (p.profile && p.profile.id === activeId));
+        if (!selected) selected = (list as any[])[0];
+
+        if (!selected) return;
+
+        if (role === "WORKER") {
+          setCurrentUser({ ...selected.profile, role: "WORKER" });
+          setActiveProfileId(mode as any, selected.id || selected.profile.id);
+        } else {
+          setCurrentUser({ ...selected, role });
+          setActiveProfileId(mode as any, selected.id);
+        }
       });
-    } else if (role === "SOCIETY_ADMIN") {
-      setCurrentUser({
-        id: "admin_demo_1",
-        email: "admin.demo@example.com",
-        fullName: "Sunita Deshmukh",
-        phone: "+91 98222 33445",
-        role: "SOCIETY_ADMIN",
-        address: "Labour Cooperative Bhawan, Sector 62",
-        city: "Noida",
-        state: "Uttar Pradesh",
-        postalCode: "201301",
-        lat: 28.629,
-        lng: 77.362,
-        createdAt: "2026-07-01T00:00:00Z",
-        updatedAt: "2026-07-01T00:00:00Z",
-      });
-    } else if (role === "FEDERATION_ADMIN") {
-      setCurrentUser({
-        id: "fed_demo_1",
-        email: "federation.demo@example.com",
-        fullName: "Dr. Rajeshwar Patil",
-        phone: "+91 98333 44556",
-        role: "FEDERATION_ADMIN",
-        address: "National Cooperative Union Complex, Siri Fort",
-        city: "New Delhi",
-        state: "Delhi",
-        postalCode: "110049",
-        lat: 28.552,
-        lng: 77.218,
-        createdAt: "2026-07-01T00:00:00Z",
-        updatedAt: "2026-07-01T00:00:00Z",
-      });
-    } else {
-      setCurrentRoleState(role);
+    } catch (e) {
+      // fallback to previous behaviour
+      if (role === "CUSTOMER") setCurrentUser(INITIAL_CUSTOMERS[0]);
+      else if (role === "WORKER") {
+        const w = workers[0];
+        setCurrentUser({ ...w.profile, role: "WORKER" });
+      }
     }
   };
 
@@ -264,6 +352,57 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     const fullName = params.fullName.trim();
     const email = params.email.trim();
 
+    // Try to persist to Supabase (via createProfileForMode). If not available, fallback to local demo arrays
+    try {
+      const mode = params.role === "CUSTOMER" ? "customer" : "worker";
+      // Fire-and-forget; update local state when promise resolves
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      (async () => {
+        const created: any = await createProfileForMode(mode as any, { fullName, email });
+        if (!created) return;
+        if (params.role === "CUSTOMER") {
+          setCustomers((prev) => [...prev, created]);
+          setCurrentUser(created);
+          setCurrentRoleState("CUSTOMER");
+          setActiveProfileId("customer", created.id);
+        } else {
+          // WorkerProfile
+          setWorkers((prev) => [...prev, created]);
+          setCurrentUser({ ...created.profile, role: "WORKER" });
+          setCurrentRoleState("WORKER");
+          setActiveProfileId("worker", created.id);
+        }
+      })();
+    } catch (e) {
+      // fallback to previous demo behavior
+      if (params.role === "CUSTOMER") {
+        const id = generateUserId("cust");
+        const profile = createRegisteredCustomerProfile({
+          id,
+          fullName,
+          email,
+          template: INITIAL_CUSTOMERS[0],
+        });
+        setCustomers((prev) => [...prev, profile]);
+        setCurrentUser(profile);
+        setCurrentRoleState("CUSTOMER");
+        return profile;
+      }
+
+      const id = generateUserId("worker");
+      const worker = cloneWorkerTemplateForRegistration({
+        id,
+        fullName,
+        email,
+        template: INITIAL_WORKERS[0],
+      });
+      setWorkers((prev) => [...prev, worker]);
+      setCurrentUser({ ...worker.profile, role: "WORKER" });
+      setCurrentRoleState("WORKER");
+      return worker.profile;
+    }
+
+    // Return a temporary profile immediately (UX) while persistence completes
     if (params.role === "CUSTOMER") {
       const id = generateUserId("cust");
       const profile = createRegisteredCustomerProfile({
@@ -292,11 +431,37 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loginDemoByEmail = (email: string): { role: UserRole; targetUrl: string } | null => {
+    // First check local demo arrays
     const match = findDemoUserByEmail(email, customers, workers);
-    if (!match) return null;
-    setCurrentUser(match.profile);
-    setCurrentRoleState(match.role);
-    return { role: match.role, targetUrl: match.targetUrl };
+    if (match) {
+      setCurrentUser(match.profile);
+      setCurrentRoleState(match.role);
+      return { role: match.role, targetUrl: match.targetUrl };
+    }
+
+    // Otherwise try Supabase-backed profiles (async) and set user when found
+    (async () => {
+      try {
+        const customerList: Profile[] = (await fetchProfilesByMode("customer")) as Profile[];
+        const workerList: WorkerProfile[] = (await fetchProfilesByMode("worker")) as WorkerProfile[];
+        const c = customerList.find((p) => p.email === email);
+        if (c) {
+          setCurrentUser(c);
+          setCurrentRoleState("CUSTOMER");
+          return;
+        }
+        const w = workerList.find((wp) => wp.profile?.email === email || wp.email === email);
+        if (w) {
+          setCurrentUser({ ...w.profile, role: "WORKER" });
+          setCurrentRoleState("WORKER");
+          return;
+        }
+      } catch (e) {
+        // ignore
+      }
+    })();
+
+    return null;
   };
 
   const addNotification = (notif: Omit<Notification, "id" | "createdAt" | "isRead">) => {
@@ -872,6 +1037,24 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     setCurrentRoleState("CUSTOMER");
   };
 
+  const logout = async () => {
+    try {
+      await logoutCurrent();
+    } catch (e) {
+      console.warn("Logout helper failed:", e);
+    }
+    resetToSeedData();
+  };
+
+  const changePasswordWrapper = async (newPassword: string) => {
+    try {
+      return await changePassword(newPassword);
+    } catch (e) {
+      console.error(e);
+      return { error: e };
+    }
+  };
+
   return (
     <StateContext.Provider
       value={{
@@ -881,6 +1064,9 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         switchDemoUser,
         registerDemoUser,
         loginDemoByEmail,
+        logout,
+        changePassword: changePasswordWrapper,
+        authenticatedUser,
         customers,
         workers,
         bookings,
