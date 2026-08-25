@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { useAppState } from "@/lib/store/stateContext";
+import { normalizeWorkerRecord } from "@/lib/auth/authHelpers";
 import { AvailabilityToggle } from "@/components/worker/AvailabilityToggle";
 import { JobAlertCard } from "@/components/worker/JobAlertCard";
 import { ActiveServiceBar } from "@/components/worker/ActiveServiceBar";
@@ -26,7 +27,14 @@ import {
 export default function WorkerDashboardPage() {
   const { currentUser, workers, bookings } = useAppState();
 
-  const worker = workers.find((w) => w.id === currentUser.id) || workers[0];
+  const worker =
+    workers.find((w) => w.id === currentUser.id) ||
+    workers[0] ||
+    normalizeWorkerRecord({
+      id: currentUser.id,
+      profile: { ...currentUser, role: "WORKER" },
+      cooperativeName: "Unassigned Cooperative",
+    });
 
   // Incoming jobs assigned to this worker that are not yet accepted
   const pendingIncomingJobs = bookings.filter(
@@ -53,14 +61,14 @@ export default function WorkerDashboardPage() {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 bg-[#F8F8F8] rounded-xl border border-[#E5E5E5]">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-full bg-[#111111] text-white flex items-center justify-center font-bold text-base">
-            {worker.profile.fullName.slice(0, 2).toUpperCase()}
+            {(worker.profile?.fullName || "Worker").slice(0, 2).toUpperCase()}
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-[#111111]">{worker.profile.fullName}</h1>
+              <h1 className="text-xl font-bold text-[#111111]">{worker.profile?.fullName || "Worker"}</h1>
               <WorkerVerificationBadge status={worker.verificationStatus} />
             </div>
-            <p className="text-xs text-[#737373] mt-0.5">{worker.cooperativeName}</p>
+            <p className="text-xs text-[#737373] mt-0.5">{worker.cooperativeName || "Unassigned Cooperative"}</p>
             <div className="flex items-center gap-2 mt-1.5">
               <RatingStars rating={worker.ratingAvg || 5} size="sm" showNumber />
               <span className="text-[11px] text-[#525252]">({worker.ratingCount} Customer Reviews)</span>

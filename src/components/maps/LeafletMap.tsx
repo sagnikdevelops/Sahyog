@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 
@@ -35,11 +35,13 @@ function MapInternal({
 }: MapProps) {
   const [LInstance, setLInstance] = useState<any>(null);
   const [mapElementId] = useState(() => `map_${Math.random().toString(36).substring(2, 9)}`);
+  const mapRef = useRef<any>(null);
 
   useEffect(() => {
-    let map: any = null;
+    let isDisposed = false;
 
     import("leaflet").then((L) => {
+      if (isDisposed) return;
       setLInstance(L);
 
       // Fix default leaflet icons in webpack/next
@@ -53,11 +55,18 @@ function MapInternal({
       const container = document.getElementById(mapElementId);
       if (!container) return;
 
-      map = L.map(mapElementId, {
+      // Avoid re-initializing the same Leaflet container when StrictMode / rerenders fire effect twice.
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+
+      const map = L.map(container, {
         center,
         zoom,
         zoomControl: true,
       });
+      mapRef.current = map;
 
       // Monochrome / clean OpenStreetMap tile layer
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -100,8 +109,10 @@ function MapInternal({
     });
 
     return () => {
-      if (map) {
-        map.remove();
+      isDisposed = true;
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
       }
     };
   }, [center, zoom, markers, interactive, onLocationSelect, mapElementId]);

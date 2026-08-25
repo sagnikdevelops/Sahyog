@@ -44,15 +44,17 @@ export function WorkerVerificationModal({
         <DialogHeader>
           <DialogTitle className="text-base font-bold flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-[#16A34A]" />
-            Verify Worker: {worker.profile.fullName}
+            Verify Worker: {worker.profile?.fullName || "Unknown Worker"}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2 text-xs">
           <div className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5]">
-            <p className="font-bold text-[#111111]">{worker.profile.fullName}</p>
-            <p className="text-[#737373] text-[11px]">{worker.cooperativeName}</p>
-            <p className="text-[#525252] mt-1">{worker.skills.map((s) => s.skillName).join(", ") || "General Skilled Labour"}</p>
+            <p className="font-bold text-[#111111]">{worker.profile?.fullName || "Unknown Worker"}</p>
+            <p className="text-[#737373] text-[11px]">{worker.cooperativeName || "Unknown Cooperative"}</p>
+            <p className="text-[#525252] mt-1">
+              {Array.isArray(worker.skills) ? worker.skills.map((s) => s?.skillName).filter(Boolean).join(", ") || "General Skilled Labour" : "General Skilled Labour"}
+            </p>
           </div>
 
           <div>

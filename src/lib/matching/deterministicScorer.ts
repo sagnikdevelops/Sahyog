@@ -17,16 +17,19 @@ export function calculateDeterministicWorkerScore(
   criteria: MatchCriteria
 ): WorkerMatchCandidate {
   const { serviceId, customerLat, customerLng, urgency, maxRadiusKm = 25 } = criteria;
+  const safeSkills = Array.isArray(worker?.skills) ? worker.skills : [];
+  const workerLat = Number.isFinite(Number(worker?.currentLat)) ? Number(worker.currentLat) : 28.6;
+  const workerLng = Number.isFinite(Number(worker?.currentLng)) ? Number(worker.currentLng) : 77.3;
 
   // 1. Skill Match (Weight: 40 points)
   let skillScore = 0;
-  const exactSkillMatch = worker.skills.find(
-    (s) => s.serviceId === serviceId && s.isVerified
+  const exactSkillMatch = safeSkills.find(
+    (s) => s?.serviceId === serviceId && s?.isVerified
   );
-  const unverifiedSkillMatch = worker.skills.find(
-    (s) => s.serviceId === serviceId
+  const unverifiedSkillMatch = safeSkills.find(
+    (s) => s?.serviceId === serviceId
   );
-  const categoryMatch = worker.skills.length > 0;
+  const categoryMatch = safeSkills.length > 0;
 
   if (exactSkillMatch) {
     skillScore = 40;
@@ -42,8 +45,8 @@ export function calculateDeterministicWorkerScore(
   const distanceKm = calculateDistanceKm(
     customerLat,
     customerLng,
-    worker.currentLat,
-    worker.currentLng
+    workerLat,
+    workerLng
   );
 
   let proximityScore = 0;

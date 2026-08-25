@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useAppState } from "@/lib/store/stateContext";
+import { normalizeWorkerRecord } from "@/lib/auth/authHelpers";
 import { WorkerVerificationBadge } from "@/components/shared/StatusBadge";
 import { RatingStars } from "@/components/shared/RatingStars";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -10,17 +11,24 @@ import { ShieldCheck, Award, Wrench, Calendar, CheckCircle2 } from "lucide-react
 
 export default function WorkerProfilePage() {
   const { currentUser, workers } = useAppState();
-  const worker = workers.find((w) => w.id === currentUser.id) || workers[0];
+  const worker =
+    workers.find((w) => w.id === currentUser.id) ||
+    workers[0] ||
+    normalizeWorkerRecord({
+      id: currentUser.id,
+      profile: { ...currentUser, role: "WORKER" },
+      cooperativeName: "Unassigned Cooperative",
+    });
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       <div className="border-b border-[#E5E5E5] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-[#111111]">{worker.profile.fullName}</h1>
+            <h1 className="text-2xl font-bold text-[#111111]">{worker.profile?.fullName || "Worker"}</h1>
             <WorkerVerificationBadge status={worker.verificationStatus} />
           </div>
-          <p className="text-xs text-[#737373] mt-0.5">{worker.cooperativeName}</p>
+           <p className="text-xs text-[#737373] mt-0.5">{worker.cooperativeName || "Unassigned Cooperative"}</p>
         </div>
       </div>
 
@@ -35,21 +43,25 @@ export default function WorkerProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3">
-              {worker.skills.map((s) => (
-                <div key={s.id} className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5] flex justify-between items-center text-xs">
-                  <div>
-                    <h4 className="font-bold text-[#111111]">{s.skillName}</h4>
-                    <p className="text-[11px] text-[#737373]">{s.serviceName}</p>
+              {(Array.isArray(worker.skills) ? worker.skills : []).length === 0 ? (
+                <p className="text-xs text-[#737373]">No skills added yet. Please update your profile after registration.</p>
+              ) : (
+                (Array.isArray(worker.skills) ? worker.skills : []).map((s) => (
+                  <div key={s?.id || Math.random()} className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5] flex justify-between items-center text-xs">
+                    <div>
+                      <h4 className="font-bold text-[#111111]">{s?.skillName || "General Labour"}</h4>
+                      <p className="text-[11px] text-[#737373]">{s?.serviceName || "General Service"}</p>
+                    </div>
+                    {s?.isVerified ? (
+                      <Badge variant="success" className="text-[10px] gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Certified by Society
+                      </Badge>
+                    ) : (
+                      <Badge variant="warning" className="text-[10px]">Verification Pending</Badge>
+                    )}
                   </div>
-                  {s.isVerified ? (
-                    <Badge variant="success" className="text-[10px] gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Certified by Society
-                    </Badge>
-                  ) : (
-                    <Badge variant="warning" className="text-[10px]">Verification Pending</Badge>
-                  )}
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
 
@@ -61,18 +73,18 @@ export default function WorkerProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3 text-xs">
-              {worker.certifications.length === 0 ? (
+              {(Array.isArray(worker.certifications) ? worker.certifications : []).length === 0 ? (
                 <p className="text-xs text-[#737373]">No certificates uploaded yet.</p>
               ) : (
-                worker.certifications.map((c) => (
-                  <div key={c.id} className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5] space-y-1">
+                (Array.isArray(worker.certifications) ? worker.certifications : []).map((c) => (
+                  <div key={c?.id || Math.random()} className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5] space-y-1">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-[#111111]">{c.title}</span>
+                      <span className="font-bold text-[#111111]">{c?.title || "Certificate"}</span>
                       <span className="text-[10px] text-[#16A34A] font-semibold bg-[#16A34A]/10 px-2 py-0.5 rounded">
                         Verified
                       </span>
                     </div>
-                    <p className="text-[11px] text-[#737373]">Issued by: {c.issuingBody} • {c.issueDate}</p>
+                    <p className="text-[11px] text-[#737373]">Issued by: {c?.issuingBody || "Cooperative"} • {c?.issueDate || "Not available"}</p>
                   </div>
                 ))
               )}
@@ -94,7 +106,7 @@ export default function WorkerProfilePage() {
 
               <div>
                 <p className="text-[10px] uppercase text-[#737373] font-semibold">Service Area</p>
-                <p className="font-medium text-[#111111]">{worker.serviceRadiusKm} km around {worker.profile.city}</p>
+                <p className="font-medium text-[#111111]">{worker.serviceRadiusKm || 10} km around {worker.profile?.city || "your area"}</p>
               </div>
 
               <div>

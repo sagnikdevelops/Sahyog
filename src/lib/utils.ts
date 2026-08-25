@@ -42,18 +42,27 @@ export function calculateDistanceKm(
   lat2: number,
   lon2: number
 ): number {
+  const safeLat1 = Number.isFinite(Number(lat1)) ? Number(lat1) : 0;
+  const safeLon1 = Number.isFinite(Number(lon1)) ? Number(lon1) : 0;
+  const safeLat2 = Number.isFinite(Number(lat2)) ? Number(lat2) : 0;
+  const safeLon2 = Number.isFinite(Number(lon2)) ? Number(lon2) : 0;
+
+  if (safeLat1 === 0 && safeLon1 === 0 && safeLat2 === 0 && safeLon2 === 0) {
+    return Number.POSITIVE_INFINITY;
+  }
+
   const R = 6371; // Earth's radius in km
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const dLat = ((safeLat2 - safeLat1) * Math.PI) / 180;
+  const dLon = ((safeLon2 - safeLon1) * Math.PI) / 180;
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
+    Math.cos((safeLat1 * Math.PI) / 180) *
+      Math.cos((safeLat2 * Math.PI) / 180) *
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const d = R * c;
-  return Math.round(d * 10) / 10;
+  return Number.isFinite(d) ? Math.round(d * 10) / 10 : Number.POSITIVE_INFINITY;
 }
 
 export function generateBookingNumber(): string {

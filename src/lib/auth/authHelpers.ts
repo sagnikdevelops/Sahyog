@@ -35,6 +35,86 @@ export function createRegisteredCustomerProfile(params: {
   };
 }
 
+export function normalizeWorkerRecord(worker?: Partial<WorkerProfile> | null): WorkerProfile {
+  const source = worker ?? {};
+  const profile = source.profile ?? {};
+  const fallbackId = source.id ?? profile.id ?? generateUserId("worker");
+  const fallbackEmail = profile.email ?? "worker@local.example";
+  const fallbackFullName = profile.fullName ?? "Worker";
+
+  const normalizedProfile = {
+    id: fallbackId,
+    email: fallbackEmail,
+    fullName: fallbackFullName,
+    phone: profile.phone ?? "",
+    avatarUrl: profile.avatarUrl,
+    role: "WORKER" as const,
+    address: profile.address ?? "",
+    city: profile.city ?? "",
+    state: profile.state ?? "",
+    postalCode: profile.postalCode ?? "",
+    lat: Number.isFinite(Number(profile.lat)) ? Number(profile.lat) : 28.6,
+    lng: Number.isFinite(Number(profile.lng)) ? Number(profile.lng) : 77.3,
+    createdAt: profile.createdAt ?? new Date().toISOString(),
+    updatedAt: profile.updatedAt ?? new Date().toISOString(),
+  };
+
+  return {
+    id: fallbackId,
+    profile: normalizedProfile,
+    cooperativeId: source.cooperativeId ?? null,
+    cooperativeName: source.cooperativeName ?? "Unassigned Cooperative",
+    federationName: source.federationName ?? "Unassigned Federation",
+    verificationStatus: source.verificationStatus ?? "UNVERIFIED",
+    experienceYears: Number(source.experienceYears ?? 0),
+    serviceRadiusKm: Number(source.serviceRadiusKm ?? 10),
+    isAvailable: Boolean(source.isAvailable),
+    currentLat: Number.isFinite(Number(source.currentLat)) ? Number(source.currentLat) : normalizedProfile.lat,
+    currentLng: Number.isFinite(Number(source.currentLng)) ? Number(source.currentLng) : normalizedProfile.lng,
+    ratingAvg: Number(source.ratingAvg ?? 0),
+    ratingCount: Number(source.ratingCount ?? 0),
+    completedServicesCount: Number(source.completedServicesCount ?? 0),
+    bio: source.bio ?? "",
+    skills: Array.isArray(source.skills) ? source.skills.map((skill, index) => ({
+      ...skill,
+      id: skill?.id ?? `ws_${fallbackId}_${index}`,
+      workerId: skill?.workerId ?? fallbackId,
+      skillName: skill?.skillName ?? "General Labour",
+      serviceName: skill?.serviceName ?? "General Service",
+    })) : [],
+    certifications: Array.isArray(source.certifications) ? source.certifications.map((cert, index) => ({
+      ...cert,
+      id: cert?.id ?? `cert_${fallbackId}_${index}`,
+      workerId: cert?.workerId ?? fallbackId,
+      title: cert?.title ?? "Certification",
+      issuingBody: cert?.issuingBody ?? "Cooperative",
+      issueDate: cert?.issueDate ?? new Date().toISOString(),
+      certificationStatus: cert?.certificationStatus ?? "PENDING",
+    })) : [],
+    availability: Array.isArray(source.availability) ? source.availability.map((slot, index) => ({
+      ...slot,
+      id: slot?.id ?? `av_${fallbackId}_${index}`,
+      workerId: slot?.workerId ?? fallbackId,
+      dayOfWeek: slot?.dayOfWeek ?? 0,
+      startTime: slot?.startTime ?? "09:00",
+      endTime: slot?.endTime ?? "18:00",
+      isActive: slot?.isActive ?? true,
+    })) : [],
+    welfare: Array.isArray(source.welfare) ? source.welfare.map((item, index) => ({
+      ...item,
+      id: item?.id ?? `welf_${fallbackId}_${index}`,
+      workerId: item?.workerId ?? fallbackId,
+      schemeName: item?.schemeName ?? "Welfare Policy",
+      policyNo: item?.policyNo ?? `POL-${fallbackId}`,
+      provider: item?.provider ?? "Cooperative Welfare Board",
+      coverageAmount: Number(item?.coverageAmount ?? 0),
+      validUntil: item?.validUntil ?? new Date().toISOString(),
+      status: item?.status ?? "ACTIVE",
+    })) : [],
+    activeBookingsCount: Number(source.activeBookingsCount ?? 0),
+  };
+}
+
 export function cloneWorkerTemplateForRegistration(params: {
   id: string;
   fullName: string;
@@ -42,14 +122,14 @@ export function cloneWorkerTemplateForRegistration(params: {
   template: WorkerProfile;
 }): WorkerProfile {
   const now = new Date().toISOString();
-  const clone: WorkerProfile = JSON.parse(JSON.stringify(params.template));
+  const base = normalizeWorkerRecord(params.template);
   const id = params.id;
 
-  return {
-    ...clone,
+  return normalizeWorkerRecord({
+    ...base,
     id,
     profile: {
-      ...clone.profile,
+      ...base.profile,
       id,
       email: params.email,
       fullName: params.fullName,
@@ -57,28 +137,30 @@ export function cloneWorkerTemplateForRegistration(params: {
       createdAt: now,
       updatedAt: now,
     },
-    skills: clone.skills.map((skill, index) => ({
+    cooperativeName: base.cooperativeName || "Unassigned Cooperative",
+    federationName: base.federationName || "Unassigned Federation",
+    skills: Array.isArray(base.skills) ? base.skills.map((skill, index) => ({
       ...skill,
       id: `ws_${id}_${index}`,
       workerId: id,
-    })),
-    certifications: clone.certifications.map((cert, index) => ({
+    })) : [],
+    certifications: Array.isArray(base.certifications) ? base.certifications.map((cert, index) => ({
       ...cert,
       id: `cert_${id}_${index}`,
       workerId: id,
-    })),
-    availability: clone.availability.map((slot, index) => ({
+    })) : [],
+    availability: Array.isArray(base.availability) ? base.availability.map((slot, index) => ({
       ...slot,
       id: `av_${id}_${index}`,
       workerId: id,
-    })),
-    welfare: clone.welfare.map((item, index) => ({
+    })) : [],
+    welfare: Array.isArray(base.welfare) ? base.welfare.map((item, index) => ({
       ...item,
       id: `welf_${id}_${index}`,
       workerId: id,
-    })),
+    })) : [],
     activeBookingsCount: 0,
-  };
+  });
 }
 
 export type DemoLoginMatch = {
@@ -118,7 +200,7 @@ export function findDemoUserByEmail(
     return { profile: customer, role: "CUSTOMER", targetUrl: "/customer" };
   }
 
-  const worker = workers.find((w) => w.profile.email.toLowerCase() === normalized);
+  const worker = workers.find((w) => (w.profile?.email ?? "").toLowerCase() === normalized);
   if (worker) {
     return {
       profile: { ...worker.profile, role: "WORKER" },

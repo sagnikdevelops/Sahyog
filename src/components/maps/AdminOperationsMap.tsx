@@ -17,11 +17,20 @@ export function AdminOperationsMap() {
   // Add Worker markers
   if (filter === "ALL" || filter === "WORKERS") {
     workers.forEach((w) => {
+      if (!w) return;
+
+      const workerName = w.profile?.fullName || "Worker";
+      const firstSkillName = Array.isArray(w.skills) ? w.skills[0]?.skillName : undefined;
+      const lat = Number(w.currentLat);
+      const lng = Number(w.currentLng);
+
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
       markers.push({
         id: w.id,
-        lat: w.currentLat,
-        lng: w.currentLng,
-        title: `${w.profile.fullName} (${w.skills[0]?.skillName || "Skilled Worker"})`,
+        lat,
+        lng,
+        title: `${workerName} (${firstSkillName || "Skilled Worker"})`,
         subtitle: `${w.cooperativeName} • ${w.isAvailable ? "Available" : "Busy"}`,
         type: "WORKER",
         status: w.verificationStatus,
@@ -32,11 +41,17 @@ export function AdminOperationsMap() {
   // Add Booking markers
   if (filter === "ALL" || filter === "BOOKINGS" || filter === "EMERGENCY") {
     bookings.forEach((b) => {
+      if (!b) return;
       if (filter === "EMERGENCY" && b.urgency !== "EMERGENCY") return;
+      const lat = Number(b.customerLat);
+      const lng = Number(b.customerLng);
+
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
       markers.push({
         id: b.id,
-        lat: b.customerLat,
-        lng: b.customerLng,
+        lat,
+        lng,
         title: `${b.urgency === "EMERGENCY" ? "🚨 " : ""}${b.serviceName}`,
         subtitle: `${b.customerAddress} • ₹${b.totalAmount}`,
         type: b.urgency === "EMERGENCY" ? "EMERGENCY" : "CUSTOMER",

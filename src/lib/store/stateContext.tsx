@@ -43,6 +43,7 @@ import {
   createRegisteredCustomerProfile,
   findDemoUserByEmail,
   generateUserId,
+  normalizeWorkerRecord,
 } from "@/lib/auth/authHelpers";
 
 interface StateContextType {
@@ -366,11 +367,11 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
           setCurrentRoleState("CUSTOMER");
           setActiveProfileId("customer", created.id);
         } else {
-          // WorkerProfile
-          setWorkers((prev) => [...prev, created]);
-          setCurrentUser({ ...created.profile, role: "WORKER" });
+          const normalizedWorker = normalizeWorkerRecord(created);
+          setWorkers((prev) => [...prev, normalizedWorker]);
+          setCurrentUser({ ...normalizedWorker.profile, role: "WORKER" });
           setCurrentRoleState("WORKER");
-          setActiveProfileId("worker", created.id);
+          setActiveProfileId("worker", normalizedWorker.id);
         }
       })();
     } catch (e) {
@@ -396,10 +397,11 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         email,
         template: INITIAL_WORKERS[0],
       });
-      setWorkers((prev) => [...prev, worker]);
-      setCurrentUser({ ...worker.profile, role: "WORKER" });
+      const normalizedWorker = normalizeWorkerRecord(worker);
+      setWorkers((prev) => [...prev, normalizedWorker]);
+      setCurrentUser({ ...normalizedWorker.profile, role: "WORKER" });
       setCurrentRoleState("WORKER");
-      return worker.profile;
+      return normalizedWorker.profile;
     }
 
     // Return a temporary profile immediately (UX) while persistence completes
@@ -424,10 +426,11 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       email,
       template: INITIAL_WORKERS[0],
     });
-    setWorkers((prev) => [...prev, worker]);
-    setCurrentUser({ ...worker.profile, role: "WORKER" });
+    const normalizedWorker = normalizeWorkerRecord(worker);
+    setWorkers((prev) => [...prev, normalizedWorker]);
+    setCurrentUser({ ...normalizedWorker.profile, role: "WORKER" });
     setCurrentRoleState("WORKER");
-    return worker.profile;
+    return normalizedWorker.profile;
   };
 
   const loginDemoByEmail = (email: string): { role: UserRole; targetUrl: string } | null => {
@@ -510,7 +513,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         (w) =>
           w.isAvailable &&
           (w.verificationStatus === "APPROVED" || w.verificationStatus === "COOPERATIVE_VERIFIED") &&
-          w.skills.some((s) => s.serviceId === service.id)
+          Array.isArray(w.skills) && w.skills.some((s) => s?.serviceId === service.id)
       ) || workers[0];
     }
 

@@ -19,11 +19,17 @@ export default function AdminWorkersPage() {
   const [selectedWorker, setSelectedWorker] = useState<WorkerProfile | null>(null);
 
   const filteredWorkers = workers.filter((w) => {
+    if (!w) return false;
+
+    const workerName = w.profile?.fullName || "Unknown Worker";
+    const cooperativeName = w.cooperativeName || "Unknown Cooperative";
+    const skillNames = Array.isArray(w.skills) ? w.skills.map((s) => s?.skillName).filter(Boolean) : [];
+
     const matchesStatus = filter === "ALL" || w.verificationStatus === filter;
     const matchesSearch =
-      w.profile.fullName.toLowerCase().includes(search.toLowerCase()) ||
-      w.cooperativeName.toLowerCase().includes(search.toLowerCase()) ||
-      w.skills.some((s) => s.skillName.toLowerCase().includes(search.toLowerCase()));
+      workerName.toLowerCase().includes(search.toLowerCase()) ||
+      cooperativeName.toLowerCase().includes(search.toLowerCase()) ||
+      skillNames.some((skillName) => skillName.toLowerCase().includes(search.toLowerCase()));
     return matchesStatus && matchesSearch;
   });
 
@@ -78,28 +84,32 @@ export default function AdminWorkersPage() {
       <Card className="border-[#E5E5E5]">
         <CardContent className="p-0">
           <div className="divide-y divide-[#E5E5E5] text-xs">
-            {filteredWorkers.map((w) => (
-              <div key={w.id} className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#F8F8F8] transition-colors">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#111111] text-white flex items-center justify-center font-bold text-xs shrink-0">
-                    {w.profile.fullName.slice(0, 2).toUpperCase()}
-                  </div>
-                  <div className="space-y-0.5">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-sm text-[#111111]">{w.profile.fullName}</span>
-                      <WorkerVerificationBadge status={w.verificationStatus} />
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
-                        w.isAvailable ? "bg-[#16A34A]/10 text-[#16A34A]" : "bg-[#F3F3F3] text-[#737373]"
-                      }`}>
-                        {w.isAvailable ? "Online" : "Offline"}
-                      </span>
+            {filteredWorkers.map((w) => {
+              const workerName = w.profile?.fullName || "Unknown Worker";
+              const skillNames = Array.isArray(w.skills) ? w.skills.map((s) => s?.skillName).filter(Boolean) : [];
+
+              return (
+                <div key={w.id} className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#F8F8F8] transition-colors">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 rounded-full bg-[#111111] text-white flex items-center justify-center font-bold text-xs shrink-0">
+                      {workerName.slice(0, 2).toUpperCase()}
                     </div>
-                    <p className="text-[#737373] text-[11px]">{w.cooperativeName}</p>
-                    <p className="text-[#525252] text-xs">
-                      Skills: {w.skills.map((s) => s.skillName).join(", ") || "General Labour"}
-                    </p>
+                    <div className="space-y-0.5">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm text-[#111111]">{workerName}</span>
+                        <WorkerVerificationBadge status={w.verificationStatus} />
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${
+                          w.isAvailable ? "bg-[#16A34A]/10 text-[#16A34A]" : "bg-[#F3F3F3] text-[#737373]"
+                        }`}>
+                          {w.isAvailable ? "Online" : "Offline"}
+                        </span>
+                      </div>
+                      <p className="text-[#737373] text-[11px]">{w.cooperativeName || "Unknown Cooperative"}</p>
+                      <p className="text-[#525252] text-xs">
+                        Skills: {skillNames.join(", ") || "General Labour"}
+                      </p>
+                    </div>
                   </div>
-                </div>
 
                 <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
                   <div className="text-left md:text-right text-[11px] text-[#737373]">
@@ -116,7 +126,8 @@ export default function AdminWorkersPage() {
                   </Button>
                 </div>
               </div>
-            ))}
+            );
+          })}
           </div>
         </CardContent>
       </Card>
