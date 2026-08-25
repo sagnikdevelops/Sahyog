@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS profiles (
     state TEXT,
     postal_code TEXT,
     location GEOMETRY(Point, 4326),
+    bio TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -122,7 +123,23 @@ CREATE TABLE IF NOT EXISTS certifications (
     expiry_date DATE,
     document_url TEXT,
     is_verified BOOLEAN DEFAULT FALSE,
+    certification_number TEXT,
+    notes TEXT,
+    certification_status TEXT DEFAULT 'PENDING' CHECK (certification_status IN ('PENDING', 'APPROVED', 'REJECTED')),
+    reviewed_by UUID,
+    reviewed_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS worker_badges (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    worker_id UUID REFERENCES workers(id) ON DELETE CASCADE,
+    badge_key TEXT NOT NULL,
+    label TEXT NOT NULL,
+    description TEXT,
+    awarded_by UUID REFERENCES profiles(id) ON DELETE SET NULL,
+    awarded_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(worker_id, badge_key)
 );
 
 -- 10. Worker Availability
@@ -315,3 +332,8 @@ CREATE INDEX IF NOT EXISTS idx_bookings_location ON bookings USING GIST (custome
 CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings (status);
 CREATE INDEX IF NOT EXISTS idx_bookings_customer ON bookings (customer_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_worker ON bookings (worker_id);
+CREATE INDEX IF NOT EXISTS idx_profiles_email ON profiles (email);
+CREATE INDEX IF NOT EXISTS idx_profiles_role ON profiles (role);
+CREATE INDEX IF NOT EXISTS idx_worker_skills_worker ON worker_skills (worker_id);
+CREATE INDEX IF NOT EXISTS idx_certifications_worker ON certifications (worker_id);
+CREATE INDEX IF NOT EXISTS idx_worker_badges_worker ON worker_badges (worker_id);

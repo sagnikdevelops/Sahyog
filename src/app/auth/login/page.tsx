@@ -14,25 +14,27 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { switchDemoUser, loginDemoByEmail } = useAppState();
+  const { switchDemoUser, loginAccount } = useAppState();
   const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDemoLogin = (role: UserRole, targetUrl: string) => {
     switchDemoUser(role);
     router.push(targetUrl);
   };
 
-  const handleEmailSignIn = (e: React.FormEvent) => {
+  const handleEmailSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    const match = loginDemoByEmail(email);
-    if (match) {
-      router.push(match.targetUrl);
-      return;
-    }
-    handleDemoLogin("CUSTOMER", "/customer");
+    setSubmitting(true);
+    setError(null);
+    const result = await loginAccount(email, password);
+    setSubmitting(false);
+    if (result.error) { setError(result.error); return; }
+    router.push(result.targetUrl ?? "/customer");
   };
 
   return (
@@ -86,9 +88,10 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-            <p className="text-[11px] text-[#737373]">{t("auth.demoDisclaimer")}</p>
-            <Button type="submit" className="w-full text-xs bg-[#111111] text-white hover:bg-[#262626]">
-              {t("auth.signIn")}
+            {error ? <p className="text-xs text-red-700">{error}</p> : null}
+            <p className="text-[11px] text-[#737373]">Sign in with your real Supabase account. Demo personas are available below as a separate simulation.</p>
+            <Button type="submit" disabled={submitting} className="w-full text-xs bg-[#111111] text-white hover:bg-[#262626]">
+              {submitting ? "Signing in…" : t("auth.signIn")}
             </Button>
           </form>
 

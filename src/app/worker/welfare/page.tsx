@@ -5,17 +5,17 @@ import { useAppState } from "@/lib/store/stateContext";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ShieldCheck, HeartHandshake, FileCheck, CheckCircle2 } from "lucide-react";
+import { normalizeWorkerRecord } from "@/lib/auth/authHelpers";
 
 export default function WorkerWelfarePage() {
   const { currentUser, workers } = useAppState();
   const worker =
     workers.find((w) => w.id === currentUser.id) ||
-    workers[0] || {
+    normalizeWorkerRecord({
       id: currentUser.id,
       profile: { ...currentUser, role: "WORKER" },
       cooperativeName: "Unassigned Cooperative",
-      welfare: [],
-    };
+    });
 
   const welfarePolicies = Array.isArray(worker.welfare) ? worker.welfare : [];
 

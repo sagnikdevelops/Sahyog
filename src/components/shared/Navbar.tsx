@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { useAppState } from "@/lib/store/stateContext";
 import { useI18n } from "@/lib/i18n";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { DemoRoleSwitcher } from "./DemoRoleSwitcher";
 import { NotificationCenter } from "./NotificationCenter";
 import ProfileMenu from "./ProfileMenu";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,7 @@ import {
 } from "lucide-react";
 
 export function Navbar() {
-  const { currentRole, currentUser } = useAppState();
+  const { currentRole, isAuthenticated } = useAppState();
   const { t } = useI18n();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -94,27 +93,24 @@ export function Navbar() {
             </Button>
           </Link>
 
-          {/* Demo Role Switcher */}
-          <DemoRoleSwitcher />
-
           {/* Notification Center */}
           <NotificationCenter />
 
           {/* Language Switcher */}
           <LanguageSwitcher />
 
-          <ProfileMenu />
-
-          <Link href="/auth/login">
-            <Button variant="outline" size="sm" className="text-[10px] sm:text-xs">
-              {t("nav.login")}
-            </Button>
-          </Link>
-          <Link href="/auth/register">
-            <Button variant="ghost" size="sm" className="text-[10px] sm:text-xs">
-              {t("nav.register")}
-            </Button>
-          </Link>
+          {isAuthenticated ? <ProfileMenu /> : <>
+            <Link href="/auth/login">
+              <Button variant="outline" size="sm" className="text-[10px] sm:text-xs">
+                {t("nav.login")}
+              </Button>
+            </Link>
+            <Link href="/auth/register">
+              <Button variant="ghost" size="sm" className="text-[10px] sm:text-xs">
+                {t("nav.register")}
+              </Button>
+            </Link>
+          </>}
 
           {/* Portal Switcher Button */}
           <Link

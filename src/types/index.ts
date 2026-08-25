@@ -69,6 +69,7 @@ export interface Profile {
   fullName: string;
   phone: string;
   avatarUrl?: string;
+  bio?: string;
   role: UserRole;
   address: string;
   city: string;
@@ -129,6 +130,7 @@ export interface Certification {
   workerId: string;
   title: string;
   issuingBody: string;
+  certificationNumber?: string;
   issueDate: string;
   expiryDate?: string;
   documentUrl?: string;
@@ -137,6 +139,17 @@ export interface Certification {
   adminNotes?: string;
   reviewedBy?: string;
   reviewedAt?: string;
+  notes?: string;
+}
+
+export interface WorkerBadge {
+  id: string;
+  workerId: string;
+  badgeKey: string;
+  label: string;
+  description: string;
+  awardedBy?: string;
+  awardedAt: string;
 }
 
 
@@ -178,6 +191,7 @@ export interface WorkerProfile {
   bio: string;
   skills: WorkerSkill[];
   certifications: Certification[];
+  badges?: WorkerBadge[];
   availability: WorkerAvailability[];
   welfare: WorkerWelfare[];
   activeBookingsCount: number;

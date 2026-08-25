@@ -29,7 +29,6 @@ export default function WorkerDashboardPage() {
 
   const worker =
     workers.find((w) => w.id === currentUser.id) ||
-    workers[0] ||
     normalizeWorkerRecord({
       id: currentUser.id,
       profile: { ...currentUser, role: "WORKER" },

@@ -16,7 +16,7 @@ type RegisterRole = "CUSTOMER" | "WORKER";
 
 export default function RegisterPage() {
   const router = useRouter();
-  const { registerDemoUser } = useAppState();
+  const { registerAccount } = useAppState();
   const { t } = useI18n();
   const [role, setRole] = useState<RegisterRole>("CUSTOMER");
   const [fullName, setFullName] = useState("");
@@ -27,6 +27,9 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
 
   const formValues = { fullName, email, password, confirmPassword, role };
   const parsed = useMemo(() => demoRegistrationSchema.safeParse(formValues), [formValues]);
@@ -39,23 +42,25 @@ export default function RegisterPage() {
     return key ? t(key) : undefined;
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-    const result = demoRegistrationSchema.safeParse(formValues);
-    if (!result.success) return;
+    const validation = demoRegistrationSchema.safeParse(formValues);
+    if (!validation.success) return;
 
-    const profile = registerDemoUser({
-      fullName: result.data.fullName,
-      email: result.data.email,
-      role: result.data.role,
+    setSubmitting(true);
+    setSubmitError(null);
+    const registration = await registerAccount({
+      fullName: validation.data.fullName,
+      email: validation.data.email,
+      password: validation.data.password,
+      role: validation.data.role,
     });
-
+    setSubmitting(false);
+    if (registration.error) { setSubmitError(registration.error); return; }
     setSuccess(true);
-    const target = profile.role === "WORKER" ? "/worker" : "/customer";
-    window.setTimeout(() => {
-      router.push(target);
-    }, 700);
+    setNeedsEmailConfirmation(Boolean(registration.needsEmailConfirmation));
+    if (!registration.needsEmailConfirmation) window.setTimeout(() => router.push(registration.profile?.role === "WORKER" ? "/worker" : "/customer"), 700);
   };
 
   return (
@@ -77,7 +82,7 @@ export default function RegisterPage() {
               aria-live="polite"
             >
               <CheckCircle2 className="w-10 h-10 text-[#16A34A]" aria-hidden="true" />
-              <p className="text-sm font-semibold text-[#111111]">{t("auth.registerSuccess")}</p>
+              <p className="text-sm font-semibold text-[#111111]">{needsEmailConfirmation ? "Check your email to confirm your account before signing in." : t("auth.registerSuccess")}</p>
             </div>
           ) : (
             <form onSubmit={handleRegister} className="space-y-4 text-xs" noValidate>
@@ -218,14 +223,15 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <p className="text-[11px] text-[#737373]">{t("auth.demoDisclaimer")}</p>
+              {submitError ? <p className="text-xs text-red-700">{submitError}</p> : null}
+              <p className="text-[11px] text-[#737373]">Your password is handled only by Supabase Auth and is never stored by Sahyog.</p>
 
               <Button
                 type="submit"
-                disabled={!isValid}
+                disabled={!isValid || submitting}
                 className="w-full text-xs bg-[#111111] text-white hover:bg-[#262626] mt-2"
               >
-                {t("auth.register")}
+                {submitting ? "Creating account…" : t("auth.register")}
               </Button>
             </form>
           )}

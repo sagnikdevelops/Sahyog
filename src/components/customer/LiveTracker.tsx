@@ -8,6 +8,8 @@ import { RatingStars } from "@/components/shared/RatingStars";
 import { InvoiceModal } from "@/components/customer/InvoiceModal";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -34,6 +36,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
     createDispute,
     ratings,
     payments,
+    workers,
   } = useAppState();
 
   const [isPaymentOpen, setIsPaymentOpen] = useState(false);
@@ -55,6 +58,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
 
   const existingRating = ratings.find((r) => r.bookingId === booking.id);
   const existingPayment = payments.find((p) => p.bookingId === booking.id);
+  const assignedWorker = booking.workerId ? workers.find((worker) => worker.id === booking.workerId) : undefined;
 
   const stages = [
     { key: "REQUESTED", label: "Requested" },
@@ -220,28 +224,25 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
             <CardHeader className="p-4 border-b border-[#E5E5E5]">
               <CardTitle className="text-sm font-bold flex items-center justify-between">
                 <span>Assigned Cooperative Service Provider</span>
-                <WorkerVerificationBadge status="APPROVED" />
+                {assignedWorker ? <WorkerVerificationBadge status={assignedWorker.verificationStatus} /> : null}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3 text-xs">
               <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-full bg-[#111111] text-white flex items-center justify-center font-bold text-sm">
-                  {booking.workerName ? booking.workerName.slice(0, 2).toUpperCase() : "CW"}
-                </div>
+                <Avatar className="h-12 w-12"><AvatarImage src={assignedWorker?.profile.avatarUrl ?? booking.workerAvatarUrl} alt={assignedWorker?.profile.fullName ?? booking.workerName ?? "Assigned worker"} /><AvatarFallback>{(assignedWorker?.profile.fullName ?? booking.workerName ?? "AW").slice(0, 2).toUpperCase()}</AvatarFallback></Avatar>
                 <div className="flex-1">
                   <h3 className="font-bold text-sm text-[#111111]">
-                    {booking.workerName || "Cooperative Assigned Worker"}
+                    {assignedWorker?.profile.fullName ?? booking.workerName ?? "Awaiting worker assignment"}
                   </h3>
-                  <p className="text-[11px] text-[#737373]">{booking.cooperativeName}</p>
+                  {assignedWorker ? <><p className="text-[11px] text-[#737373]">Worker ID: {assignedWorker.id}</p><p className="text-[11px] text-[#737373]">{assignedWorker.cooperativeName}</p></> : <p className="text-[11px] text-[#737373]">A verified worker will be assigned soon.</p>}
                   <div className="flex items-center gap-2 mt-1">
-                    <RatingStars rating={4.9} size="sm" showNumber />
-                    <span className="text-[10px] text-[#A3A3A3]">• 38 Cooperative Jobs Completed</span>
+                    {assignedWorker ? <><RatingStars rating={assignedWorker.ratingAvg} size="sm" showNumber /><span className="text-[10px] text-[#A3A3A3]">• {assignedWorker.completedServicesCount} Cooperative Jobs Completed</span></> : null}
                   </div>
                 </div>
 
                 <div className="flex gap-2">
                   <a
-                    href={`tel:${booking.workerPhone || "+919811122334"}`}
+                    href={assignedWorker?.profile.phone || booking.workerPhone ? `tel:${assignedWorker?.profile.phone ?? booking.workerPhone}` : undefined}
                     className="p-2 rounded-md bg-[#F3F3F3] hover:bg-[#E5E5E5] text-[#111111]"
                     title="Call Worker"
                   >
@@ -249,6 +250,8 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
                   </a>
                 </div>
               </div>
+
+              {assignedWorker ? <div className="rounded-md bg-[#F8F8F8] p-3 text-xs"><p className="font-semibold">{assignedWorker.bio || "This worker has not added a public bio yet."}</p><div className="mt-2 flex flex-wrap gap-1.5">{assignedWorker.skills.map((skill) => <Badge key={skill.id} variant="secondary">{skill.skillName}</Badge>)}{assignedWorker.badges?.map((badge) => <Badge key={badge.id} variant="outline">{badge.label}</Badge>)}</div></div> : null}
 
               {booking.workerCompletionNotes && (
                 <div className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5] mt-3 space-y-1">

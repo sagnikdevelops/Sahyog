@@ -1053,12 +1053,12 @@ export async function fetchProfilesByMode(mode: Mode): Promise<Profile[] | Worke
           const id = row.id || row.profile_id || row.user_id;
           const email = row.email || row.email_address || "";
           const fullName = row.full_name ?? row.fullName ?? row.name ?? "";
-          const phone = row.phone ?? row.mobile ?? null;
+          const phone = row.phone ?? row.mobile ?? "";
           const roleField = row.role ?? row.user_role ?? role;
-          const address = row.address ?? null;
-          const city = row.city ?? null;
-          const state = row.state ?? null;
-          const postalCode = row.postal_code ?? row.postalCode ?? null;
+          const address = row.address ?? "";
+          const city = row.city ?? "";
+          const state = row.state ?? "";
+          const postalCode = row.postal_code ?? row.postalCode ?? "";
 
           // location can come as PostGIS geometry (GeoJSON-like) or separate lat/lng columns
           let lat: number | undefined = undefined;
@@ -1091,8 +1091,8 @@ export async function fetchProfilesByMode(mode: Mode): Promise<Profile[] | Worke
             }
           }
 
-          const createdAt = row.created_at ?? row.createdAt ?? null;
-          const updatedAt = row.updated_at ?? row.updatedAt ?? null;
+          const createdAt = row.created_at ?? row.createdAt ?? new Date().toISOString();
+          const updatedAt = row.updated_at ?? row.updatedAt ?? new Date().toISOString();
 
           return {
             id,
@@ -1104,8 +1104,8 @@ export async function fetchProfilesByMode(mode: Mode): Promise<Profile[] | Worke
             city,
             state,
             postalCode,
-            lat,
-            lng,
+            lat: lat ?? 0,
+            lng: lng ?? 0,
             createdAt,
             updatedAt,
           };
@@ -1188,7 +1188,7 @@ export async function createProfileForMode(mode: Mode, payload: Partial<Profile>
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
-      cooperativeId: null,
+      cooperativeId: "",
       cooperativeName: "Unassigned Cooperative",
       federationName: "Unassigned Federation",
       verificationStatus: "UNVERIFIED",

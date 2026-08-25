@@ -5,10 +5,11 @@ import { useAppState } from "@/lib/store/stateContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Power, MapPin } from "lucide-react";
+import { normalizeWorkerRecord } from "@/lib/auth/authHelpers";
 
 export function AvailabilityToggle({ workerId }: { workerId: string }) {
   const { workers, toggleWorkerAvailability } = useAppState();
-  const worker = workers.find((w) => w.id === workerId) || workers[0];
+  const worker = workers.find((w) => w.id === workerId) ?? normalizeWorkerRecord({ id: workerId, profile: { id: workerId, email: "", fullName: "Worker", phone: "", role: "WORKER", address: "", city: "", state: "", postalCode: "", lat: 0, lng: 0, createdAt: "", updatedAt: "" } });
 
   return (
     <Card className={`border transition-all ${

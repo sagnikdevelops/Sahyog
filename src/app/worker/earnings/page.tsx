@@ -6,10 +6,11 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Wallet, ArrowDownRight, CheckCheck, ShieldCheck } from "lucide-react";
+import { normalizeWorkerRecord } from "@/lib/auth/authHelpers";
 
 export default function WorkerEarningsPage() {
   const { currentUser, workers, bookings, payouts } = useAppState();
-  const worker = workers.find((w) => w.id === currentUser.id) || workers[0];
+  const worker = workers.find((w) => w.id === currentUser.id) ?? normalizeWorkerRecord({ id: currentUser.id, profile: { ...currentUser, role: "WORKER" } });
 
   const completedJobs = bookings.filter(
     (b) => b.workerId === worker.id && b.status === "PAYMENT_COMPLETED"

@@ -17,6 +17,8 @@ import {
   PaymentMethod,
   UrgencyLevel,
   DemandInsight,
+  Certification,
+  WorkerSkill,
 } from "@/types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase/client";
 import {
@@ -27,15 +29,10 @@ import {
   INITIAL_DISPUTES,
   INITIAL_DEMAND_INSIGHTS,
   INITIAL_AUDIT_LOGS,
-  fetchProfilesByMode,
-  createProfileForMode,
-  getActiveProfileId,
-  setActiveProfileId,
-  getActiveProfile,
   logoutCurrent,
   changePassword,
 } from "./demoStore";
-import { DEMO_USERS, SERVICES, SERVICE_CATEGORIES } from "@/constants";
+import { SERVICES } from "@/constants";
 import { generateBookingNumber } from "@/lib/utils";
 import { processSimulatedPayment } from "@/lib/payments/mockPaymentEngine";
 import {
@@ -45,21 +42,69 @@ import {
   generateUserId,
   normalizeWorkerRecord,
 } from "@/lib/auth/authHelpers";
+import {
+  DEMO_FEDERATION_ADMIN,
+  DEMO_SOCIETY_ADMIN,
+  GUEST_PROFILE,
+  dashboardForRole,
+} from "@/lib/auth/guest";
+import {
+  deleteCertification,
+  deleteWorkerSkill,
+  fetchProfileByAuthId,
+  fetchWorkerBundle,
+  persistCertification,
+  persistProfile,
+  persistWorkerBio,
+  persistWorkerSkill,
+  persistBookingForAuthUser,
+  removeAvatarFile,
+  uploadAvatarFile,
+  uploadCertificateFile,
+} from "@/lib/supabase/profileApi";
 
 interface StateContextType {
   currentUser: Profile;
   currentRole: UserRole;
+  realUser: Profile | null;
+  demoUser: Profile | null;
+  demoRole: UserRole | null;
+  isAuthenticated: boolean;
+  isDemoMode: boolean;
+  authReady: boolean;
   setCurrentRole: (role: UserRole) => void;
   switchDemoUser: (role: UserRole) => void;
+  enterDemoMode: (role: UserRole) => void;
+  exitDemoMode: () => void;
   registerDemoUser: (params: {
     fullName: string;
     email: string;
     role: "CUSTOMER" | "WORKER";
   }) => Profile;
+  registerAccount: (params: {
+    fullName: string;
+    email: string;
+    password: string;
+    role: "CUSTOMER" | "WORKER";
+  }) => Promise<{ profile?: Profile; needsEmailConfirmation?: boolean; error?: string }>;
+  loginAccount: (email: string, password: string) => Promise<{ role?: UserRole; targetUrl?: string; error?: string }>;
   loginDemoByEmail: (email: string) => { role: UserRole; targetUrl: string } | null;
   logout: () => Promise<void>;
-  changePassword: (newPassword: string) => Promise<any>;
+  deleteAccount: () => Promise<{ error?: string }>;
+  changePassword: (newPassword: string) => Promise<{ error?: unknown } | { data?: unknown }>;
   authenticatedUser?: Profile | null;
+  updateOwnProfile: (updates: Partial<Profile>) => Promise<{ error?: string }>;
+  updateOwnWorkerBio: (bio: string) => Promise<{ error?: string }>;
+  uploadOwnAvatar: (file: File) => Promise<{ url?: string; error?: string }>;
+  removeOwnAvatar: () => Promise<{ error?: string }>;
+  addOwnSkill: (skill: Omit<WorkerSkill, "id" | "workerId">) => Promise<{ error?: string }>;
+  removeOwnSkill: (skillId: string) => Promise<{ error?: string }>;
+  saveOwnCertification: (
+    cert: Omit<Certification, "id" | "workerId" | "isVerified" | "certificationStatus"> & { id?: string }
+  ) => Promise<{ certification?: Certification; error?: string }>;
+  removeOwnCertification: (certId: string) => Promise<{ error?: string }>;
+  uploadOwnCertificateFile: (certId: string, file: File) => Promise<{ error?: string; path?: string }>;
+  reviewCertification: (workerId: string, certId: string, status: "APPROVED" | "REJECTED", notes?: string) => void;
   
   customers: Profile[];
   workers: WorkerProfile[];
@@ -143,8 +188,10 @@ const StateContext = createContext<StateContextType | undefined>(undefined);
 const STORAGE_KEY = "sahyog_state_v1";
 
 export function StateProvider({ children }: { children: React.ReactNode }) {
-  const [currentUser, setCurrentUser] = useState<Profile>(INITIAL_CUSTOMERS[0]);
-  const [currentRole, setCurrentRoleState] = useState<UserRole>("CUSTOMER");
+  const [realUser, setRealUser] = useState<Profile | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
+  const [demoUser, setDemoUser] = useState<Profile>(INITIAL_CUSTOMERS[0]);
+  const [demoRole, setDemoRole] = useState<UserRole>("CUSTOMER");
   const [customers, setCustomers] = useState<Profile[]>(INITIAL_CUSTOMERS);
   const [workers, setWorkers] = useState<WorkerProfile[]>(INITIAL_WORKERS);
   const [bookings, setBookings] = useState<Booking[]>(INITIAL_BOOKINGS);
@@ -156,71 +203,98 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>(INITIAL_AUDIT_LOGS);
   const [demandInsights, setDemandInsights] = useState<DemandInsight[]>(INITIAL_DEMAND_INSIGHTS);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [authenticatedUser, setAuthenticatedUser] = useState<Profile | null>(null);
+  const [authReady, setAuthReady] = useState(false);
 
-  // Load from localStorage if present
-  useEffect(() => {
-    // After initial load, attempt to resolve authenticated user from Supabase and map to profile
-    const resolveAuthUser = async () => {
-      if (!isSupabaseConfigured || !supabase) return;
-      try {
-        const { data, error } = await supabase.auth.getUser();
-        if (error || !data?.user) return;
-        const email = data.user.email;
-        if (!email) return;
-        // fetch profile by email
-        const { data: profileRows, error: pErr } = await supabase.from("profiles").select("*").eq("email", email).limit(1).single();
-        if (pErr || !profileRows) {
-          return;
-        }
-        const prof = profileRows;
-        const mapped: Profile = {
-          id: prof.id,
-          email: prof.email,
-          fullName: prof.full_name ?? prof.fullName ?? "",
-          phone: prof.phone,
-          role: prof.role,
-          address: prof.address,
-          city: prof.city,
-          state: prof.state,
-          postalCode: prof.postal_code ?? prof.postalCode,
-          lat: prof.location?.coordinates?.[1] ?? prof.lat ?? undefined,
-          lng: prof.location?.coordinates?.[0] ?? prof.lng ?? undefined,
-          createdAt: prof.created_at,
-          updatedAt: prof.updated_at,
-        };
-        setAuthenticatedUser(mapped);
-      } catch (e) {
-        // ignore
+  const isAuthenticated = Boolean(realUser);
+  const currentUser = isDemoMode ? demoUser : realUser ?? GUEST_PROFILE;
+  const currentRole = isDemoMode ? demoRole : realUser?.role ?? "CUSTOMER";
+  const authenticatedUser = realUser;
+
+  const applyRealUser = async (profile: Profile) => {
+    setRealUser(profile);
+    if (profile.role === "CUSTOMER") {
+      setCustomers((prev) => (prev.some((c) => c.id === profile.id) ? prev.map((c) => (c.id === profile.id ? profile : c)) : [...prev, profile]));
+    }
+    if (profile.role === "WORKER") {
+      const bundled = (await fetchWorkerBundle(profile.id)) ?? normalizeWorkerRecord({
+        id: profile.id,
+        profile: { ...profile, role: "WORKER" },
+      });
+      setWorkers((prev) => (prev.some((w) => w.id === bundled.id) ? prev.map((w) => (w.id === bundled.id ? bundled : w)) : [...prev, bundled]));
+    }
+  };
+
+  const resolveAuthUser = async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      setRealUser(null);
+      setAuthReady(true);
+      return;
+    }
+    try {
+      const { data, error } = await supabase.auth.getUser();
+      if (error || !data?.user) {
+        setRealUser(null);
+        setAuthReady(true);
+        return;
       }
-    };
+      const profile = await fetchProfileByAuthId(data.user.id);
+      if (profile) {
+        await applyRealUser(profile);
+      } else {
+        const fallback: Profile = {
+          ...GUEST_PROFILE,
+          id: data.user.id,
+          email: data.user.email ?? "",
+          fullName: (data.user.user_metadata?.full_name as string) || data.user.email?.split("@")[0] || "Member",
+          role: ((data.user.user_metadata?.role as UserRole) || "CUSTOMER"),
+        };
+        await applyRealUser(fallback);
+      }
+    } catch {
+      setRealUser(null);
+    } finally {
+      setAuthReady(true);
+    }
+  };
 
+  useEffect(() => {
     try {
       const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.customers) setCustomers(parsed.customers);
-        if (parsed.workers) setWorkers(parsed.workers);
-        if (parsed.bookings) setBookings(parsed.bookings);
-        if (parsed.payments) setPayments(parsed.payments);
-        if (parsed.payouts) setPayouts(parsed.payouts);
-        if (parsed.ratings) setRatings(parsed.ratings);
-        if (parsed.disputes) setDisputes(parsed.disputes);
-        if (parsed.notifications) setNotifications(parsed.notifications);
-        if (parsed.auditLogs) setAuditLogs(parsed.auditLogs);
-        if (parsed.currentUser) setCurrentUser(parsed.currentUser);
-        if (parsed.currentRole) setCurrentRoleState(parsed.currentRole);
+        // Only demo simulation data is restored from the browser. Real identity and
+        // real application data are always rehydrated from Supabase below.
+        if (parsed.isDemoMode) {
+          if (parsed.customers) setCustomers(parsed.customers);
+          if (parsed.workers) setWorkers(parsed.workers);
+          if (parsed.bookings) setBookings(parsed.bookings);
+          if (parsed.payments) setPayments(parsed.payments);
+          if (parsed.payouts) setPayouts(parsed.payouts);
+          if (parsed.ratings) setRatings(parsed.ratings);
+          if (parsed.disputes) setDisputes(parsed.disputes);
+          if (parsed.notifications) setNotifications(parsed.notifications);
+          if (parsed.auditLogs) setAuditLogs(parsed.auditLogs);
+          setIsDemoMode(true);
+          if (parsed.demoUser) setDemoUser(parsed.demoUser);
+          if (parsed.demoRole) setDemoRole(parsed.demoRole);
+        }
       }
     } catch (e) {
       console.warn("Failed to load Sahyog saved state, using defaults:", e);
     }
 
-    // resolve authenticated user (async)
-    resolveAuthUser().catch(() => {});
+    resolveAuthUser().catch(() => setAuthReady(true));
     setIsLoaded(true);
+
+    if (!isSupabaseConfigured || !supabase) return;
+    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+      resolveAuthUser().catch(() => {});
+    });
+    return () => {
+      listener.subscription.unsubscribe();
+    };
   }, []);
 
-  // Save to localStorage on state change
   useEffect(() => {
     if (!isLoaded) return;
     try {
@@ -234,10 +308,14 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         disputes,
         notifications,
         auditLogs,
-        currentUser,
-        currentRole,
+        isDemoMode,
+        demoUser,
+        demoRole,
       };
-      if (typeof window !== "undefined") window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+      if (typeof window !== "undefined") {
+        if (isDemoMode) window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+        else window.localStorage.removeItem(STORAGE_KEY);
+      }
     } catch (e) {
       console.warn("Failed to save state to localStorage:", e);
     }
@@ -252,97 +330,100 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     disputes,
     notifications,
     auditLogs,
-    currentUser,
-    currentRole,
+    isDemoMode,
+    demoUser,
+    demoRole,
   ]);
 
-  const switchDemoUser = (role: UserRole) => {
-    setCurrentRoleState(role);
-
-    const mode = (() => {
-      if (role === "CUSTOMER") return "customer";
-      if (role === "WORKER") return "worker";
-      if (role === "SOCIETY_ADMIN") return "cooperative";
-      if (role === "FEDERATION_ADMIN") return "federation";
-      return "customer";
-    })();
-
-    // Try to fetch persisted profiles (Supabase) first, fallback to demo data
-    try {
-      // fetchProfilesByMode returns either Profile[] or WorkerProfile[]
-      // Do not await here to keep function synchronous for callers; update state when promise resolves
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      fetchProfilesByMode(mode as any).then((list: any) => {
-        if (!list || (Array.isArray(list) && list.length === 0)) {
-          // fallback to prior demo defaults
-          if (role === "CUSTOMER") setCurrentUser(INITIAL_CUSTOMERS[0]);
-          else if (role === "WORKER") {
-            const w = workers[0];
-            setCurrentUser({ ...w.profile, role: "WORKER" });
-          } else if (role === "SOCIETY_ADMIN") {
-            setCurrentUser({
-              id: "admin_demo_1",
-              email: "admin.demo@example.com",
-              fullName: "Sunita Deshmukh",
-              phone: "+91 98222 33445",
-              role: "SOCIETY_ADMIN",
-              address: "Labour Cooperative Bhawan, Sector 62",
-              city: "Noida",
-              state: "Uttar Pradesh",
-              postalCode: "201301",
-              lat: 28.629,
-              lng: 77.362,
-              createdAt: "2026-07-01T00:00:00Z",
-              updatedAt: "2026-07-01T00:00:00Z",
-            });
-          } else if (role === "FEDERATION_ADMIN") {
-            setCurrentUser({
-              id: "fed_demo_1",
-              email: "federation.demo@example.com",
-              fullName: "Dr. Rajeshwar Patil",
-              phone: "+91 98333 44556",
-              role: "FEDERATION_ADMIN",
-              address: "National Cooperative Union Complex, Siri Fort",
-              city: "New Delhi",
-              state: "Delhi",
-              postalCode: "110049",
-              lat: 28.552,
-              lng: 77.218,
-              createdAt: "2026-07-01T00:00:00Z",
-              updatedAt: "2026-07-01T00:00:00Z",
-            });
-          }
-          return;
-        }
-
-        // select active profile id if set, else pick first
-        const activeId = getActiveProfileId(mode as any);
-        let selected: any = null;
-        if (activeId) selected = (list as any[]).find((p) => p.id === activeId || (p.profile && p.profile.id === activeId));
-        if (!selected) selected = (list as any[])[0];
-
-        if (!selected) return;
-
-        if (role === "WORKER") {
-          setCurrentUser({ ...selected.profile, role: "WORKER" });
-          setActiveProfileId(mode as any, selected.id || selected.profile.id);
-        } else {
-          setCurrentUser({ ...selected, role });
-          setActiveProfileId(mode as any, selected.id);
-        }
-      });
-    } catch (e) {
-      // fallback to previous behaviour
-      if (role === "CUSTOMER") setCurrentUser(INITIAL_CUSTOMERS[0]);
-      else if (role === "WORKER") {
-        const w = workers[0];
-        setCurrentUser({ ...w.profile, role: "WORKER" });
-      }
+  const demoProfileForRole = (role: UserRole): Profile => {
+    if (role === "CUSTOMER") return INITIAL_CUSTOMERS[0];
+    if (role === "WORKER") {
+      const w = INITIAL_WORKERS[0];
+      return { ...w.profile, role: "WORKER" };
     }
+    if (role === "SOCIETY_ADMIN") return DEMO_SOCIETY_ADMIN;
+    return DEMO_FEDERATION_ADMIN;
+  };
+
+  const enterDemoMode = (role: UserRole) => {
+    setIsDemoMode(true);
+    setDemoRole(role);
+    setDemoUser(demoProfileForRole(role));
+  };
+
+  const exitDemoMode = () => {
+    setIsDemoMode(false);
+  };
+
+  const switchDemoUser = (role: UserRole) => {
+    enterDemoMode(role);
   };
 
   const setCurrentRole = (role: UserRole) => {
-    switchDemoUser(role);
+    if (isDemoMode) {
+      enterDemoMode(role);
+      return;
+    }
+    if (realUser) return;
+    enterDemoMode(role);
+  };
+
+  const registerAccount = async (params: {
+    fullName: string;
+    email: string;
+    password: string;
+    role: "CUSTOMER" | "WORKER";
+  }): Promise<{ profile?: Profile; needsEmailConfirmation?: boolean; error?: string }> => {
+    if (!isSupabaseConfigured || !supabase) {
+      return { error: "Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY." };
+    }
+
+    const { data, error } = await supabase.auth.signUp({
+      email: params.email.trim(),
+      password: params.password,
+      options: {
+        data: { full_name: params.fullName.trim(), role: params.role },
+      },
+    });
+    if (error) return { error: error.message };
+
+    setIsDemoMode(false);
+
+    if (!data.session) {
+      return { needsEmailConfirmation: true };
+    }
+
+    if (data.user) {
+      const profile = await fetchProfileByAuthId(data.user.id);
+      if (profile) {
+        await applyRealUser(profile);
+        return { profile };
+      }
+    }
+    await resolveAuthUser();
+    return { profile: realUser ?? undefined };
+  };
+
+  const loginAccount = async (
+    email: string,
+    password: string
+  ): Promise<{ role?: UserRole; targetUrl?: string; error?: string }> => {
+    if (!isSupabaseConfigured || !supabase) {
+      return { error: "Supabase is not configured." };
+    }
+    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    if (error) return { error: error.message };
+    setIsDemoMode(false);
+    if (!data.user) return { error: "Login failed." };
+    const profile = (await fetchProfileByAuthId(data.user.id)) ?? {
+      ...GUEST_PROFILE,
+      id: data.user.id,
+      email: data.user.email ?? email,
+      fullName: (data.user.user_metadata?.full_name as string) || email.split("@")[0],
+      role: ((data.user.user_metadata?.role as UserRole) || "CUSTOMER"),
+    };
+    await applyRealUser(profile);
+    return { role: profile.role, targetUrl: dashboardForRole(profile.role) };
   };
 
   const registerDemoUser = (params: {
@@ -352,59 +433,6 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   }): Profile => {
     const fullName = params.fullName.trim();
     const email = params.email.trim();
-
-    // Try to persist to Supabase (via createProfileForMode). If not available, fallback to local demo arrays
-    try {
-      const mode = params.role === "CUSTOMER" ? "customer" : "worker";
-      // Fire-and-forget; update local state when promise resolves
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      (async () => {
-        const created: any = await createProfileForMode(mode as any, { fullName, email });
-        if (!created) return;
-        if (params.role === "CUSTOMER") {
-          setCustomers((prev) => [...prev, created]);
-          setCurrentUser(created);
-          setCurrentRoleState("CUSTOMER");
-          setActiveProfileId("customer", created.id);
-        } else {
-          const normalizedWorker = normalizeWorkerRecord(created);
-          setWorkers((prev) => [...prev, normalizedWorker]);
-          setCurrentUser({ ...normalizedWorker.profile, role: "WORKER" });
-          setCurrentRoleState("WORKER");
-          setActiveProfileId("worker", normalizedWorker.id);
-        }
-      })();
-    } catch (e) {
-      // fallback to previous demo behavior
-      if (params.role === "CUSTOMER") {
-        const id = generateUserId("cust");
-        const profile = createRegisteredCustomerProfile({
-          id,
-          fullName,
-          email,
-          template: INITIAL_CUSTOMERS[0],
-        });
-        setCustomers((prev) => [...prev, profile]);
-        setCurrentUser(profile);
-        setCurrentRoleState("CUSTOMER");
-        return profile;
-      }
-
-      const id = generateUserId("worker");
-      const worker = cloneWorkerTemplateForRegistration({
-        id,
-        fullName,
-        email,
-        template: INITIAL_WORKERS[0],
-      });
-      const normalizedWorker = normalizeWorkerRecord(worker);
-      setWorkers((prev) => [...prev, normalizedWorker]);
-      setCurrentUser({ ...normalizedWorker.profile, role: "WORKER" });
-      setCurrentRoleState("WORKER");
-      return normalizedWorker.profile;
-    }
-
-    // Return a temporary profile immediately (UX) while persistence completes
     if (params.role === "CUSTOMER") {
       const id = generateUserId("cust");
       const profile = createRegisteredCustomerProfile({
@@ -414,8 +442,8 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         template: INITIAL_CUSTOMERS[0],
       });
       setCustomers((prev) => [...prev, profile]);
-      setCurrentUser(profile);
-      setCurrentRoleState("CUSTOMER");
+      enterDemoMode("CUSTOMER");
+      setDemoUser(profile);
       return profile;
     }
 
@@ -428,42 +456,19 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     });
     const normalizedWorker = normalizeWorkerRecord(worker);
     setWorkers((prev) => [...prev, normalizedWorker]);
-    setCurrentUser({ ...normalizedWorker.profile, role: "WORKER" });
-    setCurrentRoleState("WORKER");
+    enterDemoMode("WORKER");
+    setDemoUser({ ...normalizedWorker.profile, role: "WORKER" });
     return normalizedWorker.profile;
   };
 
   const loginDemoByEmail = (email: string): { role: UserRole; targetUrl: string } | null => {
-    // First check local demo arrays
     const match = findDemoUserByEmail(email, customers, workers);
     if (match) {
-      setCurrentUser(match.profile);
-      setCurrentRoleState(match.role);
+      setIsDemoMode(true);
+      setDemoUser(match.profile);
+      setDemoRole(match.role);
       return { role: match.role, targetUrl: match.targetUrl };
     }
-
-    // Otherwise try Supabase-backed profiles (async) and set user when found
-    (async () => {
-      try {
-        const customerList: Profile[] = (await fetchProfilesByMode("customer")) as Profile[];
-        const workerList: WorkerProfile[] = (await fetchProfilesByMode("worker")) as WorkerProfile[];
-        const c = customerList.find((p) => p.email === email);
-        if (c) {
-          setCurrentUser(c);
-          setCurrentRoleState("CUSTOMER");
-          return;
-        }
-        const w = workerList.find((wp) => wp.profile?.email === email || wp.email === email);
-        if (w) {
-          setCurrentUser({ ...w.profile, role: "WORKER" });
-          setCurrentRoleState("WORKER");
-          return;
-        }
-      } catch (e) {
-        // ignore
-      }
-    })();
-
     return null;
   };
 
@@ -514,11 +519,11 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
           w.isAvailable &&
           (w.verificationStatus === "APPROVED" || w.verificationStatus === "COOPERATIVE_VERIFIED") &&
           Array.isArray(w.skills) && w.skills.some((s) => s?.serviceId === service.id)
-      ) || workers[0];
+      );
     }
 
     const newBooking: Booking = {
-      id: `bk_${Date.now()}`,
+      id: isAuthenticated && !isDemoMode ? crypto.randomUUID() : `bk_${Date.now()}`,
       bookingNumber,
       customerId: currentUser.id,
       customerName: currentUser.fullName,
@@ -534,7 +539,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       workerPhone: assignedWorker?.profile.phone,
       workerAvatarUrl: assignedWorker?.profile.avatarUrl,
       cooperativeName: assignedWorker?.cooperativeName || "Noida Shramik Utthan Labour Society",
-      status: "ASSIGNED",
+      status: assignedWorker ? "ASSIGNED" : "MATCHING",
       urgency: params.urgency,
       scheduledDate: params.scheduledDate,
       scheduledTime: params.scheduledTime,
@@ -551,6 +556,27 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     };
 
     setBookings((prev) => [newBooking, ...prev]);
+
+    if (isAuthenticated && !isDemoMode) {
+      void persistBookingForAuthUser({
+        id: newBooking.id,
+        booking_number: newBooking.bookingNumber,
+        customer_id: newBooking.customerId,
+        service_id: newBooking.serviceId,
+        worker_id: newBooking.workerId ?? null,
+        status: newBooking.status,
+        urgency: newBooking.urgency,
+        scheduled_date: newBooking.scheduledDate,
+        scheduled_time: newBooking.scheduledTime,
+        customer_address: newBooking.customerAddress,
+        description: newBooking.description,
+        customer_notes: newBooking.customerNotes ?? null,
+        total_amount: newBooking.totalAmount,
+        platform_fee: newBooking.platformFee,
+        cooperative_fee: newBooking.cooperativeFee,
+        worker_payout_amount: newBooking.workerPayoutAmount,
+      });
+    }
 
     // Notify worker
     if (assignedWorker) {
@@ -752,8 +778,8 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       bookingNumber: booking.bookingNumber,
       customerId: booking.customerId,
       customerName: booking.customerName,
-      workerId: booking.workerId || "worker_demo_1",
-      workerName: booking.workerName || "Cooperative Worker",
+      workerId: booking.workerId || "unassigned",
+      workerName: booking.workerName || "Unassigned worker",
       cooperativeId: "coop_noida_1",
       cooperativeName: booking.cooperativeName || "Noida Shramik Utthan Labour Society",
       totalAmount: booking.totalAmount,
@@ -1036,8 +1062,9 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     setNotifications([]);
     setAuditLogs(INITIAL_AUDIT_LOGS);
     setDemandInsights(INITIAL_DEMAND_INSIGHTS);
-    setCurrentUser(INITIAL_CUSTOMERS[0]);
-    setCurrentRoleState("CUSTOMER");
+    setDemoUser(INITIAL_CUSTOMERS[0]);
+    setDemoRole("CUSTOMER");
+    setIsDemoMode(false);
   };
 
   const logout = async () => {
@@ -1046,7 +1073,190 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.warn("Logout helper failed:", e);
     }
-    resetToSeedData();
+    setRealUser(null);
+    setIsDemoMode(false);
+    if (typeof window !== "undefined") {
+      window.location.assign("/");
+    }
+  };
+
+  const deleteAccount = async (): Promise<{ error?: string }> => {
+    if (!isSupabaseConfigured || !supabase) return { error: "Supabase is not configured" };
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) return { error: "Not authenticated" };
+    const res = await fetch("/api/account/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ confirm: "DELETE" }),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) return { error: json.error || "Could not delete account" };
+    setRealUser(null);
+    setIsDemoMode(false);
+    await logoutCurrent();
+    if (typeof window !== "undefined") {
+      window.location.assign("/?deleted=1");
+    }
+    return {};
+  };
+
+  const updateOwnProfile = async (updates: Partial<Profile>): Promise<{ error?: string }> => {
+    if (!realUser || isDemoMode) {
+      const next = { ...currentUser, ...updates, updatedAt: new Date().toISOString() };
+      if (isDemoMode) setDemoUser(next);
+      return {};
+    }
+    const next = { ...realUser, ...updates, updatedAt: new Date().toISOString() };
+    const result = await persistProfile(next);
+    if (result.error) return result;
+    await applyRealUser(next);
+    return {};
+  };
+
+  const updateOwnWorkerBio = async (bio: string): Promise<{ error?: string }> => {
+    if (!realUser || isDemoMode) {
+      setWorkers((prev) => prev.map((w) => (w.id === currentUser.id ? { ...w, bio } : w)));
+      return {};
+    }
+    const result = await persistWorkerBio(realUser.id, bio);
+    if (result.error) return result;
+    setWorkers((prev) => prev.map((w) => (w.id === realUser.id ? { ...w, bio } : w)));
+    return {};
+  };
+
+  const uploadOwnAvatar = async (file: File) => {
+    const userId = isDemoMode ? currentUser.id : realUser?.id;
+    if (!userId || userId === "guest") return { error: "Sign in to upload an avatar." };
+    if (isDemoMode || !realUser) return { error: "Avatar upload is available for real accounts." };
+    const result = await uploadAvatarFile(userId, file);
+    if (result.url) {
+      await applyRealUser({ ...realUser, avatarUrl: result.url });
+    }
+    return result;
+  };
+
+  const removeOwnAvatar = async () => {
+    if (!realUser || isDemoMode) return { error: "Avatar removal is available for real accounts." };
+    const result = await removeAvatarFile(realUser.id);
+    if (!result.error) await applyRealUser({ ...realUser, avatarUrl: undefined });
+    return result;
+  };
+
+  const addOwnSkill = async (skill: Omit<WorkerSkill, "id" | "workerId">) => {
+    const workerId = currentUser.id;
+    if (isDemoMode || !realUser) {
+      const local: WorkerSkill = { ...skill, id: `ws_${Date.now()}`, workerId };
+      setWorkers((prev) => prev.map((w) => (w.id === workerId ? { ...w, skills: [...w.skills, local] } : w)));
+      return {};
+    }
+    const result = await persistWorkerSkill(realUser.id, skill);
+    if (result.error || !result.skill) return { error: result.error };
+    setWorkers((prev) => prev.map((w) => (w.id === realUser.id ? { ...w, skills: [...w.skills.filter((s) => s.skillId !== result.skill!.skillId), result.skill!] } : w)));
+    return {};
+  };
+
+  const removeOwnSkill = async (skillId: string) => {
+    if (isDemoMode || !realUser) {
+      setWorkers((prev) => prev.map((w) => (w.id === currentUser.id ? { ...w, skills: w.skills.filter((s) => s.id !== skillId) } : w)));
+      return {};
+    }
+    const result = await deleteWorkerSkill(skillId);
+    if (result.error) return result;
+    setWorkers((prev) => prev.map((w) => (w.id === realUser.id ? { ...w, skills: w.skills.filter((s) => s.id !== skillId) } : w)));
+    return {};
+  };
+
+  const saveOwnCertification = async (
+    cert: Omit<Certification, "id" | "workerId" | "isVerified" | "certificationStatus"> & { id?: string }
+  ) => {
+    if (isDemoMode || !realUser) {
+      const local: Certification = {
+        ...cert,
+        id: cert.id ?? `cert_${Date.now()}`,
+        workerId: currentUser.id,
+        isVerified: false,
+        certificationStatus: "PENDING",
+      };
+      setWorkers((prev) =>
+        prev.map((w) =>
+          w.id === currentUser.id
+            ? {
+                ...w,
+                certifications: cert.id
+                  ? w.certifications.map((c) => (c.id === cert.id ? local : c))
+                  : [...w.certifications, local],
+              }
+            : w
+        )
+      );
+      return { certification: local };
+    }
+    const result = await persistCertification(realUser.id, cert);
+    if (result.certification) {
+      setWorkers((prev) =>
+        prev.map((w) =>
+          w.id === realUser.id
+            ? {
+                ...w,
+                certifications: w.certifications.some((c) => c.id === result.certification!.id)
+                  ? w.certifications.map((c) => (c.id === result.certification!.id ? result.certification! : c))
+                  : [...w.certifications, result.certification!],
+              }
+            : w
+        )
+      );
+    }
+    return result;
+  };
+
+  const removeOwnCertification = async (certId: string) => {
+    if (isDemoMode || !realUser) {
+      setWorkers((prev) => prev.map((w) => (w.id === currentUser.id ? { ...w, certifications: w.certifications.filter((c) => c.id !== certId) } : w)));
+      return {};
+    }
+    const result = await deleteCertification(certId, realUser.id);
+    if (result.error) return result;
+    setWorkers((prev) => prev.map((w) => (w.id === realUser.id ? { ...w, certifications: w.certifications.filter((c) => c.id !== certId) } : w)));
+    return {};
+  };
+
+  const uploadOwnCertificateFile = async (certId: string, file: File) => {
+    if (!realUser || isDemoMode) return { error: "Certificate upload is available for real accounts." };
+    const result = await uploadCertificateFile(realUser.id, certId, file);
+    if (result.path) {
+      setWorkers((prev) =>
+        prev.map((w) =>
+          w.id === realUser.id
+            ? { ...w, certifications: w.certifications.map((c) => (c.id === certId ? { ...c, documentUrl: result.path } : c)) }
+            : w
+        )
+      );
+    }
+    return result;
+  };
+
+  const reviewCertification = (workerId: string, certId: string, status: "APPROVED" | "REJECTED", notes?: string) => {
+    setWorkers((prev) =>
+      prev.map((w) =>
+        w.id === workerId
+          ? {
+              ...w,
+              certifications: w.certifications.map((c) =>
+                c.id === certId
+                  ? {
+                      ...c,
+                      certificationStatus: status,
+                      isVerified: status === "APPROVED",
+                      adminNotes: notes,
+                      reviewedAt: new Date().toISOString(),
+                    }
+                  : c
+              ),
+            }
+          : w
+      )
+    );
   };
 
   const changePasswordWrapper = async (newPassword: string) => {
@@ -1063,13 +1273,34 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       value={{
         currentUser,
         currentRole,
+        realUser,
+        demoUser: isDemoMode ? demoUser : null,
+        demoRole: isDemoMode ? demoRole : null,
+        isAuthenticated,
+        isDemoMode,
+        authReady,
         setCurrentRole,
         switchDemoUser,
+        enterDemoMode,
+        exitDemoMode,
         registerDemoUser,
+        registerAccount,
+        loginAccount,
         loginDemoByEmail,
         logout,
+        deleteAccount,
         changePassword: changePasswordWrapper,
         authenticatedUser,
+        updateOwnProfile,
+        updateOwnWorkerBio,
+        uploadOwnAvatar,
+        removeOwnAvatar,
+        addOwnSkill,
+        removeOwnSkill,
+        saveOwnCertification,
+        removeOwnCertification,
+        uploadOwnCertificateFile,
+        reviewCertification,
         customers,
         workers,
         bookings,

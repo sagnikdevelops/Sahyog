@@ -37,7 +37,7 @@ export function createRegisteredCustomerProfile(params: {
 
 export function normalizeWorkerRecord(worker?: Partial<WorkerProfile> | null): WorkerProfile {
   const source = worker ?? {};
-  const profile = source.profile ?? {};
+  const profile: Partial<Profile> = source.profile ?? {};
   const fallbackId = source.id ?? profile.id ?? generateUserId("worker");
   const fallbackEmail = profile.email ?? "worker@local.example";
   const fallbackFullName = profile.fullName ?? "Worker";
@@ -62,7 +62,7 @@ export function normalizeWorkerRecord(worker?: Partial<WorkerProfile> | null): W
   return {
     id: fallbackId,
     profile: normalizedProfile,
-    cooperativeId: source.cooperativeId ?? null,
+    cooperativeId: source.cooperativeId ?? "",
     cooperativeName: source.cooperativeName ?? "Unassigned Cooperative",
     federationName: source.federationName ?? "Unassigned Federation",
     verificationStatus: source.verificationStatus ?? "UNVERIFIED",
@@ -82,6 +82,7 @@ export function normalizeWorkerRecord(worker?: Partial<WorkerProfile> | null): W
       skillName: skill?.skillName ?? "General Labour",
       serviceName: skill?.serviceName ?? "General Service",
     })) : [],
+    badges: Array.isArray(source.badges) ? source.badges : [],
     certifications: Array.isArray(source.certifications) ? source.certifications.map((cert, index) => ({
       ...cert,
       id: cert?.id ?? `cert_${fallbackId}_${index}`,
