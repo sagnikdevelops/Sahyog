@@ -1,135 +1,281 @@
 # Sahyog (सहयोग)
-> **Connecting Cooperative Skills with Everyday Needs**
 
-A cooperative-owned digital service marketplace platform designed to connect skilled workers registered with **Labour Cooperative Federations** and **Labour Cooperative Societies** (electricians, plumbers, carpenters, painters, cleaners, caregivers, drivers, gardeners, appliance technicians) with households, businesses, institutions, and communities.
+> Connecting Cooperative Skills with Everyday Needs
 
----
+Sahyog is a cooperative-owned digital service marketplace that connects verified skilled workers from Labour Cooperative Societies and Federations with households, businesses, institutions, and communities. The platform makes skilled local work discoverable, trusted, and transparent while prioritizing worker welfare, fair wages, and governance through cooperatives.
 
-## 🌟 Overview & Key Principles
+## Hackathon context
 
-- **Cooperative Ownership**: Built for Labour Cooperative Federations to digitally organize and mobilize skilled workers without intermediary commission extraction.
-- **Fair Wage & Economic Architecture**: **88%** of booking value goes directly to the worker, **7%** into the Member Cooperative Welfare & Accident Fund, and **5%** for platform digital maintenance.
-- **Monochrome-First Design System**: Black, white, and neutral greys (`#111111`, `#FFFFFF`, `#F8F8F8`, `#F3F3F3`, `#E5E5E5`) with restrained functional state colors (`#16A34A`, `#D97706`, `#DC2626`, `#2563EB`).
-- **Deterministic Worker Matching**: Formula-based ranking:
-  $$\text{Total Score} = 40\% \text{ Skill} + 30\% \text{ Proximity} + 20\% \text{ Availability} + 10\% \text{ Workload}$$
-- **PostGIS Geographic Engine**: Spatial querying with Leaflet and OpenStreetMap for low-cost, zero-API-billing hackathon execution.
-- **Multilingual (i18n)**: Out-of-the-box English and Hindi with instant navbar toggle.
+- Hackathon: Smart India Hackathon 2026 (SIH 2026)
+- Project theme: Digital transformation for cooperative labour ecosystems and community service delivery
+- Repository: https://github.com/sagnikdevelops/Sahyog
+- Live app: https://sahyogapp.vercel.app/
 
----
+## Project overview
 
-## 🚀 Quick Start & Development
+Sahyog addresses a major gap in the Indian service ecosystem: thousands of skilled workers are already part of labour cooperative networks, but they remain fragmented, underutilized, and disconnected from digital booking platforms. At the same time, customers struggle to find reliable, local, verified professionals for essential services such as plumbing, electrical work, carpentry, household care, gardening, repair, and community support.
 
-### 1. Prerequisites
-- Node.js v20+ or v22+ (LTS)
+Our solution is a digital marketplace designed around cooperative principles:
+
+- verified worker profiles and certifications
+- transparent pricing and payout structure
+- location-aware matching of workers to customer requests
+- emergency and scheduled service booking flows
+- cooperative admin dashboards for monitoring demand, labor allocation, and welfare contributions
+- worker-first economics with minimal intermediary extraction
+
+## Problem statement
+
+The organisation-provided problem statement describes the challenge as follows:
+
+> Labour Cooperative Federations and Labour Cooperative Societies have a large pool of skilled workers, including electricians, plumbers, carpenters, painters, domestic helpers, caregivers, drivers, gardeners, cleaners, and technicians. Despite having these skilled workers and a strong local presence, there is no centralized digital platform that efficiently connects them with households, businesses, and institutions needing their services.
+>
+> Currently, private service platforms dominate the market, while many cooperative workers remain underutilized and lack direct access to customers.
+>
+> The project aims to develop a cooperative-owned digital service marketplace that connects verified skilled workers with customers who need household and community services. The platform focuses on fair and transparent wages, worker welfare, skill verification, customer safety and trust, efficient service discovery, and better utilization of the cooperative workforce.
+
+## Why this problem matters
+
+- Many workers have skills but no digital access to demand markets.
+- Customers often rely on informal or unreliable service channels.
+- Cooperative societies lack tools to organize their workforce at scale.
+- The service ecosystem needs a trustworthy, community-governed alternative to private commission-heavy platforms.
+- Better digital coordination can improve income opportunities, service quality, and social security for workers.
+
+## Solution in brief
+
+Sahyog provides a role-based platform for:
+
+- customers to discover, compare, book, pay, and rate service providers
+- workers to receive verified job opportunities and manage availability
+- society admins to onboard, verify, and monitor workers
+- federation admins to track analytics, demand, welfare, and operational health
+- super admins to govern the overall platform and compliance flow
+
+The system includes a deterministic worker matching algorithm that prioritizes verified skill match, proximity, availability, and workload, making the booking process transparent and explainable.
+
+## Key value proposition
+
+- 88% of booking value goes directly to the worker
+- 7% is allocated to the cooperative welfare and accident fund
+- 5% supports platform maintenance and digital infrastructure
+- all workers are organized under cooperative and community governance
+- customers get verified, local, and trusted service providers
+
+## Features
+
+### For customers
+
+- service discovery by category and urgency
+- emergency dispatch flow
+- worker ranking and booking recommendation
+- location-based matching using map interaction
+- live booking status tracking
+- digital invoice generation and mock payment flow
+- ratings and review history
+
+### For workers
+
+- worker profile and skill verification
+- availability management
+- incoming job alerts
+- accept/reject booking workflow
+- service execution and completion tracking
+- earnings and welfare visibility
+- proof-of-service recording for trust and compliance
+
+### For cooperative society admins
+
+- worker verification and onboarding
+- member management
+- booking oversight
+- service quality and dispute monitoring
+- welfare and cooperative analytics
+
+### For federation admins
+
+- region-wide demand insights
+- cooperative performance dashboards
+- worker utilization tracking
+- revenue and payout overview
+- compliance and dispute analysis
+
+### For super admins
+
+- platform governance
+- role-based operations visibility
+- system-wide audits and policy monitoring
+- operational oversight across all societies and federations
+
+## Tech stack
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS
+- shadcn-style UI primitives
+- Leaflet + OpenStreetMap for mapping and geo-location
+- Recharts for analytics dashboards
+- Supabase for data and backend integration
+- PostGIS-oriented architecture for spatial logic and matching
+
+## Matching and business logic
+
+Sahyog uses a deterministic worker scoring model based on the weighted formula:
+
+Total Score = 40% Skill + 30% Proximity + 20% Availability + 10% Workload
+
+This makes matching simple, explainable, and suitable for demo and evaluation scenarios without relying on opaque ML black-boxes. The project also includes a cooperative revenue split model:
+
+- Worker: 88%
+- Cooperative Welfare / Accident Fund: 7%
+- Platform and Digital Infrastructure: 5%
+
+## Product workflow
+
+1. Customer searches for a service or emergency request.
+2. Customer selects service, urgency level, and location.
+3. System ranks nearby verified workers using the matching engine.
+4. Customer confirms booking and creates a job request.
+5. Worker receives a job alert and accepts or rejects.
+6. Booking moves through the service lifecycle: assigned → accepted → en route → started → completed.
+7. Customer confirms completion and pays via mock UPI / digital payment workflow.
+8. Worker payout and cooperative welfare distribution are generated.
+9. Ratings, reviews, and analytics are updated for future matching.
+
+## Demo mode and user roles
+
+The app includes an in-product Demo Mode switcher so judges can experience the platform across multiple roles without manual login setup.
+
+| Role | Demo user | Example specialization | Access route |
+| --- | --- | --- | --- |
+| Customer | Aarav Sharma | Household resident | `/customer` |
+| Worker | Ramesh Kumar Verma | Master plumber | `/worker` |
+| Society Admin | Sunita Deshmukh | Labour society administrator | `/admin` |
+| Federation Admin | Dr. Rajeshwar Patil | Federation analytics and oversight | `/admin/analytics` |
+| Super Admin | System Administrator | Platform governance | `/admin` |
+
+## Demo flow
+
+A typical 16-step hackathon flow is:
+
+1. Open the home page or customer dashboard.
+2. Search for a service category such as plumbing or repair.
+3. Select an urgent service and add emergency dispatch.
+4. Pin the exact customer location on the map.
+5. Review ranked worker options.
+6. Create the booking request.
+7. Switch into the worker role and receive the incoming job alert.
+8. Accept the job.
+9. Track status changes as the worker is assigned and begins work.
+10. Start travel and then service execution.
+11. Complete the task and add service notes.
+12. Customer verifies completion and pays.
+13. Payment is marked complete and invoice is generated.
+14. Customer provides a rating and feedback.
+15. Society and federation dashboards show analytics and contribution tracking.
+16. Judges observe the full cooperative service lifecycle end to end.
+
+## Project structure
+
+```text
+Sahyog/
+├── src/
+│   ├── app/
+│   │   ├── admin/
+│   │   ├── api/
+│   │   ├── customer/
+│   │   ├── worker/
+│   │   ├── auth/
+│   │   ├── about/
+│   │   ├── cooperatives/
+│   │   ├── services/
+│   │   └── page.tsx
+│   ├── components/
+│   │   ├── admin/
+│   │   ├── customer/
+│   │   ├── worker/
+│   │   ├── maps/
+│   │   ├── shared/
+│   │   └── ui/
+│   ├── constants/
+│   ├── lib/
+│   │   ├── auth/
+│   │   ├── i18n/
+│   │   ├── matching/
+│   │   ├── payments/
+│   │   ├── store/
+│   │   └── supabase/
+│   ├── schemas/
+│   ├── types/
+│   └── app/globals.css
+├── supabase/
+├── scripts/
+├── package.json
+├── next.config.ts
+├── tailwind.config.ts
+├── .env.example
+├── AGENTS.md
+├── CONTRIBUTING.md
+├── DATABASE.md
+├── WORKFLOW.md
+└── README.md
+```
+
+## Local setup
+
+### Prerequisites
+
+- Node.js 20+
 - npm or yarn
 
-### 2. Installation
+### Installation
+
 ```bash
-# Navigate to project directory
-cd Projects/Sahyog
-
-# Install dependencies
+git clone https://github.com/sagnikdevelops/Sahyog.git
+cd Sahyog
 npm install
-
-# Run automated tests
 npm run test
-
-# Run TypeScript type check
 npm run typecheck
-
-# Start development server
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
----
+Open http://localhost:3000
 
-## 👥 Demo Accounts & Hackathon Role Switcher
+### Environment variables
 
-Use the **floating "Demo Mode" switcher** in the top navbar to instantly test the end-to-end lifecycle across all 5 user roles without manual database logins:
-
-| Role | Demo User | Trade / Specialization | Access Route |
-|---|---|---|---|
-| **CUSTOMER** | Aarav Sharma | Household Resident (Sector 62, Noida) | `/customer` |
-| **WORKER** | Ramesh Kumar Verma | Master Plumber (NSDC Certified) | `/worker` |
-| **SOCIETY_ADMIN** | Sunita Deshmukh | Noida Shramik Utthan Labour Society | `/admin` |
-| **FEDERATION_ADMIN** | Dr. Rajeshwar Patil | NCR Labour Cooperative Federation | `/admin/analytics` |
-| **SUPER_ADMIN** | System Administrator | Platform Operations & By-Laws | `/admin` |
-
----
-
-## 🛠️ Complete 16-Step Hackathon Demo Flow
-
-1. Open `/` or `/customer` as **Customer**.
-2. Search or select **Plumbing Services** $\rightarrow$ choose **Emergency Leak & Pipe Burst Repair**.
-3. Toggle **Emergency Dispatch** (+₹100 priority surcharge).
-4. Pin address on the OpenStreetMap interactive Leaflet picker.
-5. Review the **deterministic worker ranking** (Ramesh Kumar ranked #1 best match with 95% score).
-6. Click **Confirm & Request Service** $\rightarrow$ booking created in `ASSIGNED` status.
-7. Switch to **Worker** role via top Demo Switcher $\rightarrow$ see the red pulsing incoming Emergency Job alert card.
-8. Worker clicks **Accept Job** $\rightarrow$ status moves to `ACCEPTED`.
-9. Customer tracker reflects real-time acceptance.
-10. Worker clicks **Start Travel** $\rightarrow$ status changes to `WORKER_EN_ROUTE`.
-11. Worker arrives and clicks **Start Service** $\rightarrow$ status changes to `SERVICE_STARTED`.
-12. Worker completes work with summary notes and photo proof $\rightarrow$ status changes to `SERVICE_COMPLETED`.
-13. Customer inspects work and clicks **Confirm & Pay ₹550**.
-14. Customer selects **Mock UPI** $\rightarrow$ status changes to `PAYMENT_COMPLETED`, digital invoice generated.
-15. Customer rates worker **5 Stars** with written feedback $\rightarrow$ updates worker profile rating stats.
-16. Switch to **Society Admin** / **Federation Admin** $\rightarrow$ inspect completed booking, GMV revenue chart, 88% worker payout ledger, and compliance audit trail!
-
----
-
-## 🔐 Environment Variables
-
-Create `.env.local` based on `.env.example`:
+Copy the sample environment file:
 
 ```bash
 cp .env.example .env.local
 ```
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-placeholder
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-placeholder
+Then add your project keys if you want to connect to Supabase or payment infrastructure. The app is also designed to work in a demo mode with internal fallback state logic for hackathon presentation without requiring full backend activation.
 
-PAYMENT_PROVIDER_KEY=test_key_sahyog_demo
-PAYMENT_PROVIDER_SECRET=test_secret_sahyog_demo
+## Team members
 
-MAP_TILE_URL=https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
-MAP_ATTRIBUTION=&copy; OpenStreetMap contributors
-```
+| Name | Role | GitHub | LinkedIn |
+| --- | --- | --- | --- |
+| Sagnik Dutta | Team leader | https://github.com/sagnikdevelops | https://www.linkedin.com/in/sagnikduttahere/ |
+| Pratik Saha | Member 1 | https://github.com/Pratik-saha-2007 | https://www.linkedin.com/in/pratiksaha-codes/ |
+| Satwika Majumdar | Member 2 | https://github.com/satwika-coder | https://www.linkedin.com/in/satwika-majumdar-a282053a0/ |
+| Samragnyi Bhowmick | Member 3 | https://github.com/samragnyibhowmick | https://www.linkedin.com/in/samragnyi-bhowmick-4a56b542a/ |
+| Pritam Karmakar | Member 4 | TBD | TBD |
 
-> **Note:** The application includes a built-in fallback state engine that works 100% offline out-of-the-box without requiring live Supabase credentials for hackathon demonstration.
+## Links
+
+- GitHub repository: https://github.com/sagnikdevelops/Sahyog
+- Deployed app: https://sahyogapp.vercel.app/
+- Problem statement and organisation brief: https://docs.google.com/spreadsheets/d/1HUkEtA30LG4mnDJddnXDZLl1cbO2AV0m_LNY4amSbPE/edit?usp=sharing
+
+## Project impact
+
+Sahyog is built to strengthen the cooperative economy by making worker services more discoverable, fairer, and digitally enabled. It creates a public-interest digital infrastructure that can bring dignity, safety, and opportunity to workers while providing households and institutions with a reliable and transparent platform for essential services.
+
+## License
+
+This project is currently developed for hackathon presentation and internal evaluation. Please contact the team before using the repository for commercial deployment or redistribution.
 
 ---
 
-## 📂 Project Architecture
-
-```text
-Projects/Sahyog/
-├── src/
-│   ├── app/                 # Next.js App Router Pages
-│   │   ├── (public)/        # Landing, About, Services, Cooperatives
-│   │   ├── customer/        # Customer dashboard, booking wizard, live tracker, history
-│   │   ├── worker/          # Worker dashboard, job alerts, execution, profile, welfare
-│   │   ├── admin/           # Admin KPI, worker verification, bookings, map, disputes, insights
-│   │   └── api/             # REST Route handlers
-│   ├── components/
-│   │   ├── ui/              # Radix UI + shadcn styled primitives
-│   │   ├── shared/          # Navbar, Footer, DemoRoleSwitcher, LanguageSwitcher, StatusBadge
-│   │   ├── customer/        # ServiceCard, BookingWizard, LiveTracker, InvoiceModal
-│   │   ├── worker/          # AvailabilityToggle, JobAlertCard, ActiveServiceBar
-│   │   ├── admin/           # KpiCard, WorkerVerificationModal, ReassignModal, AnalyticsCharts
-│   │   └── maps/            # LeafletMap, LocationPicker, AdminOperationsMap
-│   ├── lib/
-│   │   ├── store/           # Central reactive state provider & demo seed engine
-│   │   ├── matching/        # Deterministic scoring algorithm
-│   │   ├── payments/        # Mock payment and invoice engine
-│   │   ├── i18n/            # Dual-language translations (EN/HI)
-│   │   └── supabase/        # Supabase client & server config
-│   ├── types/               # TypeScript interfaces
-│   ├── constants/           # Categories, services, demo accounts, color tokens
-│   └── schemas/             # Zod validation schemas
-├── supabase/                # PostgreSQL + PostGIS schema, seed, and RLS policies
-└── scripts/                 # Test suites and build helpers
-```
+Sahyog is a practical, cooperative-first digital solution aimed at empowering workers, strengthening local labor ecosystems, and turning essential services into a transparent and community-driven marketplace.
