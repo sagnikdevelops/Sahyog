@@ -58,12 +58,10 @@ export default function HomePage() {
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-tight drop-shadow-md">
-            {t("hero.title")}
+            Work that Works for Everyone
           </h1>
 
-          <p className="text-sm sm:text-base text-[#F9FAF7]/90 max-w-3xl mx-auto leading-relaxed font-normal">
-            {t("hero.subtitle")}
-          </p>
+          <p className="text-sm sm:text-base text-[#F9FAF7]/90 max-w-3xl mx-auto leading-relaxed font-normal">Skill. Trust. Together.</p>
 
           {/* Search Bar & Quick Emergency Trigger */}
           <div className="max-w-xl mx-auto flex flex-col sm:flex-row gap-2.5 pt-4">
