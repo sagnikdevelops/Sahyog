@@ -8,15 +8,19 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-[#111111] text-white shadow hover:bg-[#262626]",
+          "border-transparent bg-[#142D52] text-white shadow-sm hover:bg-[#0E203B]",
+        emerald:
+          "border-transparent bg-[#047857] text-white shadow-sm hover:bg-[#065F46]",
+        mint:
+          "border border-[#34D399]/40 bg-[#34D399]/15 text-[#047857]",
         secondary:
-          "border-transparent bg-[#F3F3F3] text-[#171717] hover:bg-[#E5E5E5]",
-        outline: "border-[#E5E5E5] text-[#171717]",
-        success: "border-transparent bg-[#16A34A]/10 text-[#16A34A] border-[#16A34A]/20",
-        warning: "border-transparent bg-[#D97706]/10 text-[#D97706] border-[#D97706]/20",
-        destructive: "border-transparent bg-[#DC2626]/10 text-[#DC2626] border-[#DC2626]/20",
-        info: "border-transparent bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/20",
-        cooperative: "border-transparent bg-[#111111] text-white font-medium",
+          "border border-[#E5E7EB] bg-[#F9FAF7] text-[#142D52] hover:bg-white",
+        outline: "border-[#E5E7EB] text-[#1F2937]",
+        success: "border border-[#047857]/20 bg-[#047857]/10 text-[#047857]",
+        warning: "border border-[#D97706]/20 bg-[#D97706]/10 text-[#D97706]",
+        destructive: "border border-[#DC2626]/20 bg-[#DC2626]/10 text-[#DC2626]",
+        info: "border border-[#142D52]/20 bg-[#142D52]/10 text-[#142D52]",
+        cooperative: "border border-[#047857]/30 bg-[#047857] text-white font-medium",
       },
     },
     defaultVariants: {

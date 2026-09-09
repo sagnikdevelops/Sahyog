@@ -6,13 +6,15 @@ import { I18nProvider } from "@/lib/i18n";
 import { Navbar } from "@/components/shared/Navbar";
 import { Footer } from "@/components/shared/Footer";
 import { DemoModeFab } from "@/components/shared/DemoModeFab";
+import { ScrollToTop } from "@/components/shared/ScrollToTop";
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Sahyog - Connecting Cooperative Skills with Everyday Needs",
+  title: "Sahyog - Dignity in Labour. Trust in Service. India's Cooperative Platform",
   description:
     "A cooperative-owned digital service marketplace connecting skilled workers of Labour Cooperative Federations and Societies with households and businesses.",
+  icons: { icon: "/logo.png", shortcut: "/logo.png" },
 };
 
 export default function RootLayout({
@@ -23,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.className} min-h-screen flex flex-col bg-white text-[#171717]`}
+        className={`${inter.className} min-h-screen flex flex-col bg-[#F9FAF7] text-[#1F2937]`}
         suppressHydrationWarning
       >
         <I18nProvider>
@@ -31,6 +33,7 @@ export default function RootLayout({
             <Navbar />
             <main className="flex-1">{children}</main>
             <DemoModeFab />
+            <ScrollToTop />
             <Footer />
           </StateProvider>
         </I18nProvider>

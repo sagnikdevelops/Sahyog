@@ -44,33 +44,33 @@ export default function AdminDashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 bg-[#F8F8F8] rounded-xl border border-[#E5E5E5]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 bg-[#F9FAF7] rounded-xl border border-[#E5E7EB]">
         <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#737373]">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">
             Cooperative Administration Platform
           </span>
-          <h1 className="text-2xl font-bold text-[#111111] mt-0.5">
-            Operations & Workforce Dispatch Dashboard
+          <h1 className="text-2xl font-bold text-[#142D52] mt-0.5">
+            Operations &amp; Workforce Dispatch Dashboard
           </h1>
-          <p className="text-xs text-[#525252] mt-1">
-            Labour Cooperative Society & Federation Unified Control Center
+          <p className="text-xs text-[#4B5563] mt-1">
+            Labour Cooperative Society &amp; Federation Unified Control Center
           </p>
         </div>
 
         <div className="flex flex-wrap gap-2">
           <Link href="/admin/workers">
-            <Button size="sm" className="text-xs bg-[#111111] text-white hover:bg-[#262626]">
+            <Button size="sm" className="text-xs bg-[#047857] text-white hover:bg-[#065F46]">
               Worker Verification ({totalWorkers})
             </Button>
           </Link>
           <Link href="/admin/bookings">
-            <Button variant="outline" size="sm" className="text-xs">
+            <Button variant="outline" size="sm" className="text-xs border-[#E5E7EB] text-[#142D52] hover:bg-white">
               Dispatch Console
             </Button>
           </Link>
           <Link href="/admin/map">
-            <Button variant="outline" size="sm" className="text-xs gap-1">
-              <MapPin className="w-3.5 h-3.5 text-[#111111]" /> GIS Map
+            <Button variant="outline" size="sm" className="text-xs gap-1 border-[#E5E7EB] text-[#142D52] hover:bg-white">
+              <MapPin className="w-3.5 h-3.5 text-[#047857]" /> GIS Map
             </Button>
           </Link>
         </div>
@@ -113,12 +113,12 @@ export default function AdminDashboardPage() {
 
       {/* Demand Insights Rule Engine Alerts */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-2">
-          <h2 className="text-sm font-bold text-[#111111] uppercase tracking-wider flex items-center gap-1.5">
-            <TrendingUp className="w-4 h-4 text-[#111111]" />
-            Demand Surge Insights & Workforce Advisory
+        <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-2">
+          <h2 className="text-sm font-bold text-[#142D52] uppercase tracking-wider flex items-center gap-1.5">
+            <TrendingUp className="w-4 h-4 text-[#047857]" />
+            Demand Surge Insights &amp; Workforce Advisory
           </h2>
-          <Link href="/admin/insights" className="text-xs text-[#111111] hover:underline font-semibold">
+          <Link href="/admin/insights" className="text-xs text-[#047857] hover:underline font-semibold">
             View All Advisories →
           </Link>
         </div>
@@ -131,37 +131,37 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Recent Bookings & Dispatch Table */}
-      <Card className="border-[#E5E5E5]">
-        <CardHeader className="p-4 border-b border-[#E5E5E5] flex flex-row items-center justify-between">
-          <CardTitle className="text-sm font-bold">Today's Service Requests & Dispatch Monitor</CardTitle>
+      <Card className="border-[#E5E7EB]">
+        <CardHeader className="p-4 border-b border-[#E5E7EB] flex flex-row items-center justify-between">
+          <CardTitle className="text-sm font-bold text-[#142D52]">Today&apos;s Service Requests &amp; Dispatch Monitor</CardTitle>
           <Link href="/admin/bookings">
-            <Button variant="outline" size="sm" className="text-xs">
+            <Button variant="outline" size="sm" className="text-xs border-[#E5E7EB] text-[#142D52] hover:bg-white">
               View All Bookings
             </Button>
           </Link>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="divide-y divide-[#E5E5E5] text-xs">
+          <div className="divide-y divide-[#E5E7EB] text-xs">
             {bookings.slice(0, 5).map((b) => (
-              <div key={b.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-[#F8F8F8] transition-colors">
+              <div key={b.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 hover:bg-[#F9FAF7] transition-colors">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-[#111111]">#{b.bookingNumber}</span>
+                    <span className="font-bold text-[#142D52]">#{b.bookingNumber}</span>
                     <BookingStatusBadge status={b.status} />
                     <UrgencyBadge urgency={b.urgency} />
                   </div>
-                  <p className="font-semibold text-[#111111]">{b.serviceName}</p>
-                  <p className="text-[#737373] text-[11px]">
+                  <p className="font-semibold text-[#1F2937]">{b.serviceName}</p>
+                  <p className="text-[#6B7280] text-[11px]">
                     Customer: {b.customerName} • Assigned: {b.workerName || "Matching..."} ({b.cooperativeName})
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <span className="font-bold text-[#111111] block">{formatCurrency(b.totalAmount)}</span>
-                    <span className="text-[10px] text-[#737373]">{formatDate(b.createdAt, "hh:mm a")}</span>
+                    <span className="font-bold text-[#142D52] block">{formatCurrency(b.totalAmount)}</span>
+                    <span className="text-[10px] text-[#6B7280]">{formatDate(b.createdAt, "hh:mm a")}</span>
                   </div>
                   <Link href={`/customer/bookings/${b.id}`}>
-                    <Button variant="outline" size="sm" className="text-xs">Inspect</Button>
+                    <Button variant="outline" size="sm" className="text-xs border-[#E5E7EB] text-[#142D52] hover:bg-white">Inspect</Button>
                   </Link>
                 </div>
               </div>

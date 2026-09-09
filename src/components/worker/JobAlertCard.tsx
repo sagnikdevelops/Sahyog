@@ -22,23 +22,23 @@ export function JobAlertCard({ booking }: JobAlertCardProps) {
     <Card className={`border shadow-sm transition-all ${
       booking.urgency === "EMERGENCY"
         ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
-        : "border-[#E5E5E5] bg-white hover:border-[#111111]"
+        : "border-[#E5E7EB] bg-white hover:border-[#047857]"
     }`}>
-      <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b border-[#E5E5E5]">
+      <CardHeader className="p-4 pb-2 flex flex-row items-center justify-between border-b border-[#E5E7EB]">
         <div className="flex items-center gap-2">
-          <CardTitle className="text-sm font-bold text-[#111111]">{booking.serviceName}</CardTitle>
+          <CardTitle className="text-sm font-bold text-[#142D52]">{booking.serviceName}</CardTitle>
           <UrgencyBadge urgency={booking.urgency} />
         </div>
-        <span className="font-bold text-sm text-[#111111]">{formatCurrency(booking.totalAmount)}</span>
+        <span className="font-bold text-sm text-[#047857]">{formatCurrency(booking.totalAmount)}</span>
       </CardHeader>
 
       <CardContent className="p-4 space-y-2.5 text-xs">
-        <div className="flex items-start gap-1.5 text-[#525252]">
-          <MapPin className="w-3.5 h-3.5 text-[#111111] shrink-0 mt-0.5" />
+        <div className="flex items-start gap-1.5 text-[#4B5563]">
+          <MapPin className="w-3.5 h-3.5 text-[#047857] shrink-0 mt-0.5" />
           <span className="leading-tight">{booking.customerAddress}</span>
         </div>
 
-        <div className="flex items-center gap-4 text-[11px] text-[#737373]">
+        <div className="flex items-center gap-4 text-[11px] text-[#6B7280]">
           <span className="flex items-center gap-1">
             <Calendar className="w-3 h-3" /> {booking.scheduledDate}
           </span>
@@ -47,18 +47,18 @@ export function JobAlertCard({ booking }: JobAlertCardProps) {
           </span>
         </div>
 
-        <div className="p-2.5 bg-[#F8F8F8] rounded text-[#525252] border border-[#E5E5E5]">
-          <p className="text-[10px] font-bold text-[#737373] uppercase">Problem Description</p>
+        <div className="p-2.5 bg-[#F9FAF7] rounded text-[#4B5563] border border-[#E5E7EB]">
+          <p className="text-[10px] font-bold text-[#142D52] uppercase">Problem Description</p>
           <p className="mt-0.5 line-clamp-2 leading-relaxed">{booking.description}</p>
         </div>
 
-        <div className="flex justify-between items-center text-[11px] pt-1 text-[#737373]">
+        <div className="flex justify-between items-center text-[11px] pt-1 text-[#6B7280]">
           <span>Customer: {booking.customerName}</span>
-          <span className="font-semibold text-[#16A34A]">Your Payout: ₹{booking.workerPayoutAmount}</span>
+          <span className="font-semibold text-[#047857]">Your Payout: ₹{booking.workerPayoutAmount}</span>
         </div>
       </CardContent>
 
-      <CardFooter className="p-3 bg-[#F8F8F8] border-t border-[#E5E5E5] flex justify-between gap-2">
+      <CardFooter className="p-3 bg-[#F9FAF7] border-t border-[#E5E7EB] flex justify-between gap-2">
         <Button
           variant="outline"
           size="sm"
@@ -70,7 +70,7 @@ export function JobAlertCard({ booking }: JobAlertCardProps) {
         <Button
           size="sm"
           onClick={() => acceptBookingJob(booking.id)}
-          className="text-xs bg-[#111111] text-white hover:bg-[#262626] gap-1"
+          className="text-xs bg-[#047857] text-white hover:bg-[#065F46] gap-1"
         >
           <Check className="w-3.5 h-3.5" /> Accept Job
         </Button>

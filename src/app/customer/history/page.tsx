@@ -17,19 +17,19 @@ export default function CustomerHistoryPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      <div className="border-b border-[#E5E5E5] pb-4 space-y-1">
-        <h1 className="text-2xl font-bold text-[#111111]">Service History & Invoices</h1>
-        <p className="text-xs text-[#737373]">
+      <div className="border-b border-[#E5E7EB] pb-4 space-y-1">
+        <h1 className="text-2xl font-bold text-[#142D52]">Service History & Invoices</h1>
+        <p className="text-xs text-[#6B7280]">
           All completed and active service requests registered under your account.
         </p>
       </div>
 
       {userBookings.length === 0 ? (
-        <div className="text-center py-16 bg-[#F8F8F8] rounded-xl border border-[#E5E5E5] space-y-3">
-          <p className="text-sm font-semibold text-[#111111]">No active bookings yet.</p>
-          <p className="text-xs text-[#737373]">Book verified plumbers, electricians, carpenters with one click.</p>
+        <div className="text-center py-16 bg-[#F9FAF7] rounded-xl border border-[#E5E7EB] space-y-3">
+          <p className="text-sm font-semibold text-[#142D52]">No active bookings yet.</p>
+          <p className="text-xs text-[#6B7280]">Book verified plumbers, electricians, carpenters with one click.</p>
           <Link href="/customer/book">
-            <Button size="sm" className="text-xs bg-[#111111] text-white">Book a Service</Button>
+            <Button size="sm" className="text-xs bg-[#047857] text-white hover:bg-[#065F46]">Book a Service</Button>
           </Link>
         </div>
       ) : (
@@ -37,30 +37,30 @@ export default function CustomerHistoryPage() {
           {userBookings.map((b) => {
             const review = ratings.find((r) => r.bookingId === b.id);
             return (
-              <Card key={b.id} className="border-[#E5E5E5] bg-white hover:border-[#111111] transition-all">
+              <Card key={b.id} className="border-[#E5E7EB] bg-white hover:border-[#047857] transition-all">
                 <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-[#111111]">#{b.bookingNumber}</span>
+                      <span className="font-bold text-[#142D52]">#{b.bookingNumber}</span>
                       <BookingStatusBadge status={b.status} />
                       <UrgencyBadge urgency={b.urgency} />
                     </div>
-                    <h3 className="font-bold text-sm text-[#111111]">{b.serviceName}</h3>
-                    <p className="text-[11px] text-[#737373]">
+                    <h3 className="font-bold text-sm text-[#142D52]">{b.serviceName}</h3>
+                    <p className="text-[11px] text-[#6B7280]">
                       Worker: {b.workerName || "Cooperative Assigned"} • {formatDate(b.scheduledDate)} at {b.scheduledTime}
                     </p>
                     {review && (
                       <div className="pt-1 flex items-center gap-2">
                         <RatingStars rating={review.rating} size="sm" />
-                        <span className="text-[11px] text-[#525252] italic">"{review.feedback}"</span>
+                        <span className="text-[11px] text-[#4B5563] italic">"{review.feedback}"</span>
                       </div>
                     )}
                   </div>
 
                   <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2">
-                    <span className="text-base font-bold text-[#111111]">{formatCurrency(b.totalAmount)}</span>
+                    <span className="text-base font-bold text-[#142D52]">{formatCurrency(b.totalAmount)}</span>
                     <Link href={`/customer/bookings/${b.id}`}>
-                      <Button variant="outline" size="sm" className="text-xs gap-1">
+                      <Button variant="outline" size="sm" className="text-xs gap-1 border-[#E5E7EB] text-[#142D52] hover:bg-[#F9FAF7]">
                         View Details <ArrowRight className="w-3 h-3" />
                       </Button>
                     </Link>

@@ -6,7 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { Handshake, Download, Printer, ShieldCheck } from "lucide-react";
+import { Download, Printer, ShieldCheck } from "lucide-react";
+import { SahyogLogo } from "@/components/shared/Logo";
 
 interface InvoiceModalProps {
   isOpen: boolean;
@@ -26,20 +27,20 @@ export function InvoiceModal({ isOpen, onClose, booking, payment }: InvoiceModal
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md p-6 bg-white border border-[#E5E5E5]">
-        <DialogHeader className="border-b border-[#E5E5E5] pb-4">
+      <DialogContent className="max-w-md p-6 bg-white border border-[#E5E7EB]">
+        <DialogHeader className="border-b border-[#E5E7EB] pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded bg-[#111111] flex items-center justify-center text-white">
-                <Handshake className="w-4 h-4" />
+              <div className="w-8 h-8 rounded bg-[#142D52] flex items-center justify-center text-[#34D399]">
+                <SahyogLogo size="xs" />
               </div>
               <div>
-                <DialogTitle className="text-base font-bold text-[#111111]">Sahyog Invoicing</DialogTitle>
-                <p className="text-[10px] text-[#737373]">Cooperative Digital Marketplace</p>
+                <DialogTitle className="text-base font-bold text-[#142D52]">Sahyog Invoicing</DialogTitle>
+                <p className="text-[10px] text-[#6B7280]">Cooperative Digital Marketplace</p>
               </div>
             </div>
             <div className="text-right">
-              <span className="text-[10px] bg-[#16A34A]/10 text-[#16A34A] px-2 py-0.5 rounded font-semibold border border-[#16A34A]/20">
+              <span className="text-[10px] bg-[#047857]/10 text-[#047857] px-2 py-0.5 rounded font-semibold border border-[#047857]/20">
                 PAID & SETTLED
               </span>
             </div>
@@ -47,37 +48,37 @@ export function InvoiceModal({ isOpen, onClose, booking, payment }: InvoiceModal
         </DialogHeader>
 
         <div className="space-y-4 text-xs py-2">
-          <div className="grid grid-cols-2 gap-2 text-[#737373]">
+          <div className="grid grid-cols-2 gap-2 text-[#6B7280]">
             <div>
-              <p className="text-[10px] uppercase text-[#A3A3A3]">Invoice Number</p>
-              <p className="font-semibold text-[#111111]">{invoiceNo}</p>
+              <p className="text-[10px] uppercase text-[#9CA3AF]">Invoice Number</p>
+              <p className="font-semibold text-[#142D52]">{invoiceNo}</p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] uppercase text-[#A3A3A3]">Date of Service</p>
-              <p className="font-semibold text-[#111111]">{dateStr}</p>
+              <p className="text-[10px] uppercase text-[#9CA3AF]">Date of Service</p>
+              <p className="font-semibold text-[#142D52]">{dateStr}</p>
             </div>
           </div>
 
-          <div className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5] space-y-1">
-            <p className="text-[10px] uppercase text-[#737373] font-semibold">Service Beneficiary</p>
-            <p className="font-bold text-[#111111]">{booking.customerName}</p>
-            <p className="text-[#525252] text-[11px]">{booking.customerAddress}</p>
+          <div className="p-3 bg-[#F9FAF7] rounded-md border border-[#E5E7EB] space-y-1">
+            <p className="text-[10px] uppercase text-[#047857] font-semibold">Service Beneficiary</p>
+            <p className="font-bold text-[#142D52]">{booking.customerName}</p>
+            <p className="text-[#4B5563] text-[11px]">{booking.customerAddress}</p>
           </div>
 
-          <div className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5] space-y-1">
-            <p className="text-[10px] uppercase text-[#737373] font-semibold">Service Performed By</p>
-            <p className="font-bold text-[#111111]">{booking.workerName || "Verified Cooperative Technician"}</p>
-            <p className="text-[#525252] text-[11px]">{booking.cooperativeName}</p>
+          <div className="p-3 bg-[#F9FAF7] rounded-md border border-[#E5E7EB] space-y-1">
+            <p className="text-[10px] uppercase text-[#047857] font-semibold">Service Performed By</p>
+            <p className="font-bold text-[#142D52]">{booking.workerName || "Verified Cooperative Technician"}</p>
+            <p className="text-[#4B5563] text-[11px]">{booking.cooperativeName}</p>
           </div>
 
           <div className="space-y-2">
-            <div className="flex justify-between py-1 border-b border-[#E5E5E5]">
-              <span className="text-[#525252]">{booking.serviceName} ({booking.urgency})</span>
-              <span className="font-bold text-[#111111]">{formatCurrency(booking.totalAmount)}</span>
+            <div className="flex justify-between py-1 border-b border-[#E5E7EB]">
+              <span className="text-[#4B5563]">{booking.serviceName} ({booking.urgency})</span>
+              <span className="font-bold text-[#142D52]">{formatCurrency(booking.totalAmount)}</span>
             </div>
             
             {/* Transparent Cooperative Fee Breakdown */}
-            <div className="space-y-1 text-[11px] text-[#737373] pt-1">
+            <div className="space-y-1 text-[11px] text-[#6B7280] pt-1">
               <div className="flex justify-between">
                 <span>Direct Worker Remuneration (88%)</span>
                 <span>{formatCurrency(booking.workerPayoutAmount)}</span>
@@ -94,16 +95,16 @@ export function InvoiceModal({ isOpen, onClose, booking, payment }: InvoiceModal
 
             <Separator className="my-2" />
 
-            <div className="flex justify-between text-sm font-bold text-[#111111]">
+            <div className="flex justify-between text-sm font-bold text-[#142D52]">
               <span>Total Paid</span>
               <span>{formatCurrency(booking.totalAmount)}</span>
             </div>
           </div>
 
-          <div className="bg-[#F3F3F3] p-2.5 rounded text-[11px] text-[#525252] space-y-0.5">
+          <div className="bg-[#F9FAF7] p-2.5 rounded border border-[#E5E7EB] text-[11px] text-[#4B5563] space-y-0.5">
             <p><span className="font-semibold">Txn Reference:</span> {txnRef}</p>
             <p><span className="font-semibold">Payment Mode:</span> {booking.paymentMethod || "MOCK_UPI"}</p>
-            <div className="flex items-center gap-1 text-[#16A34A] pt-1 font-medium">
+            <div className="flex items-center gap-1 text-[#047857] pt-1 font-medium">
               <ShieldCheck className="w-3 h-3" />
               <span>Cooperative Trust & Fair Wage Compliant</span>
             </div>

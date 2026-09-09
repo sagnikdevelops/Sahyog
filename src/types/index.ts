@@ -246,6 +246,7 @@ export interface Booking {
   description: string;
   notes?: string;
   customerNotes?: string;
+  problemPhotoUrl?: string;
   workerCompletionNotes?: string;
   workerCompletionPhotoUrl?: string;
   totalAmount: number;

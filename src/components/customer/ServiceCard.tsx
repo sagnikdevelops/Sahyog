@@ -48,25 +48,25 @@ export function ServiceCard({ category, isEmergency = false }: ServiceCardProps)
   return (
     <Link
       href={`/customer/book?category=${category.id}${isEmergency ? "&urgency=EMERGENCY" : ""}`}
-      className="group block p-5 rounded-lg border border-[#E5E5E5] bg-white hover:border-[#111111] hover:shadow-md transition-all relative overflow-hidden"
+      className="group block p-5 rounded-lg border border-[#E5E7EB] bg-white hover:border-[#047857] hover:shadow-md transition-all relative overflow-hidden"
     >
       <div className="flex items-start justify-between">
-        <div className="w-10 h-10 rounded-md bg-[#F3F3F3] text-[#111111] flex items-center justify-center group-hover:bg-[#111111] group-hover:text-white transition-colors">
+        <div className="w-10 h-10 rounded-md bg-[#047857]/10 text-[#047857] flex items-center justify-center group-hover:bg-[#047857] group-hover:text-white transition-colors">
           {getIcon(category.iconName)}
         </div>
-        <span className="text-[11px] font-medium text-[#737373] bg-[#F8F8F8] px-2 py-0.5 rounded border border-[#E5E5E5]">
+        <span className="text-[11px] font-medium text-[#4B5563] bg-[#F9FAF7] px-2 py-0.5 rounded border border-[#E5E7EB]">
           {category.servicesCount} Services
         </span>
       </div>
 
-      <h3 className="text-sm font-bold text-[#111111] mt-3 group-hover:text-black transition-colors">
+      <h3 className="text-sm font-bold text-[#142D52] mt-3 group-hover:text-[#047857] transition-colors">
         {title}
       </h3>
-      <p className="text-xs text-[#737373] mt-1 line-clamp-2 leading-relaxed">
+      <p className="text-xs text-[#4B5563] mt-1 line-clamp-2 leading-relaxed">
         {desc}
       </p>
 
-      <div className="mt-4 flex items-center text-xs font-semibold text-[#111111] group-hover:translate-x-0.5 transition-transform">
+      <div className="mt-4 flex items-center text-xs font-semibold text-[#142D52] group-hover:text-[#047857] group-hover:translate-x-0.5 transition-all">
         <span>Book Verified Provider</span>
         <ArrowRight className="w-3.5 h-3.5 ml-1" />
       </div>

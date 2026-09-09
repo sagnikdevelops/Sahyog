@@ -19,10 +19,10 @@ export default function BookingDetailPage() {
   if (!booking) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center space-y-4">
-        <h2 className="text-lg font-bold text-[#111111]">Booking Not Found</h2>
-        <p className="text-xs text-[#737373]">The requested service booking was not found or has expired.</p>
+        <h2 className="text-lg font-bold text-[#142D52]">Booking Not Found</h2>
+        <p className="text-xs text-[#6B7280]">The requested service booking was not found or has expired.</p>
         <Link href="/customer">
-          <Button size="sm" className="text-xs">Return to Dashboard</Button>
+          <Button size="sm" className="text-xs bg-[#047857] hover:bg-[#065F46] text-white">Return to Dashboard</Button>
         </Link>
       </div>
     );
@@ -32,7 +32,7 @@ export default function BookingDetailPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       <div className="flex items-center gap-2">
         <Link href="/customer">
-          <Button variant="outline" size="sm" className="text-xs gap-1">
+          <Button variant="outline" size="sm" className="text-xs gap-1 border-[#E5E7EB] text-[#142D52] hover:bg-[#F9FAF7]">
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Dashboard
           </Button>
         </Link>

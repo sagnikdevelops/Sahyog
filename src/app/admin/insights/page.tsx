@@ -11,15 +11,15 @@ export default function AdminInsightsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      <div className="border-b border-[#E5E5E5] pb-4 space-y-1">
+      <div className="border-b border-[#E5E7EB] pb-4 space-y-1">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] bg-[#111111] text-white px-2 py-0.5 rounded font-bold uppercase">
+          <span className="text-[10px] bg-[#142D52] text-[#34D399] px-2 py-0.5 rounded font-bold uppercase">
             AI-Ready Rule Engine
           </span>
-          <span className="text-xs text-[#737373]">Real-time Demand Pattern Analysis</span>
+          <span className="text-xs text-[#6B7280]">Real-time Demand Pattern Analysis</span>
         </div>
-        <h1 className="text-2xl font-bold text-[#111111]">Demand Insights & Workforce Allocation</h1>
-        <p className="text-xs text-[#737373]">
+        <h1 className="text-2xl font-bold text-[#142D52]">Demand Insights &amp; Workforce Allocation</h1>
+        <p className="text-xs text-[#6B7280]">
           Automated heuristics tracking trade surge requests, seasonal spikes, and regional technician shortages.
         </p>
       </div>
@@ -30,12 +30,12 @@ export default function AdminInsightsPage() {
         ))}
       </div>
 
-      <Card className="border-[#E5E5E5] bg-[#F8F8F8] p-6 space-y-2">
+      <Card className="border-[#E5E7EB] bg-[#F9FAF7] p-6 space-y-2">
         <div className="flex items-center gap-2">
-          <Cpu className="w-5 h-5 text-[#111111]" />
-          <CardTitle className="text-sm font-bold">Machine Learning Extension Architecture</CardTitle>
+          <Cpu className="w-5 h-5 text-[#047857]" />
+          <CardTitle className="text-sm font-bold text-[#142D52]">Machine Learning Extension Architecture</CardTitle>
         </div>
-        <p className="text-xs text-[#525252] leading-relaxed">
+        <p className="text-xs text-[#4B5563] leading-relaxed">
           The Sahyog demand forecasting interface is structured to ingest historical booking frequency, local weather events, and spatial clustering models in Phase 2 for predictive automated dispatch.
         </p>
       </Card>

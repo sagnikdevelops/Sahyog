@@ -5,60 +5,130 @@ import Link from "next/link";
 import { useAppState } from "@/lib/store/stateContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { DeleteAccountDialog } from "@/components/profile/DeleteAccountDialog";
 import { initialsFromName } from "@/lib/auth/guest";
-import { ChevronDown, LayoutDashboard, LogOut, UserRound } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut, UserRound, Sparkles, XCircle } from "lucide-react";
 
 export default function ProfileMenu() {
-  const { realUser, demoUser, isDemoMode, logout } = useAppState();
+  const { realUser, demoUser, currentUser, currentRole, isDemoMode, exitDemoMode, logout } = useAppState();
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
-  if (!realUser) return null;
-  const profileHref = realUser.role === "WORKER" ? "/worker/profile" : "/customer/profile";
-  const dashboardHref = realUser.role === "WORKER" ? "/worker" : realUser.role.includes("ADMIN") ? "/admin" : "/customer";
+  const activeUser = isDemoMode ? (demoUser || currentUser) : realUser;
+  if (!activeUser) return null;
+
+  const profileHref = currentRole === "WORKER" ? "/worker/profile" : "/customer/profile";
+  const dashboardHref =
+    currentRole === "WORKER"
+      ? "/worker"
+      : currentRole.includes("ADMIN")
+      ? "/admin"
+      : "/customer";
 
   return (
     <div className="relative">
-      <Button variant="ghost" onClick={() => setOpen((value) => !value)} className="h-9 gap-2 px-2 text-xs">
-        <Avatar className="h-7 w-7">
-          <AvatarImage src={realUser.avatarUrl} alt={realUser.fullName} />
-          <AvatarFallback>{initialsFromName(realUser.fullName)}</AvatarFallback>
+      <Button
+        variant="ghost"
+        onClick={() => setOpen((value) => !value)}
+        className={`h-9 gap-2 px-2 text-xs border ${
+          isDemoMode
+            ? "border-[#34D399]/50 bg-[#34D399]/10 text-[#142D52] hover:bg-[#34D399]/20"
+            : "border-[#E5E7EB] hover:bg-[#F9FAF7]"
+        }`}
+      >
+        <Avatar className="h-7 w-7 border border-[#047857]/30">
+          <AvatarImage src={activeUser.avatarUrl} alt={activeUser.fullName} />
+          <AvatarFallback className="bg-[#142D52] text-[#34D399] text-[10px] font-bold">
+            {initialsFromName(activeUser.fullName)}
+          </AvatarFallback>
         </Avatar>
-        <span className="hidden max-w-28 truncate sm:inline">{realUser.fullName}</span>
-        <ChevronDown className="h-3.5 w-3.5" />
+        <div className="flex flex-col items-start text-left">
+          <span className="hidden max-w-28 truncate sm:inline font-bold text-[11px] text-[#142D52]">
+            {activeUser.fullName}
+          </span>
+          {isDemoMode && (
+            <span className="text-[9px] text-[#047857] font-semibold tracking-wider uppercase">
+              Demo ({currentRole})
+            </span>
+          )}
+        </div>
+        <ChevronDown className="h-3.5 w-3.5 text-[#6B7280]" />
       </Button>
 
-      {open ? (
-        <div className="absolute right-0 z-50 mt-2 w-72 rounded-xl border border-[#E5E5E5] bg-white p-2 shadow-xl">
-          <div className="rounded-lg bg-[#F8F8F8] p-3">
-            <p className="text-[10px] font-bold uppercase tracking-wide text-[#737373]">Real account</p>
-            <p className="mt-1 text-sm font-semibold text-[#111111]">{realUser.fullName}</p>
-            <p className="truncate text-xs text-[#737373]">{realUser.email}</p>
-            <p className="mt-1 text-[11px] font-medium text-[#525252]">{realUser.role.replace("_", " ")}</p>
-          </div>
-          {isDemoMode && demoUser ? (
-            <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 p-2.5">
-              <p className="text-[10px] font-bold uppercase tracking-wide text-amber-800">Demo mode active</p>
-              <p className="text-xs text-amber-900">Viewing {demoUser.fullName}; your real account remains signed in.</p>
+      {open && (
+        <div className="absolute right-0 z-50 mt-2 w-72 rounded-xl border border-[#E5E7EB] bg-white p-2 shadow-2xl animate-in fade-in slide-in-from-top-1 duration-150">
+          <div className="rounded-lg bg-[#F9FAF7] border border-[#E5E7EB] p-3 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#047857]">
+                {isDemoMode ? "Active Demo Profile" : "Signed-In Account"}
+              </span>
+              <Badge variant="outline" className="text-[9px] border-[#047857] text-[#047857]">
+                {currentRole.replace("_", " ")}
+              </Badge>
             </div>
-          ) : null}
+            <p className="text-sm font-bold text-[#142D52] truncate">{activeUser.fullName}</p>
+            <p className="truncate text-xs text-[#6B7280]">{activeUser.email}</p>
+          </div>
+
+          {isDemoMode && realUser && (
+            <div className="mt-2 rounded-lg border border-[#34D399]/40 bg-[#34D399]/10 p-2 text-[11px] text-[#142D52]">
+              Real account: <strong>{realUser.fullName}</strong> is signed in.
+            </div>
+          )}
+
           <div className="mt-2 space-y-1">
-            <Link href={profileHref} onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-xs hover:bg-[#F8F8F8]">
-              <UserRound className="h-4 w-4" /> Profile
+            <Link
+              href={profileHref}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 rounded-md px-2.5 py-2 text-xs text-[#1F2937] hover:bg-[#F9FAF7] hover:text-[#047857] transition-colors"
+            >
+              <UserRound className="h-4 w-4 text-[#047857]" /> My Profile &amp; Settings
             </Link>
-            <Link href={dashboardHref} onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-md px-2.5 py-2 text-xs hover:bg-[#F8F8F8]">
-              <LayoutDashboard className="h-4 w-4" /> Dashboard
+            <Link
+              href={dashboardHref}
+              onClick={() => setOpen(false)}
+              className="flex items-center gap-2 rounded-md px-2.5 py-2 text-xs text-[#1F2937] hover:bg-[#F9FAF7] hover:text-[#047857] transition-colors"
+            >
+              <LayoutDashboard className="h-4 w-4 text-[#047857]" /> View Portal Dashboard
             </Link>
-            <button onClick={() => { setOpen(false); setDeleteOpen(true); }} className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs text-[#B91C1C] hover:bg-red-50">
-              Delete account
-            </button>
-            <button onClick={() => void logout()} className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs hover:bg-[#F8F8F8]">
-              <LogOut className="h-4 w-4" /> Sign out
+
+            {isDemoMode && (
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  exitDemoMode();
+                }}
+                className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs text-[#D97706] hover:bg-amber-50 transition-colors"
+              >
+                <XCircle className="h-4 w-4" /> Exit Demo Mode
+              </button>
+            )}
+
+            {realUser && (
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  setDeleteOpen(true);
+                }}
+                className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs text-[#DC2626] hover:bg-red-50 transition-colors"
+              >
+                Delete account
+              </button>
+            )}
+
+            <button
+              onClick={() => {
+                setOpen(false);
+                void logout();
+              }}
+              className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs text-[#1F2937] hover:bg-[#F9FAF7] hover:text-[#047857] transition-colors border-t border-[#E5E7EB] mt-1 pt-2"
+            >
+              <LogOut className="h-4 w-4 text-[#6B7280]" /> {isDemoMode ? "Reset / Sign Out" : "Sign Out"}
             </button>
           </div>
         </div>
-      ) : null}
+      )}
       <DeleteAccountDialog open={deleteOpen} onOpenChange={setDeleteOpen} />
     </div>
   );

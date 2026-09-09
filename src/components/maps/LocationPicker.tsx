@@ -68,7 +68,7 @@ export function LocationPicker({
     <div className="space-y-3">
       <div className="flex gap-2">
         <div className="relative flex-1">
-          <MapPin className="absolute left-3 top-2.5 w-4 h-4 text-[#737373]" />
+          <MapPin className="absolute left-3 top-2.5 w-4 h-4 text-[#047857]" />
           <Input
             value={address}
             onChange={(e) => {
@@ -76,7 +76,7 @@ export function LocationPicker({
               onLocationChange(lat, lng, e.target.value);
             }}
             placeholder="Enter address or landmark"
-            className="pl-9 text-xs"
+            className="pl-9 text-xs border-[#E5E7EB] focus:ring-[#047857]"
           />
         </div>
         <Button
@@ -85,14 +85,14 @@ export function LocationPicker({
           size="sm"
           onClick={handleUseCurrentLocation}
           disabled={isLocating}
-          className="gap-1 text-xs shrink-0"
+          className="gap-1 text-xs shrink-0 border-[#E5E7EB] text-[#142D52] hover:bg-[#F9FAF7]"
         >
-          <Navigation className={`w-3.5 h-3.5 ${isLocating ? "animate-spin" : ""}`} />
+          <Navigation className={`w-3.5 h-3.5 text-[#047857] ${isLocating ? "animate-spin" : ""}`} />
           {isLocating ? "Locating..." : "Use GPS"}
         </Button>
       </div>
 
-      <div className="h-48 sm:h-56 rounded-lg overflow-hidden border border-[#E5E5E5] relative">
+      <div className="h-48 sm:h-56 rounded-lg overflow-hidden border border-[#E5E7EB] relative">
         <LeafletMap
           center={[lat, lng]}
           zoom={14}
@@ -109,7 +109,7 @@ export function LocationPicker({
             },
           ]}
         />
-        <div className="absolute bottom-2 left-2 z-10 bg-white/90 backdrop-blur px-2 py-1 rounded text-[10px] text-[#525252] border border-[#E5E5E5]">
+        <div className="absolute bottom-2 left-2 z-10 bg-white/95 backdrop-blur px-2 py-1 rounded text-[10px] text-[#4B5563] border border-[#E5E7EB]">
           Click map to pin exact service location
         </div>
       </div>

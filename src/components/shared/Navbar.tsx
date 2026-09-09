@@ -7,10 +7,10 @@ import { useAppState } from "@/lib/store/stateContext";
 import { useI18n } from "@/lib/i18n";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { NotificationCenter } from "./NotificationCenter";
+import { SahyogLogo } from "./Logo";
 import ProfileMenu from "./ProfileMenu";
 import { Button } from "@/components/ui/button";
 import {
-  Handshake,
   Flame,
   User,
   Menu,
@@ -19,10 +19,19 @@ import {
 } from "lucide-react";
 
 export function Navbar() {
-  const { currentRole, isAuthenticated } = useAppState();
+  const { currentRole, isAuthenticated, isDemoMode } = useAppState();
   const { t } = useI18n();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const navLinks = [
     { href: "/", label: t("nav.home") },
@@ -35,27 +44,12 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-[#E5E5E5] bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+    <header className={`sticky top-0 z-50 w-full border-b border-[#E5E7EB] bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90 transition-all duration-200 ${isScrolled ? "shadow-md bg-white/98" : "shadow-sm"}`}>
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-3 py-3 sm:px-6 lg:h-16 lg:flex-row lg:items-center lg:justify-between lg:px-8 lg:py-0">
         <div className="flex items-center justify-between gap-3 lg:gap-6">
           {/* Brand Logo & Tagline */}
           <Link href="/" className="group flex min-w-0 items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#111111] text-white shadow-sm transition-colors group-hover:bg-[#262626]">
-              <Handshake className="h-5 w-5 text-white" />
-            </div>
-            <div className="flex min-w-0 flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="text-lg font-bold tracking-tight text-[#111111] sm:text-xl">
-                  Sahyog
-                </span>
-                <span className="rounded border border-[#E5E5E5] bg-[#F3F3F3] px-1.5 py-0.5 text-[8px] font-semibold uppercase tracking-wider text-[#525252] sm:text-[10px]">
-                  Cooperative
-                </span>
-              </div>
-              <span className="hidden text-[10px] text-[#737373] sm:inline-block">
-                Connecting Cooperative Skills with Everyday Needs
-              </span>
-            </div>
+            <SahyogLogo size="lg" showText={true} priority={true} />
           </Link>
 
           {/* Desktop Navigation Links */}
@@ -68,8 +62,8 @@ export function Navbar() {
                   href={item.href}
                   className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
                     isActive
-                      ? "bg-[#F3F3F3] text-[#111111] font-semibold"
-                      : "text-[#525252] hover:text-[#111111] hover:bg-[#F8F8F8]"
+                      ? "bg-[#047857]/10 text-[#047857] font-semibold"
+                      : "text-[#4B5563] hover:text-[#142D52] hover:bg-[#F9FAF7]"
                   }`}
                 >
                   {item.label}
@@ -99,14 +93,14 @@ export function Navbar() {
           {/* Language Switcher */}
           <LanguageSwitcher />
 
-          {isAuthenticated ? <ProfileMenu /> : <>
+          {isAuthenticated || isDemoMode ? <ProfileMenu /> : <>
             <Link href="/auth/login">
-              <Button variant="outline" size="sm" className="text-[10px] sm:text-xs">
+              <Button variant="outline" size="sm" className="text-[10px] sm:text-xs border-[#E5E7EB] text-[#142D52] hover:bg-[#F9FAF7]">
                 {t("nav.login")}
               </Button>
             </Link>
             <Link href="/auth/register">
-              <Button variant="ghost" size="sm" className="text-[10px] sm:text-xs">
+              <Button variant="ghost" size="sm" className="text-[10px] sm:text-xs text-[#047857] hover:bg-[#047857]/10">
                 {t("nav.register")}
               </Button>
             </Link>
@@ -134,24 +128,24 @@ export function Navbar() {
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="rounded-md p-2 text-[#525252] hover:text-[#111111] lg:hidden"
+            className="rounded-md p-2 text-[#4B5563] hover:text-[#142D52] lg:hidden"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5 text-[#111111]" />}
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5 text-[#142D52]" />}
           </button>
         </div>
       </div>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-[#E5E5E5] bg-white p-4 space-y-3">
+        <div className="lg:hidden border-b border-[#E5E7EB] bg-white p-4 space-y-3">
           <div className="grid grid-cols-2 gap-2">
             {navLinks.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 text-xs font-medium rounded-md bg-[#F8F8F8] text-[#171717] hover:bg-[#F3F3F3]"
+                className="px-3 py-2 text-xs font-medium rounded-md bg-[#F9FAF7] text-[#1F2937] hover:bg-[#047857]/10 hover:text-[#047857]"
               >
                 {item.label}
               </Link>

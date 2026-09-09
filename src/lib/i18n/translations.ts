@@ -6,7 +6,7 @@ export const translations = {
   en: {
     // Brand
     "brand.name": "Sahyog",
-    "brand.tagline": "Connecting Cooperative Skills with Everyday Needs",
+    "brand.tagline": "Dignity in Labour. Trust in Service. India's Cooperative Platform",
     "brand.description": "A cooperative-owned digital service marketplace connecting skilled workers of Labour Cooperatives with households and businesses.",
 
     // Navigation
@@ -23,7 +23,7 @@ export const translations = {
     "nav.logout": "Sign Out",
     "nav.emergencyService": "Emergency Service",
 
-    // Auth (demo-only)
+    // Auth
     "auth.loginTitle": "Sign In to Sahyog",
     "auth.loginSubtitle": "Cooperative Digital Service Marketplace",
     "auth.registerTitle": "Join Sahyog Cooperative Network",
@@ -46,20 +46,13 @@ export const translations = {
     "auth.registerSuccess": "Registration successful. Taking you to your portal…",
     "auth.showPassword": "Show password",
     "auth.hidePassword": "Hide password",
-    "auth.validation.fullNameRequired": "Full name is required",
-    "auth.validation.emailRequired": "Email is required",
-    "auth.validation.emailInvalid": "Please enter a valid email address",
-    "auth.validation.passwordRequired": "Password is required",
-    "auth.validation.passwordMin": "Password must contain at least 8 characters",
-    "auth.validation.confirmRequired": "Confirm password is required",
-    "auth.validation.passwordMismatch": "Password and confirm password must match",
 
     // Landing Page
-    "hero.badge": "100% Cooperative Owned & Verified",
-    "hero.title": "Skilled Hands. Trusted Work. Fair Cooperative Wages.",
-    "hero.subtitle": "Book verified plumbers, electricians, carpenters, cleaners, and caregivers directly from registered Labour Cooperative Federations. Transparent pricing, no middleman exploitation.",
-    "hero.searchPlaceholder": "What service do you need today? (e.g. Electrician, Plumbing leak)",
-    "hero.findWorkers": "Find Workers",
+    "hero.badge": "100% Cooperative Owned & Verified Trades",
+    "hero.title": "Dignity in Labour. Trust in Service. India's Unified Cooperative Platform.",
+    "hero.subtitle": "Book skill-certified plumbers, electricians, carpenters, painters, and caregivers directly from registered Labour Cooperative Federations. Transparent pricing, social security coverage, and fair cooperative wages with zero middleman exploitation.",
+    "hero.searchPlaceholder": "What service do you need today? (e.g. Electrician, Plumbing leak, Carpenter)",
+    "hero.findWorkers": "Find Verified Workers",
     "hero.howItWorks": "How Sahyog Works",
     "hero.stats.workers": "1,500+ Verified Workers",
     "hero.stats.coops": "48+ Cooperative Societies",

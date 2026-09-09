@@ -58,22 +58,22 @@ export function DemoRoleSwitcher() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex max-w-[220px] items-center gap-1.5 rounded-full border border-[#D4D4D4] bg-white px-2 py-1.5 text-[10px] font-medium text-[#171717] shadow-sm transition-all hover:bg-[#F8F8F8] sm:gap-2 sm:px-3 sm:text-xs"
+        className="flex max-w-[220px] items-center gap-1.5 rounded-full border border-[#E5E7EB] bg-white px-2 py-1.5 text-[10px] font-medium text-[#1F2937] shadow-sm transition-all hover:bg-[#F9FAF7] sm:gap-2 sm:px-3 sm:text-xs"
       >
-        <span className="h-2 w-2 shrink-0 rounded-full bg-[#16A34A] animate-pulse" />
-        <span className="hidden font-semibold text-[#111111] sm:inline">Demo Mode:</span>
-        <span className="truncate rounded bg-[#F3F3F3] px-1.5 py-0.5 text-[#525252] sm:px-2">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-[#047857] animate-pulse" />
+        <span className="hidden font-semibold text-[#142D52] sm:inline">Demo Mode:</span>
+        <span className="truncate rounded bg-[#F9FAF7] px-1.5 py-0.5 text-[#4B5563] sm:px-2">
           {currentRole.replace("_", " ")}
         </span>
-        <ChevronDown className="h-3.5 w-3.5 shrink-0 text-[#737373]" />
+        <ChevronDown className="h-3.5 w-3.5 shrink-0 text-[#6B7280]" />
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-1.5rem))] rounded-lg border border-[#E5E5E5] bg-white shadow-xl p-3 z-50 animate-in fade-in-0 zoom-in-95">
-          <div className="flex items-center justify-between pb-2 border-b border-[#E5E5E5] mb-2">
+        <div className="absolute right-0 mt-2 w-[min(20rem,calc(100vw-1.5rem))] rounded-lg border border-[#E5E7EB] bg-white shadow-xl p-3 z-50 animate-in fade-in-0 zoom-in-95">
+          <div className="flex items-center justify-between pb-2 border-b border-[#E5E7EB] mb-2">
             <div>
-              <p className="text-xs font-bold text-[#111111]">Hackathon Role Switcher</p>
-              <p className="text-[11px] text-[#737373]">Current: {authenticatedUser?.fullName ?? currentUser.fullName}</p>
+              <p className="text-xs font-bold text-[#142D52]">Hackathon Role Switcher</p>
+              <p className="text-[11px] text-[#6B7280]">Current: {authenticatedUser?.fullName ?? currentUser.fullName}</p>
             </div>
             <button
               onClick={() => {
@@ -84,7 +84,7 @@ export function DemoRoleSwitcher() {
                 }
               }}
               title="Reset Demo Data"
-              className="text-[#737373] hover:text-[#DC2626] p-1 rounded hover:bg-[#F3F3F3]"
+              className="text-[#6B7280] hover:text-[#DC2626] p-1 rounded hover:bg-[#F9FAF7]"
             >
               <RefreshCw className="w-3.5 h-3.5" />
             </button>
@@ -100,12 +100,12 @@ export function DemoRoleSwitcher() {
                   onClick={() => handleRoleSelect(item.role, item.route)}
                   className={`w-full flex items-start gap-2.5 p-2 rounded-md text-left transition-colors ${
                     isSelected
-                      ? "bg-[#111111] text-white"
-                      : "hover:bg-[#F8F8F8] text-[#171717]"
+                      ? "bg-[#142D52] text-white"
+                      : "hover:bg-[#F9FAF7] text-[#1F2937]"
                   }`}
                 >
-                  <div className={`p-1.5 rounded-md ${isSelected ? "bg-[#262626]" : "bg-[#F3F3F3]"}`}>
-                    <Icon className={`w-4 h-4 ${isSelected ? "text-white" : "text-[#111111]"}`} />
+                  <div className={`p-1.5 rounded-md ${isSelected ? "bg-[#047857]" : "bg-[#F9FAF7]"}`}>
+                    <Icon className={`w-4 h-4 ${isSelected ? "text-[#34D399]" : "text-[#142D52]"}`} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
@@ -116,7 +116,7 @@ export function DemoRoleSwitcher() {
                         </Badge>
                       )}
                     </div>
-                    <p className={`text-[11px] truncate ${isSelected ? "text-[#D4D4D4]" : "text-[#737373]"}`}>
+                    <p className={`text-[11px] truncate ${isSelected ? "text-[#34D399]" : "text-[#6B7280]"}`}>
                       {item.user}
                     </p>
                   </div>

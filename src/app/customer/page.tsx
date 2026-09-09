@@ -34,28 +34,28 @@ export default function CustomerDashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header Greeting */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 bg-[#F8F8F8] rounded-xl border border-[#E5E5E5]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 bg-[#F9FAF7] rounded-xl border border-[#E5E7EB]">
         <div>
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#737373]">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#6B7280]">
             Customer Portal
           </span>
-          <h1 className="text-2xl font-bold text-[#111111] mt-0.5">
+          <h1 className="text-2xl font-bold text-[#142D52] mt-0.5">
             Welcome back, {currentUser.fullName} 👋
           </h1>
-          <p className="text-xs text-[#525252] mt-1 flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-[#111111]" />
+          <p className="text-xs text-[#4B5563] mt-1 flex items-center gap-1">
+            <MapPin className="w-3.5 h-3.5 text-[#047857]" />
             Default Area: {currentUser.address} ({currentUser.city})
           </p>
         </div>
 
         <div className="flex gap-2">
           <Link href="/customer/book">
-            <Button className="text-xs bg-[#111111] text-white hover:bg-[#262626]">
+            <Button className="text-xs bg-[#047857] text-white hover:bg-[#065F46] shadow-sm">
               + Book New Service
             </Button>
           </Link>
           <Link href="/customer/history">
-            <Button variant="outline" className="text-xs">
+            <Button variant="outline" className="text-xs border-[#E5E7EB] text-[#142D52] hover:bg-white">
               Past Invoices
             </Button>
           </Link>
@@ -69,8 +69,8 @@ export default function CustomerDashboardPage() {
             <Flame className="w-5 h-5 fill-white" />
           </div>
           <div>
-            <h3 className="font-bold text-xs sm:text-sm text-[#111111]">Emergency Plumbing or Power Breakdown?</h3>
-            <p className="text-[11px] text-[#737373]">PostGIS auto-assigns the nearest verified technician in under 30 minutes.</p>
+            <h3 className="font-bold text-xs sm:text-sm text-[#142D52]">Emergency Plumbing or Power Breakdown?</h3>
+            <p className="text-[11px] text-[#6B7280]">PostGIS auto-assigns the nearest verified technician in under 30 minutes.</p>
           </div>
         </div>
         <Link href="/customer/book?urgency=EMERGENCY">
@@ -83,34 +83,34 @@ export default function CustomerDashboardPage() {
       {/* Active Bookings Bar */}
       {activeBookings.length > 0 && (
         <div className="space-y-3">
-          <h2 className="text-sm font-bold text-[#111111] uppercase tracking-wider flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-[#16A34A] animate-pulse" />
+          <h2 className="text-sm font-bold text-[#142D52] uppercase tracking-wider flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#047857] animate-pulse" />
             Active Service Trackers ({activeBookings.length})
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {activeBookings.map((b) => (
-              <Card key={b.id} className="border-[#111111] bg-white shadow-sm">
+              <Card key={b.id} className="border-[#047857] bg-white shadow-sm">
                 <CardContent className="p-4 space-y-2 text-xs">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-[#111111]">#{b.bookingNumber}</span>
+                      <span className="font-bold text-[#142D52]">#{b.bookingNumber}</span>
                       <BookingStatusBadge status={b.status} />
                     </div>
                     <UrgencyBadge urgency={b.urgency} />
                   </div>
 
                   <div>
-                    <h3 className="font-bold text-sm text-[#111111]">{b.serviceName}</h3>
-                    <p className="text-[11px] text-[#737373]">
+                    <h3 className="font-bold text-sm text-[#142D52]">{b.serviceName}</h3>
+                    <p className="text-[11px] text-[#6B7280]">
                       Worker: {b.workerName || "Matching Cooperative Worker..."}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-[#E5E5E5]">
-                    <span className="text-[11px] text-[#525252]">Scheduled: {b.scheduledDate} ({b.scheduledTime})</span>
+                  <div className="flex items-center justify-between pt-2 border-t border-[#E5E7EB]">
+                    <span className="text-[11px] text-[#4B5563]">Scheduled: {b.scheduledDate} ({b.scheduledTime})</span>
                     <Link href={`/customer/bookings/${b.id}`}>
-                      <Button size="sm" className="text-xs bg-[#111111] text-white gap-1 h-7">
+                      <Button size="sm" className="text-xs bg-[#047857] text-white hover:bg-[#065F46] gap-1 h-7">
                         Track Live <ArrowRight className="w-3 h-3" />
                       </Button>
                     </Link>
@@ -124,9 +124,9 @@ export default function CustomerDashboardPage() {
 
       {/* Service Trades Grid */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-[#E5E5E5] pb-2">
-          <h2 className="text-base font-bold text-[#111111]">Choose a Cooperative Service</h2>
-          <span className="text-xs text-[#737373]">100% Certified Members</span>
+        <div className="flex items-center justify-between border-b border-[#E5E7EB] pb-2">
+          <h2 className="text-base font-bold text-[#142D52]">Choose a Cooperative Service</h2>
+          <span className="text-xs text-[#6B7280]">100% Certified Members</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

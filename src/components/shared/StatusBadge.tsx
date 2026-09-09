@@ -28,36 +28,36 @@ export function BookingStatusBadge({ status }: { status: BookingStatus }) {
   switch (status) {
     case "REQUESTED":
       return (
-        <Badge variant="outline" className="gap-1 border-[#D4D4D4] bg-[#F8F8F8] text-[#525252]">
-          <Clock className="w-3 h-3 text-[#737373]" />
+        <Badge variant="outline" className="gap-1 border-[#E5E7EB] bg-[#F9FAF7] text-[#4B5563]">
+          <Clock className="w-3 h-3 text-[#6B7280]" />
           {t("booking.status.REQUESTED")}
         </Badge>
       );
     case "MATCHING":
       return (
         <Badge variant="info" className="gap-1 animate-pulse-subtle">
-          <Search className="w-3 h-3 text-[#2563EB]" />
+          <Search className="w-3 h-3 text-[#142D52]" />
           {t("booking.status.MATCHING")}
         </Badge>
       );
     case "ASSIGNED":
       return (
         <Badge variant="info" className="gap-1">
-          <UserCheck className="w-3 h-3 text-[#2563EB]" />
+          <UserCheck className="w-3 h-3 text-[#142D52]" />
           {t("booking.status.ASSIGNED")}
         </Badge>
       );
     case "ACCEPTED":
       return (
         <Badge variant="success" className="gap-1">
-          <CheckCircle2 className="w-3 h-3 text-[#16A34A]" />
+          <CheckCircle2 className="w-3 h-3 text-[#047857]" />
           {t("booking.status.ACCEPTED")}
         </Badge>
       );
     case "SCHEDULED":
       return (
-        <Badge variant="outline" className="gap-1 border-[#D4D4D4] bg-white text-[#171717]">
-          <Calendar className="w-3 h-3 text-[#111111]" />
+        <Badge variant="outline" className="gap-1 border-[#E5E7EB] bg-white text-[#1F2937]">
+          <Calendar className="w-3 h-3 text-[#142D52]" />
           {t("booking.status.SCHEDULED")}
         </Badge>
       );
@@ -78,7 +78,7 @@ export function BookingStatusBadge({ status }: { status: BookingStatus }) {
     case "SERVICE_COMPLETED":
       return (
         <Badge variant="success" className="gap-1">
-          <CheckCheck className="w-3 h-3 text-[#16A34A]" />
+          <CheckCheck className="w-3 h-3 text-[#047857]" />
           {t("booking.status.SERVICE_COMPLETED")}
         </Badge>
       );
@@ -92,7 +92,7 @@ export function BookingStatusBadge({ status }: { status: BookingStatus }) {
     case "PAYMENT_COMPLETED":
     case "PAYOUT_COMPLETED":
       return (
-        <Badge variant="success" className="gap-1 bg-[#16A34A] text-white">
+        <Badge variant="success" className="gap-1 bg-[#047857] text-white">
           <CheckCheck className="w-3 h-3" />
           {t("booking.status.PAYMENT_COMPLETED")}
         </Badge>
@@ -113,7 +113,7 @@ export function BookingStatusBadge({ status }: { status: BookingStatus }) {
       );
     case "REFUNDED":
       return (
-        <Badge variant="outline" className="gap-1 border-[#D4D4D4] text-[#525252]">
+        <Badge variant="outline" className="gap-1 border-[#E5E7EB] text-[#4B5563]">
           <RotateCcw className="w-3 h-3" />
           {t("booking.status.REFUNDED")}
         </Badge>
@@ -133,15 +133,15 @@ export function WorkerVerificationBadge({
   switch (status) {
     case "APPROVED":
       return (
-        <Badge variant="success" className="gap-1 font-medium bg-[#16A34A]/15 text-[#16A34A]">
+        <Badge variant="success" className="gap-1 font-medium bg-[#047857]/15 text-[#047857]">
           <ShieldCheck className="w-3.5 h-3.5" />
           {t("verification.APPROVED")}
         </Badge>
       );
     case "COOPERATIVE_VERIFIED":
       return (
-        <Badge variant="default" className="gap-1 bg-[#111111] text-white">
-          <ShieldCheck className="w-3.5 h-3.5 text-[#16A34A]" />
+        <Badge variant="default" className="gap-1 bg-[#142D52] text-white">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#34D399]" />
           {t("verification.COOPERATIVE_VERIFIED")}
         </Badge>
       );
@@ -169,7 +169,7 @@ export function WorkerVerificationBadge({
     case "UNVERIFIED":
     default:
       return (
-        <Badge variant="outline" className="gap-1 text-[#737373]">
+        <Badge variant="outline" className="gap-1 text-[#6B7280]">
           {t("verification.UNVERIFIED")}
         </Badge>
       );
@@ -187,7 +187,7 @@ export function UrgencyBadge({ urgency }: { urgency: UrgencyLevel }) {
     );
   }
   return (
-    <Badge variant="secondary" className="gap-1 text-[#525252]">
+    <Badge variant="secondary" className="gap-1 text-[#4B5563]">
       {t("common.normal")}
     </Badge>
   );

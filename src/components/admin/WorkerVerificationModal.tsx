@@ -40,33 +40,33 @@ export function WorkerVerificationModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md bg-white border border-[#E5E5E5]">
+      <DialogContent className="max-w-md bg-white border border-[#E5E7EB]">
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-[#16A34A]" />
+          <DialogTitle className="text-base font-bold flex items-center gap-2 text-[#142D52]">
+            <ShieldCheck className="w-5 h-5 text-[#047857]" />
             Verify Worker: {worker.profile?.fullName || "Unknown Worker"}
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-2 text-xs">
-          <div className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5]">
-            <p className="font-bold text-[#111111]">{worker.profile?.fullName || "Unknown Worker"}</p>
-            <p className="text-[#737373] text-[11px]">{worker.cooperativeName || "Unknown Cooperative"}</p>
-            <p className="text-[#525252] mt-1">
+          <div className="p-3 bg-[#F9FAF7] rounded-md border border-[#E5E7EB]">
+            <p className="font-bold text-[#142D52]">{worker.profile?.fullName || "Unknown Worker"}</p>
+            <p className="text-[#6B7280] text-[11px]">{worker.cooperativeName || "Unknown Cooperative"}</p>
+            <p className="text-[#4B5563] mt-1">
               {Array.isArray(worker.skills) ? worker.skills.map((s) => s?.skillName).filter(Boolean).join(", ") || "General Skilled Labour" : "General Skilled Labour"}
             </p>
           </div>
 
           <div>
-            <label className="font-bold text-[#111111] block mb-2">Set Verification Pipeline State</label>
+            <label className="font-bold text-[#142D52] block mb-2">Set Verification Pipeline State</label>
             <div className="space-y-2 max-h-52 overflow-y-auto">
               {statuses.map((s) => (
                 <label
                   key={s.val}
-                  className={`flex items-start gap-2 p-2.5 rounded border cursor-pointer ${
+                  className={`flex items-start gap-2 p-2.5 rounded border cursor-pointer transition-colors ${
                     status === s.val
-                      ? "border-[#111111] bg-[#F8F8F8] font-bold"
-                      : "border-[#E5E5E5] hover:bg-[#F8F8F8]"
+                      ? "border-[#047857] bg-[#047857]/5 font-bold"
+                      : "border-[#E5E7EB] hover:bg-[#F9FAF7]"
                   }`}
                 >
                   <input
@@ -75,11 +75,11 @@ export function WorkerVerificationModal({
                     value={s.val}
                     checked={status === s.val}
                     onChange={() => setStatus(s.val)}
-                    className="mt-0.5"
+                    className="mt-0.5 accent-[#047857]"
                   />
                   <div>
-                    <span className="block text-xs font-semibold text-[#111111]">{s.label}</span>
-                    <span className="text-[10px] text-[#737373]">{s.desc}</span>
+                    <span className="block text-xs font-semibold text-[#142D52]">{s.label}</span>
+                    <span className="text-[10px] text-[#6B7280]">{s.desc}</span>
                   </div>
                 </label>
               ))}
@@ -87,21 +87,22 @@ export function WorkerVerificationModal({
           </div>
 
           <div>
-            <label className="font-semibold block mb-1">Supervisor Audit Notes</label>
+            <label className="font-semibold text-[#1F2937] block mb-1">Supervisor Audit Notes</label>
             <Textarea
               rows={2}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="e.g. Verified trade certificate and cooperative membership roll."
+              className="border-[#E5E7EB] focus:ring-[#047857]"
             />
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" size="sm" onClick={onClose}>
+          <Button variant="outline" size="sm" onClick={onClose} className="border-[#E5E7EB] text-[#1F2937]">
             Cancel
           </Button>
-          <Button onClick={handleSave} size="sm" className="bg-[#111111] text-white">
+          <Button onClick={handleSave} size="sm" className="bg-[#047857] hover:bg-[#065F46] text-white">
             Save Verification Status
           </Button>
         </DialogFooter>

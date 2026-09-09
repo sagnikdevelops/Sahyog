@@ -76,11 +76,11 @@ function MapInternal({
 
       // Render markers
       markers.forEach((m) => {
-        let markerColor = "#111111";
+        let markerColor = "#142D52";
         if (m.type === "EMERGENCY") markerColor = "#DC2626";
-        if (m.type === "WORKER") markerColor = "#16A34A";
-        if (m.type === "CUSTOMER") markerColor = "#2563EB";
-        if (m.type === "SOCIETY") markerColor = "#111111";
+        if (m.type === "WORKER") markerColor = "#047857";
+        if (m.type === "CUSTOMER") markerColor = "#142D52";
+        if (m.type === "SOCIETY") markerColor = "#047857";
 
         const customIcon = L.divIcon({
           className: "custom-map-pin",
@@ -94,9 +94,9 @@ function MapInternal({
         const marker = L.marker([m.lat, m.lng], { icon: customIcon }).addTo(map);
         marker.bindPopup(`
           <div style="font-family: inherit; padding: 4px;">
-            <div style="font-weight: bold; font-size: 13px; color: #111111;">${m.title}</div>
-            ${m.subtitle ? `<div style="font-size: 11px; color: #525252; margin-top: 2px;">${m.subtitle}</div>` : ""}
-            ${m.status ? `<div style="font-size: 10px; margin-top: 4px; display: inline-block; padding: 2px 6px; background: #F3F3F3; border-radius: 4px; color: #171717;">${m.status}</div>` : ""}
+            <div style="font-weight: bold; font-size: 13px; color: #142D52;">${m.title}</div>
+            ${m.subtitle ? `<div style="font-size: 11px; color: #4B5563; margin-top: 2px;">${m.subtitle}</div>` : ""}
+            ${m.status ? `<div style="font-size: 10px; margin-top: 4px; display: inline-block; padding: 2px 6px; background: #F9FAF7; border: 1px solid #E5E7EB; border-radius: 4px; color: #142D52;">${m.status}</div>` : ""}
           </div>
         `);
       });
@@ -123,7 +123,7 @@ function MapInternal({
 export const LeafletMap = dynamic(() => Promise.resolve(MapInternal), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-72 bg-[#F8F8F8] border border-[#E5E5E5] rounded-lg flex items-center justify-center text-xs text-[#737373] animate-pulse">
+    <div className="w-full h-72 bg-[#F9FAF7] border border-[#E5E7EB] rounded-lg flex items-center justify-center text-xs text-[#6B7280] animate-pulse">
       Loading OpenStreetMap Layer...
     </div>
   ),

@@ -30,16 +30,16 @@ export function ReassignModal({ isOpen, onClose, booking }: ReassignModalProps) 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md bg-white border border-[#E5E5E5]">
+      <DialogContent className="max-w-md bg-white border border-[#E5E7EB]">
         <DialogHeader>
-          <DialogTitle className="text-base font-bold flex items-center gap-2">
-            <UserCheck className="w-5 h-5 text-[#111111]" />
+          <DialogTitle className="text-base font-bold flex items-center gap-2 text-[#142D52]">
+            <UserCheck className="w-5 h-5 text-[#047857]" />
             Manual Dispatch & Reassign Worker
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3 py-2 text-xs">
-          <p className="text-[#525252]">
+          <p className="text-[#4B5563]">
             Booking #{booking.bookingNumber} • {booking.serviceName}
           </p>
 
@@ -52,21 +52,21 @@ export function ReassignModal({ isOpen, onClose, booking }: ReassignModalProps) 
                   onClick={() => setSelectedWorkerId(w.id)}
                   className={`p-2.5 rounded-lg border cursor-pointer transition-all ${
                     isSelected
-                      ? "border-[#111111] bg-[#F8F8F8] ring-1 ring-[#111111]"
-                      : "border-[#E5E5E5] hover:bg-[#F8F8F8]"
+                      ? "border-[#142D52] bg-[#F9FAF7] ring-1 ring-[#142D52]"
+                      : "border-[#E5E7EB] hover:bg-[#F9FAF7]"
                   }`}
                 >
                   <div className="flex justify-between items-start">
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-[#111111]">{w.profile.fullName}</span>
+                        <span className="font-bold text-[#142D52]">{w.profile.fullName}</span>
                         <WorkerVerificationBadge status={w.verificationStatus} />
                       </div>
-                      <p className="text-[10px] text-[#737373]">{w.cooperativeName}</p>
+                      <p className="text-[10px] text-[#6B7280]">{w.cooperativeName}</p>
                     </div>
                     <RatingStars rating={w.ratingAvg || 5} size="sm" />
                   </div>
-                  <div className="flex gap-3 text-[10px] text-[#525252] mt-1">
+                  <div className="flex gap-3 text-[10px] text-[#4B5563] mt-1">
                     <span>{w.isAvailable ? "🟢 Available" : "🔴 Busy"}</span>
                     <span>📍 {w.profile.city}</span>
                     <span>✅ {w.completedServicesCount} jobs</span>
@@ -78,10 +78,10 @@ export function ReassignModal({ isOpen, onClose, booking }: ReassignModalProps) 
         </div>
 
         <DialogFooter>
-          <Button variant="outline" size="sm" onClick={onClose}>
+          <Button variant="outline" size="sm" onClick={onClose} className="border-[#E5E7EB] text-[#1F2937]">
             Cancel
           </Button>
-          <Button onClick={handleReassign} size="sm" className="bg-[#111111] text-white">
+          <Button onClick={handleReassign} size="sm" className="bg-[#142D52] hover:bg-[#0E203B] text-white">
             Dispatch Selected Worker
           </Button>
         </DialogFooter>

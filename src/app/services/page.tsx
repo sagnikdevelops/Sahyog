@@ -27,13 +27,13 @@ export default function ServicesPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
-      <div className="border-b border-[#E5E5E5] pb-6 space-y-2">
+      <div className="border-b border-[#E5E7EB] pb-6 space-y-2">
         <div className="flex items-center gap-2">
           <Badge variant="default" className="text-xs">Sahyog Marketplace</Badge>
-          <span className="text-xs text-[#737373]">10 Cooperative Service Trades</span>
+          <span className="text-xs text-[#6B7280]">10 Cooperative Service Trades</span>
         </div>
-        <h1 className="text-3xl font-bold text-[#111111]">Certified Cooperative Services</h1>
-        <p className="text-xs sm:text-sm text-[#525252] max-w-2xl">
+        <h1 className="text-3xl font-bold text-[#142D52]">Certified Cooperative Services</h1>
+        <p className="text-xs sm:text-sm text-[#4B5563] max-w-2xl">
           All services are delivered exclusively by trained, insured, and verified members of registered Labour Cooperative Federations and Societies.
         </p>
       </div>
@@ -45,8 +45,8 @@ export default function ServicesPage() {
             onClick={() => setActiveCategory("ALL")}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               activeCategory === "ALL"
-                ? "bg-[#111111] text-white border-[#111111]"
-                : "bg-white text-[#525252] border-[#E5E5E5] hover:bg-[#F8F8F8]"
+                ? "bg-[#142D52] text-white border-[#142D52]"
+                : "bg-white text-[#4B5563] border-[#E5E7EB] hover:bg-[#F9FAF7]"
             }`}
           >
             All Trades ({SERVICES.length})
@@ -57,8 +57,8 @@ export default function ServicesPage() {
               onClick={() => setActiveCategory(cat.id)}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
                 activeCategory === cat.id
-                  ? "bg-[#111111] text-white border-[#111111]"
-                  : "bg-white text-[#525252] border-[#E5E5E5] hover:bg-[#F8F8F8]"
+                  ? "bg-[#142D52] text-white border-[#142D52]"
+                  : "bg-white text-[#4B5563] border-[#E5E7EB] hover:bg-[#F9FAF7]"
               }`}
             >
               {language === "hi" ? cat.nameHi : cat.name}
@@ -67,12 +67,12 @@ export default function ServicesPage() {
         </div>
 
         <div className="relative w-full md:w-72">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#737373]" />
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#047857]" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search service name..."
-            className="pl-9 text-xs"
+            className="pl-9 text-xs border-[#E5E7EB] focus:ring-[#047857]"
           />
         </div>
       </div>
@@ -80,10 +80,10 @@ export default function ServicesPage() {
       {/* Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredServices.map((srv) => (
-          <Card key={srv.id} className="border-[#E5E5E5] flex flex-col justify-between hover:border-[#111111] transition-all">
+          <Card key={srv.id} className="border-[#E5E7EB] bg-white flex flex-col justify-between hover:border-[#047857] hover:shadow-sm transition-all">
             <CardHeader className="p-5 pb-3">
               <div className="flex items-start justify-between gap-2">
-                <span className="text-[11px] font-semibold text-[#737373] bg-[#F8F8F8] px-2 py-0.5 rounded border border-[#E5E5E5]">
+                <span className="text-[11px] font-semibold text-[#6B7280] bg-[#F9FAF7] px-2 py-0.5 rounded border border-[#E5E7EB]">
                   {srv.categoryName}
                 </span>
                 {srv.isEmergencyEligible && (
@@ -92,32 +92,32 @@ export default function ServicesPage() {
                   </Badge>
                 )}
               </div>
-              <CardTitle className="text-sm font-bold text-[#111111] mt-2">
+              <CardTitle className="text-sm font-bold text-[#142D52] mt-2">
                 {language === "hi" ? srv.nameHi : srv.name}
               </CardTitle>
             </CardHeader>
 
             <CardContent className="p-5 pt-0 space-y-3 text-xs flex-1">
-              <p className="text-[#525252] leading-relaxed">
+              <p className="text-[#4B5563] leading-relaxed">
                 {language === "hi" ? srv.descriptionHi : srv.description}
               </p>
-              <div className="flex items-center gap-4 text-[11px] text-[#737373] pt-2 border-t border-[#E5E5E5]">
+              <div className="flex items-center gap-4 text-[11px] text-[#6B7280] pt-2 border-t border-[#E5E7EB]">
                 <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-[#111111]" /> ~{srv.estimatedDurationMins} mins
+                  <Clock className="w-3 h-3 text-[#142D52]" /> ~{srv.estimatedDurationMins} mins
                 </span>
                 <span className="flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3 text-[#16A34A]" /> Cooperative Assured
+                  <ShieldCheck className="w-3 h-3 text-[#047857]" /> Cooperative Assured
                 </span>
               </div>
             </CardContent>
 
-            <CardFooter className="p-4 bg-[#F8F8F8] border-t border-[#E5E5E5] flex items-center justify-between">
+            <CardFooter className="p-4 bg-[#F9FAF7] border-t border-[#E5E7EB] flex items-center justify-between">
               <div>
-                <span className="text-[10px] text-[#737373] uppercase block">Base Price</span>
-                <span className="text-base font-bold text-[#111111]">{formatCurrency(srv.basePrice)}</span>
+                <span className="text-[10px] text-[#6B7280] uppercase block">Base Price</span>
+                <span className="text-base font-bold text-[#142D52]">{formatCurrency(srv.basePrice)}</span>
               </div>
               <Link href={`/customer/book?service=${srv.id}&category=${srv.categoryId}`}>
-                <Button size="sm" className="text-xs bg-[#111111] text-white hover:bg-[#262626] gap-1">
+                <Button size="sm" className="text-xs bg-[#047857] text-white hover:bg-[#065F46] gap-1 shadow-sm">
                   Book Now <ArrowRight className="w-3.5 h-3.5" />
                 </Button>
               </Link>

@@ -30,10 +30,10 @@ export default function AdminBookingsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      <div className="border-b border-[#E5E5E5] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="border-b border-[#E5E7EB] pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-[#111111]">Service Dispatch & Booking Management</h1>
-          <p className="text-xs text-[#737373]">
+          <h1 className="text-2xl font-bold text-[#142D52]">Service Dispatch &amp; Booking Management</h1>
+          <p className="text-xs text-[#6B7280]">
             Monitor all incoming bookings, track lifecycle transitions, and override worker assignments.
           </p>
         </div>
@@ -57,8 +57,8 @@ export default function AdminBookingsPage() {
               onClick={() => setStatusFilter(item.id)}
               className={`px-3 py-1.5 rounded-full font-medium border transition-colors ${
                 statusFilter === item.id
-                  ? "bg-[#111111] text-white border-[#111111]"
-                  : "bg-white text-[#525252] border-[#E5E5E5] hover:bg-[#F8F8F8]"
+                  ? "bg-[#047857] text-white border-[#047857]"
+                  : "bg-white text-[#4B5563] border-[#E5E7EB] hover:bg-[#F9FAF7]"
               }`}
             >
               {item.label}
@@ -67,41 +67,41 @@ export default function AdminBookingsPage() {
         </div>
 
         <div className="relative w-full md:w-72">
-          <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#737373]" />
+          <Search className="absolute left-3 top-2.5 w-4 h-4 text-[#6B7280]" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search booking # or name..."
-            className="pl-9 text-xs"
+            className="pl-9 text-xs border-[#E5E7EB]"
           />
         </div>
       </div>
 
       {/* Bookings Table */}
-      <Card className="border-[#E5E5E5]">
+      <Card className="border-[#E5E7EB]">
         <CardContent className="p-0">
-          <div className="divide-y divide-[#E5E5E5] text-xs">
+          <div className="divide-y divide-[#E5E7EB] text-xs">
             {filteredBookings.map((b) => (
-              <div key={b.id} className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#F8F8F8] transition-colors">
+              <div key={b.id} className="p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-[#F9FAF7] transition-colors">
                 <div className="space-y-1 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-[#111111]">#{b.bookingNumber}</span>
+                    <span className="font-bold text-sm text-[#142D52]">#{b.bookingNumber}</span>
                     <BookingStatusBadge status={b.status} />
                     <UrgencyBadge urgency={b.urgency} />
                   </div>
-                  <h4 className="font-semibold text-xs text-[#111111]">{b.serviceName}</h4>
-                  <p className="text-[11px] text-[#737373]">
+                  <h4 className="font-semibold text-xs text-[#1F2937]">{b.serviceName}</h4>
+                  <p className="text-[11px] text-[#6B7280]">
                     Customer: {b.customerName} ({b.customerPhone}) • Address: {b.customerAddress}
                   </p>
-                  <p className="text-[11px] text-[#525252]">
+                  <p className="text-[11px] text-[#4B5563]">
                     Worker: <span className="font-semibold">{b.workerName || "System Matching..."}</span> ({b.cooperativeName})
                   </p>
                 </div>
 
                 <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                   <div className="text-left md:text-right">
-                    <span className="font-bold text-sm text-[#111111] block">{formatCurrency(b.totalAmount)}</span>
-                    <span className="text-[10px] text-[#737373]">{formatDate(b.scheduledDate)} at {b.scheduledTime}</span>
+                    <span className="font-bold text-sm text-[#142D52] block">{formatCurrency(b.totalAmount)}</span>
+                    <span className="text-[10px] text-[#6B7280]">{formatDate(b.scheduledDate)} at {b.scheduledTime}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -109,12 +109,12 @@ export default function AdminBookingsPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => setReassignBooking(b)}
-                      className="text-xs gap-1"
+                      className="text-xs gap-1 border-[#E5E7EB] text-[#142D52] hover:bg-white"
                     >
                       <UserCheck className="w-3.5 h-3.5" /> Reassign
                     </Button>
                     <Link href={`/customer/bookings/${b.id}`}>
-                      <Button size="sm" className="text-xs bg-[#111111] text-white">
+                      <Button size="sm" className="text-xs bg-[#047857] text-white hover:bg-[#065F46]">
                         Inspect
                       </Button>
                     </Link>

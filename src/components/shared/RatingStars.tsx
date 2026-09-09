@@ -48,8 +48,8 @@ export function RatingStars({
                 className={cn(
                   sizeClass,
                   isFilled
-                    ? "fill-[#111111] text-[#111111]"
-                    : "text-[#D4D4D4] fill-[#F8F8F8]"
+                    ? "fill-[#047857] text-[#047857]"
+                    : "text-[#D1D5DB] fill-[#F9FAF7]"
                 )}
               />
             </button>
@@ -57,7 +57,7 @@ export function RatingStars({
         })}
       </div>
       {showNumber && (
-        <span className="text-xs font-semibold text-[#171717] ml-1">
+        <span className="text-xs font-semibold text-[#1F2937] ml-1">
           {rating.toFixed(1)}
         </span>
       )}

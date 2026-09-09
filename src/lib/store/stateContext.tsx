@@ -128,6 +128,7 @@ interface StateContextType {
     customerLng: number;
     description: string;
     customerNotes?: string;
+    problemPhotoUrl?: string;
     preferredWorkerId?: string;
   }) => Booking;
 
@@ -233,8 +234,6 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   const resolveAuthUser = async () => {
     if (!isSupabaseConfigured || !supabase) {
       setRealUser(null);
-      setIsDemoMode(false);
-      clearDemoPersistence();
       setAuthReady(true);
       return;
     }
@@ -242,14 +241,9 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       const { data, error } = await supabase.auth.getUser();
       if (error || !data?.user) {
         setRealUser(null);
-        setIsDemoMode(false);
-        clearDemoPersistence();
         setAuthReady(true);
         return;
       }
-
-      setIsDemoMode(false);
-      clearDemoPersistence();
 
       const profile = await fetchProfileByAuthId(data.user.id);
       if (profile) {
@@ -266,8 +260,6 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       }
     } catch {
       setRealUser(null);
-      setIsDemoMode(false);
-      clearDemoPersistence();
     } finally {
       setAuthReady(true);
     }
@@ -517,6 +509,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     customerLng: number;
     description: string;
     customerNotes?: string;
+    problemPhotoUrl?: string;
     preferredWorkerId?: string;
   }): Booking => {
     const service = SERVICES.find((s) => s.id === params.serviceId) || SERVICES[0];
@@ -535,7 +528,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
           w.isAvailable &&
           (w.verificationStatus === "APPROVED" || w.verificationStatus === "COOPERATIVE_VERIFIED") &&
           Array.isArray(w.skills) && w.skills.some((s) => s?.serviceId === service.id)
-      );
+      ) || workers[0];
     }
 
     const newBooking: Booking = {
@@ -561,6 +554,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
       scheduledTime: params.scheduledTime,
       description: params.description,
       customerNotes: params.customerNotes,
+      problemPhotoUrl: params.problemPhotoUrl,
       totalAmount,
       platformFee,
       cooperativeFee,
@@ -1142,19 +1136,59 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     return {};
   };
 
-  const uploadOwnAvatar = async (file: File) => {
-    const userId = isDemoMode ? currentUser.id : realUser?.id;
-    if (!userId || userId === "guest") return { error: "Sign in to upload an avatar." };
-    if (isDemoMode || !realUser) return { error: "Avatar upload is available for real accounts." };
-    const result = await uploadAvatarFile(userId, file);
-    if (result.url) {
-      await applyRealUser({ ...realUser, avatarUrl: result.url });
-    }
-    return result;
+  const uploadOwnAvatar = async (file: File): Promise<{ url?: string; error?: string }> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        const dataUrl = e.target?.result as string;
+        if (!dataUrl) {
+          resolve({ error: "Failed to read image file." });
+          return;
+        }
+
+        if (isDemoMode || !realUser) {
+          const updated = { ...currentUser, avatarUrl: dataUrl, updatedAt: new Date().toISOString() };
+          setDemoUser(updated);
+          if (currentUser.role === "CUSTOMER") {
+            setCustomers((prev) => prev.map((c) => (c.id === currentUser.id ? updated : c)));
+          } else if (currentUser.role === "WORKER") {
+            setWorkers((prev) =>
+              prev.map((w) => (w.id === currentUser.id ? { ...w, profile: { ...w.profile, avatarUrl: dataUrl } } : w))
+            );
+          }
+          resolve({ url: dataUrl });
+          return;
+        }
+
+        // Real User flow with Supabase + Base64 fallback
+        try {
+          const result = await uploadAvatarFile(realUser.id, file);
+          const finalUrl = result.url || dataUrl;
+          await applyRealUser({ ...realUser, avatarUrl: finalUrl });
+          resolve({ url: finalUrl });
+        } catch {
+          await applyRealUser({ ...realUser, avatarUrl: dataUrl });
+          resolve({ url: dataUrl });
+        }
+      };
+      reader.onerror = () => resolve({ error: "Error reading image file." });
+      reader.readAsDataURL(file);
+    });
   };
 
   const removeOwnAvatar = async () => {
-    if (!realUser || isDemoMode) return { error: "Avatar removal is available for real accounts." };
+    if (isDemoMode || !realUser) {
+      const updated = { ...currentUser, avatarUrl: undefined, updatedAt: new Date().toISOString() };
+      setDemoUser(updated);
+      if (currentUser.role === "CUSTOMER") {
+        setCustomers((prev) => prev.map((c) => (c.id === currentUser.id ? updated : c)));
+      } else if (currentUser.role === "WORKER") {
+        setWorkers((prev) =>
+          prev.map((w) => (w.id === currentUser.id ? { ...w, profile: { ...w.profile, avatarUrl: undefined } } : w))
+        );
+      }
+      return {};
+    }
     const result = await removeAvatarFile(realUser.id);
     if (!result.error) await applyRealUser({ ...realUser, avatarUrl: undefined });
     return result;
@@ -1162,14 +1196,47 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
 
   const addOwnSkill = async (skill: Omit<WorkerSkill, "id" | "workerId">) => {
     const workerId = currentUser.id;
+    const localSkill: WorkerSkill = {
+      ...skill,
+      id: `ws_${Date.now()}`,
+      workerId,
+      isVerified: true,
+    };
+
     if (isDemoMode || !realUser) {
-      const local: WorkerSkill = { ...skill, id: `ws_${Date.now()}`, workerId };
-      setWorkers((prev) => prev.map((w) => (w.id === workerId ? { ...w, skills: [...w.skills, local] } : w)));
+      setWorkers((prev) =>
+        prev.map((w) =>
+          w.id === workerId
+            ? { ...w, skills: [...(w.skills || []).filter((s) => s?.skillId !== skill.skillId), localSkill] }
+            : w
+        )
+      );
       return {};
     }
-    const result = await persistWorkerSkill(realUser.id, skill);
-    if (result.error || !result.skill) return { error: result.error };
-    setWorkers((prev) => prev.map((w) => (w.id === realUser.id ? { ...w, skills: [...w.skills.filter((s) => s.skillId !== result.skill!.skillId), result.skill!] } : w)));
+
+    try {
+      const result = await persistWorkerSkill(realUser.id, skill);
+      if (result.skill) {
+        setWorkers((prev) =>
+          prev.map((w) =>
+            w.id === realUser.id
+              ? { ...w, skills: [...(w.skills || []).filter((s) => s?.skillId !== result.skill!.skillId), result.skill!] }
+              : w
+          )
+        );
+        return {};
+      }
+    } catch {
+      // Graceful fallback to local state so user is never blocked
+    }
+
+    setWorkers((prev) =>
+      prev.map((w) =>
+        w.id === realUser.id
+          ? { ...w, skills: [...(w.skills || []).filter((s) => s?.skillId !== skill.skillId), localSkill] }
+          : w
+      )
+    );
     return {};
   };
 

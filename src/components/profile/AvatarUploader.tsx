@@ -70,7 +70,7 @@ export function AvatarUploader({
             Remove
           </Button>
         </div>
-        <p className="text-[11px] text-[#737373]">JPG, PNG, or WEBP. Max 2 MB.</p>
+        <p className="text-[11px] text-[#6B7280]">JPG, PNG, or WEBP. Max 2 MB.</p>
         {error ? <p className="text-[11px] text-[#DC2626]">{error}</p> : null}
       </div>
       <input

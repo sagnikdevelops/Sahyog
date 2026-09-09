@@ -64,14 +64,14 @@ export function AdminOperationsMap() {
   const onlineWorkers = workers.filter((w) => w.isAvailable).length;
 
   return (
-    <Card className="border-[#E5E5E5]">
-      <CardHeader className="p-4 border-b border-[#E5E5E5] flex flex-row items-center justify-between">
+    <Card className="border-[#E5E7EB] bg-white">
+      <CardHeader className="p-4 border-b border-[#E5E7EB] flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-base font-bold flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-[#111111]" />
+          <CardTitle className="text-base font-bold flex items-center gap-2 text-[#142D52]">
+            <MapPin className="w-4 h-4 text-[#047857]" />
             Live Cooperative Operations Map
           </CardTitle>
-          <p className="text-xs text-[#737373] mt-0.5">
+          <p className="text-xs text-[#6B7280] mt-0.5">
             Geographic PostGIS distribution of active service requests & verified workforce
           </p>
         </div>
@@ -81,7 +81,7 @@ export function AdminOperationsMap() {
           <button
             onClick={() => setFilter("ALL")}
             className={`px-2.5 py-1 rounded-md transition-colors ${
-              filter === "ALL" ? "bg-[#111111] text-white font-medium" : "bg-[#F3F3F3] text-[#525252]"
+              filter === "ALL" ? "bg-[#142D52] text-white font-medium" : "bg-[#F9FAF7] border border-[#E5E7EB] text-[#4B5563] hover:bg-white"
             }`}
           >
             All Pins ({markers.length})
@@ -89,7 +89,7 @@ export function AdminOperationsMap() {
           <button
             onClick={() => setFilter("EMERGENCY")}
             className={`px-2.5 py-1 rounded-md transition-colors flex items-center gap-1 ${
-              filter === "EMERGENCY" ? "bg-[#DC2626] text-white font-medium" : "bg-[#F3F3F3] text-[#525252]"
+              filter === "EMERGENCY" ? "bg-[#DC2626] text-white font-medium" : "bg-[#F9FAF7] border border-[#E5E7EB] text-[#4B5563] hover:bg-white"
             }`}
           >
             <Flame className="w-3 h-3" />
@@ -98,7 +98,7 @@ export function AdminOperationsMap() {
           <button
             onClick={() => setFilter("WORKERS")}
             className={`px-2.5 py-1 rounded-md transition-colors ${
-              filter === "WORKERS" ? "bg-[#111111] text-white font-medium" : "bg-[#F3F3F3] text-[#525252]"
+              filter === "WORKERS" ? "bg-[#047857] text-white font-medium" : "bg-[#F9FAF7] border border-[#E5E7EB] text-[#4B5563] hover:bg-white"
             }`}
           >
             Workers ({onlineWorkers} Online)
@@ -110,19 +110,19 @@ export function AdminOperationsMap() {
         <LeafletMap center={[28.628, 77.3649]} zoom={13} markers={markers} />
 
         {/* Overlay Legend */}
-        <div className="absolute top-3 right-3 z-10 bg-white/95 backdrop-blur border border-[#E5E5E5] rounded-lg p-2.5 shadow-md text-xs space-y-1.5">
-          <p className="font-bold text-[11px] text-[#111111] border-b border-[#E5E5E5] pb-1">
+        <div className="absolute top-3 right-3 z-10 bg-white/95 backdrop-blur border border-[#E5E7EB] rounded-lg p-2.5 shadow-md text-xs space-y-1.5">
+          <p className="font-bold text-[11px] text-[#142D52] border-b border-[#E5E7EB] pb-1">
             Map Legend
           </p>
-          <div className="flex items-center gap-2 text-[11px] text-[#171717]">
-            <span className="w-3 h-3 rounded-full bg-[#16A34A] inline-block" />
+          <div className="flex items-center gap-2 text-[11px] text-[#1F2937]">
+            <span className="w-3 h-3 rounded-full bg-[#047857] inline-block" />
             <span>Cooperative Worker (Online)</span>
           </div>
-          <div className="flex items-center gap-2 text-[11px] text-[#171717]">
-            <span className="w-3 h-3 rounded-full bg-[#2563EB] inline-block" />
+          <div className="flex items-center gap-2 text-[11px] text-[#1F2937]">
+            <span className="w-3 h-3 rounded-full bg-[#142D52] inline-block" />
             <span>Standard Customer Booking</span>
           </div>
-          <div className="flex items-center gap-2 text-[11px] text-[#171717]">
+          <div className="flex items-center gap-2 text-[11px] text-[#1F2937]">
             <span className="w-3 h-3 rounded-full bg-[#DC2626] inline-block" />
             <span>Emergency Request Radar</span>
           </div>

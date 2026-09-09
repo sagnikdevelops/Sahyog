@@ -19,9 +19,9 @@ export default function AdminAnalyticsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      <div className="border-b border-[#E5E5E5] pb-4">
-        <h1 className="text-2xl font-bold text-[#111111]">Cooperative Operational Analytics</h1>
-        <p className="text-xs text-[#737373]">
+      <div className="border-b border-[#E5E7EB] pb-4">
+        <h1 className="text-2xl font-bold text-[#142D52]">Cooperative Operational Analytics</h1>
+        <p className="text-xs text-[#6B7280]">
           Data-driven metrics on workforce deployment, service volume, trade demand, and member welfare fund growth.
         </p>
       </div>

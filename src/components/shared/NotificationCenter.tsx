@@ -21,31 +21,31 @@ export function NotificationCenter() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-md text-[#525252] hover:text-[#111111] hover:bg-[#F8F8F8] transition-colors"
+        className="relative p-2 rounded-md text-[#4B5563] hover:text-[#142D52] hover:bg-[#F9FAF7] transition-colors"
         aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#DC2626] text-[10px] font-bold text-white">
+          <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#047857] text-[10px] font-bold text-white">
             {unreadCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-lg border border-[#E5E5E5] bg-white shadow-xl p-3 z-50 animate-in fade-in-0 zoom-in-95">
-          <div className="flex items-center justify-between pb-2 border-b border-[#E5E5E5] mb-2">
+        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-lg border border-[#E5E7EB] bg-white shadow-xl p-3 z-50 animate-in fade-in-0 zoom-in-95">
+          <div className="flex items-center justify-between pb-2 border-b border-[#E5E7EB] mb-2">
             <div className="flex items-center gap-2">
-              <h4 className="text-sm font-semibold text-[#111111]">Notifications</h4>
+              <h4 className="text-sm font-semibold text-[#142D52]">Notifications</h4>
               {unreadCount > 0 && (
-                <span className="bg-[#111111] text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
+                <span className="bg-[#047857] text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
                   {unreadCount} new
                 </span>
               )}
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-xs text-[#737373] hover:text-[#111111]"
+              className="text-xs text-[#6B7280] hover:text-[#142D52]"
             >
               Close
             </button>
@@ -53,7 +53,7 @@ export function NotificationCenter() {
 
           <div className="max-h-80 overflow-y-auto space-y-2">
             {userNotifications.length === 0 ? (
-              <div className="text-center py-6 text-xs text-[#737373]">
+              <div className="text-center py-6 text-xs text-[#6B7280]">
                 No notifications right now.
               </div>
             ) : (
@@ -62,8 +62,8 @@ export function NotificationCenter() {
                   key={notif.id}
                   className={`p-2.5 rounded-md border transition-colors ${
                     notif.isRead
-                      ? "bg-white border-[#E5E5E5]"
-                      : "bg-[#F8F8F8] border-[#D4D4D4]"
+                      ? "bg-white border-[#E5E7EB]"
+                      : "bg-[#F9FAF7] border-[#E5E7EB]"
                   }`}
                 >
                   <div className="flex items-start gap-2">
@@ -71,25 +71,25 @@ export function NotificationCenter() {
                       <AlertTriangle className="w-4 h-4 text-[#DC2626] shrink-0 mt-0.5" />
                     )}
                     {notif.type === "SUCCESS" && (
-                      <CheckCircle2 className="w-4 h-4 text-[#16A34A] shrink-0 mt-0.5" />
+                      <CheckCircle2 className="w-4 h-4 text-[#047857] shrink-0 mt-0.5" />
                     )}
                     {(notif.type === "INFO" || notif.type === "WARNING") && (
-                      <Info className="w-4 h-4 text-[#2563EB] shrink-0 mt-0.5" />
+                      <Info className="w-4 h-4 text-[#142D52] shrink-0 mt-0.5" />
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-[#111111]">{notif.title}</p>
-                      <p className="text-xs text-[#525252] mt-0.5 leading-relaxed">
+                      <p className="text-xs font-semibold text-[#142D52]">{notif.title}</p>
+                      <p className="text-xs text-[#4B5563] mt-0.5 leading-relaxed">
                         {notif.message}
                       </p>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-[10px] text-[#A3A3A3]">
+                        <span className="text-[10px] text-[#9CA3AF]">
                           {formatDate(notif.createdAt, "hh:mm a")}
                         </span>
                         <div className="flex items-center gap-2">
                           {!notif.isRead && (
                             <button
                               onClick={() => markNotificationAsRead(notif.id)}
-                              className="text-[11px] text-[#525252] hover:text-[#111111] flex items-center gap-1"
+                              className="text-[11px] text-[#4B5563] hover:text-[#047857] flex items-center gap-1"
                             >
                               <Check className="w-3 h-3" /> Mark read
                             </button>
@@ -101,7 +101,7 @@ export function NotificationCenter() {
                                 markNotificationAsRead(notif.id);
                                 setIsOpen(false);
                               }}
-                              className="text-[11px] font-semibold text-[#111111] hover:underline flex items-center gap-1"
+                              className="text-[11px] font-semibold text-[#047857] hover:underline flex items-center gap-1"
                             >
                               Open <ExternalLink className="w-2.5 h-2.5" />
                             </Link>

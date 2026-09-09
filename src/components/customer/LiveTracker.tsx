@@ -144,14 +144,14 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-white rounded-lg border border-[#E5E5E5]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-white rounded-lg border border-[#E5E7EB]">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-bold text-[#111111]">Booking #{booking.bookingNumber}</h2>
+            <h2 className="text-base font-bold text-[#142D52]">Booking #{booking.bookingNumber}</h2>
             <BookingStatusBadge status={booking.status} />
             <UrgencyBadge urgency={booking.urgency} />
           </div>
-          <p className="text-xs text-[#737373] mt-1">
+          <p className="text-xs text-[#6B7280] mt-1">
             {booking.serviceName} • Scheduled for {booking.scheduledDate} at {booking.scheduledTime}
           </p>
         </div>
@@ -182,7 +182,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
       </div>
 
       {booking.status !== "CANCELLED" && (
-        <Card className="border-[#E5E5E5] p-5 bg-white">
+        <Card className="border-[#E5E7EB] p-5 bg-white">
           <div className="grid grid-cols-6 gap-1 relative">
             {stages.map((stage, idx) => {
               const isPast = idx < currentStageIndex;
@@ -192,10 +192,10 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
                   <div
                     className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       isPast
-                        ? "bg-[#16A34A] text-white"
+                        ? "bg-[#047857] text-white shadow-sm"
                         : isCurrent
-                        ? "bg-[#111111] text-white ring-4 ring-[#111111]/10"
-                        : "bg-[#F3F3F3] text-[#A3A3A3]"
+                        ? "bg-[#142D52] text-white ring-4 ring-[#047857]/20 shadow-sm"
+                        : "bg-[#F9FAF7] text-[#9CA3AF] border border-[#E5E7EB]"
                     }`}
                   >
                     {isPast ? "✓" : idx + 1}
@@ -203,10 +203,10 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
                   <span
                     className={`text-[11px] mt-2 leading-tight ${
                       isCurrent
-                        ? "font-bold text-[#111111]"
+                        ? "font-bold text-[#142D52]"
                         : isPast
-                        ? "font-medium text-[#16A34A]"
-                        : "text-[#A3A3A3]"
+                        ? "font-medium text-[#047857]"
+                        : "text-[#9CA3AF]"
                     }`}
                   >
                     {stage.label}
@@ -220,9 +220,9 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="md:col-span-2 space-y-4">
-          <Card className="border-[#E5E5E5]">
-            <CardHeader className="p-4 border-b border-[#E5E5E5]">
-              <CardTitle className="text-sm font-bold flex items-center justify-between">
+          <Card className="border-[#E5E7EB]">
+            <CardHeader className="p-4 border-b border-[#E5E7EB]">
+              <CardTitle className="text-sm font-bold flex items-center justify-between text-[#142D52]">
                 <span>Assigned Cooperative Service Provider</span>
                 {assignedWorker ? <WorkerVerificationBadge status={assignedWorker.verificationStatus} /> : null}
               </CardTitle>
@@ -231,19 +231,19 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
               <div className="flex items-start gap-3">
                 <Avatar className="h-12 w-12"><AvatarImage src={assignedWorker?.profile.avatarUrl ?? booking.workerAvatarUrl} alt={assignedWorker?.profile.fullName ?? booking.workerName ?? "Assigned worker"} /><AvatarFallback>{(assignedWorker?.profile.fullName ?? booking.workerName ?? "AW").slice(0, 2).toUpperCase()}</AvatarFallback></Avatar>
                 <div className="flex-1">
-                  <h3 className="font-bold text-sm text-[#111111]">
+                  <h3 className="font-bold text-sm text-[#142D52]">
                     {assignedWorker?.profile.fullName ?? booking.workerName ?? "Awaiting worker assignment"}
                   </h3>
-                  {assignedWorker ? <><p className="text-[11px] text-[#737373]">Worker ID: {assignedWorker.id}</p><p className="text-[11px] text-[#737373]">{assignedWorker.cooperativeName}</p></> : <p className="text-[11px] text-[#737373]">A verified worker will be assigned soon.</p>}
+                  {assignedWorker ? <><p className="text-[11px] text-[#6B7280]">Worker ID: {assignedWorker.id}</p><p className="text-[11px] text-[#6B7280]">{assignedWorker.cooperativeName}</p></> : <p className="text-[11px] text-[#6B7280]">A verified worker will be assigned soon.</p>}
                   <div className="flex items-center gap-2 mt-1">
-                    {assignedWorker ? <><RatingStars rating={assignedWorker.ratingAvg} size="sm" showNumber /><span className="text-[10px] text-[#A3A3A3]">• {assignedWorker.completedServicesCount} Cooperative Jobs Completed</span></> : null}
+                    {assignedWorker ? <><RatingStars rating={assignedWorker.ratingAvg} size="sm" showNumber /><span className="text-[10px] text-[#9CA3AF]">• {assignedWorker.completedServicesCount} Cooperative Jobs Completed</span></> : null}
                   </div>
                 </div>
 
                 <div className="flex gap-2">
                   <a
                     href={assignedWorker?.profile.phone || booking.workerPhone ? `tel:${assignedWorker?.profile.phone ?? booking.workerPhone}` : undefined}
-                    className="p-2 rounded-md bg-[#F3F3F3] hover:bg-[#E5E5E5] text-[#111111]"
+                    className="p-2 rounded-md bg-[#047857]/10 hover:bg-[#047857]/20 text-[#047857] transition-colors"
                     title="Call Worker"
                   >
                     <Phone className="w-4 h-4" />
@@ -251,27 +251,27 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
                 </div>
               </div>
 
-              {assignedWorker ? <div className="rounded-md bg-[#F8F8F8] p-3 text-xs"><p className="font-semibold">{assignedWorker.bio || "This worker has not added a public bio yet."}</p><div className="mt-2 flex flex-wrap gap-1.5">{assignedWorker.skills.map((skill) => <Badge key={skill.id} variant="secondary">{skill.skillName}</Badge>)}{assignedWorker.badges?.map((badge) => <Badge key={badge.id} variant="outline">{badge.label}</Badge>)}</div></div> : null}
+              {assignedWorker ? <div className="rounded-md bg-[#F9FAF7] border border-[#E5E7EB] p-3 text-xs"><p className="font-semibold text-[#142D52]">{assignedWorker.bio || "This worker has not added a public bio yet."}</p><div className="mt-2 flex flex-wrap gap-1.5">{assignedWorker.skills.map((skill) => <Badge key={skill.id} variant="secondary">{skill.skillName}</Badge>)}{assignedWorker.badges?.map((badge) => <Badge key={badge.id} variant="outline">{badge.label}</Badge>)}</div></div> : null}
 
               {booking.workerCompletionNotes && (
-                <div className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5] mt-3 space-y-1">
-                  <p className="text-[10px] font-bold text-[#111111] uppercase">Worker Job Completion Notes</p>
-                  <p className="text-[#525252] text-xs leading-relaxed">{booking.workerCompletionNotes}</p>
+                <div className="p-3 bg-[#F9FAF7] rounded-md border border-[#E5E7EB] mt-3 space-y-1">
+                  <p className="text-[10px] font-bold text-[#142D52] uppercase">Worker Job Completion Notes</p>
+                  <p className="text-[#4B5563] text-xs leading-relaxed">{booking.workerCompletionNotes}</p>
                 </div>
               )}
 
               {booking.status === "SERVICE_COMPLETED" && (
-                <div className="p-4 bg-[#16A34A]/10 border border-[#16A34A]/20 rounded-lg space-y-2 mt-3">
-                  <div className="flex items-center gap-2 text-[#16A34A] font-bold text-sm">
+                <div className="p-4 bg-[#047857]/10 border border-[#047857]/20 rounded-lg space-y-2 mt-3">
+                  <div className="flex items-center gap-2 text-[#047857] font-bold text-sm">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Work Completed! Confirm & Proceed to Payment</span>
                   </div>
-                  <p className="text-xs text-[#525252]">
+                  <p className="text-xs text-[#4B5563]">
                     Please inspect the work performed. When satisfied, proceed with the simulated payment.
                   </p>
                   <Button
                     onClick={handleConfirmCompletion}
-                    className="w-full bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-bold gap-1 mt-2"
+                    className="w-full bg-[#047857] hover:bg-[#065F46] text-white text-xs font-bold gap-1 mt-2"
                   >
                     <CreditCard className="w-4 h-4" /> Confirm & Pay ₹{booking.totalAmount}
                   </Button>
@@ -279,15 +279,15 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
               )}
 
               {booking.status === "PAYMENT_COMPLETED" && !existingRating && (
-                <div className="p-3.5 bg-[#F8F8F8] border border-[#E5E5E5] rounded-lg flex items-center justify-between mt-3">
+                <div className="p-3.5 bg-[#F9FAF7] border border-[#E5E7EB] rounded-lg flex items-center justify-between mt-3">
                   <div>
-                    <p className="font-bold text-xs text-[#111111]">How was your service experience?</p>
-                    <p className="text-[11px] text-[#737373]">Your rating directly impacts cooperative worker incentives.</p>
+                    <p className="font-bold text-xs text-[#142D52]">How was your service experience?</p>
+                    <p className="text-[11px] text-[#6B7280]">Your rating directly impacts cooperative worker incentives.</p>
                   </div>
                   <Button
                     onClick={() => setIsRatingOpen(true)}
                     size="sm"
-                    className="text-xs bg-[#111111] text-white gap-1"
+                    className="text-xs bg-[#142D52] hover:bg-[#0E203B] text-white gap-1"
                   >
                     <Star className="w-3.5 h-3.5" /> Rate Worker
                   </Button>
@@ -295,12 +295,12 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
               )}
 
               {existingRating && (
-                <div className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5] space-y-1 mt-3">
+                <div className="p-3 bg-[#F9FAF7] rounded-md border border-[#E5E7EB] space-y-1 mt-3">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs text-[#111111]">Your Submitted Review</span>
+                    <span className="font-bold text-xs text-[#142D52]">Your Submitted Review</span>
                     <RatingStars rating={existingRating.rating} size="sm" showNumber />
                   </div>
-                  <p className="text-xs text-[#525252] italic">"{existingRating.feedback}"</p>
+                  <p className="text-xs text-[#4B5563] italic">"{existingRating.feedback}"</p>
                 </div>
               )}
             </CardContent>
@@ -309,7 +309,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
           <div className="text-right">
             <button
               onClick={() => setIsDisputeOpen(true)}
-              className="text-xs text-[#737373] hover:text-[#DC2626] underline transition-colors"
+              className="text-xs text-[#6B7280] hover:text-[#DC2626] underline transition-colors"
             >
               Have an issue with this service? Raise a Cooperative Dispute
             </button>
@@ -317,27 +317,51 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
         </div>
 
         <div className="space-y-4">
-          <Card className="border-[#E5E5E5]">
-            <CardHeader className="p-4 border-b border-[#E5E5E5]">
-              <CardTitle className="text-sm font-bold">Booking Summary</CardTitle>
+          <Card className="border-[#E5E7EB]">
+            <CardHeader className="p-4 border-b border-[#E5E7EB]">
+              <CardTitle className="text-sm font-bold text-[#142D52]">Booking Summary</CardTitle>
             </CardHeader>
             <CardContent className="p-4 space-y-3 text-xs">
               <div className="space-y-1">
-                <p className="text-[10px] uppercase text-[#737373] font-semibold">Service Location</p>
-                <p className="text-[#111111] font-medium leading-tight">{booking.customerAddress}</p>
+                <p className="text-[10px] uppercase text-[#6B7280] font-semibold">Service Location</p>
+                <p className="text-[#142D52] font-medium leading-tight">{booking.customerAddress}</p>
               </div>
 
               <div className="space-y-1">
-                <p className="text-[10px] uppercase text-[#737373] font-semibold">Problem Description</p>
-                <p className="text-[#525252] leading-tight">{booking.description}</p>
+                <p className="text-[10px] uppercase text-[#6B7280] font-semibold">Problem Description</p>
+                <p className="text-[#4B5563] leading-tight">{booking.description}</p>
               </div>
 
-              <div className="pt-2 border-t border-[#E5E5E5] space-y-1.5">
+              {booking.problemPhotoUrl && (
+                <div className="space-y-1">
+                  <p className="text-[10px] uppercase text-[#6B7280] font-semibold">Problem Photo Attachment</p>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={booking.problemPhotoUrl}
+                    alt="Problem attachment"
+                    className="w-full h-28 object-cover rounded-md border border-[#E5E7EB]"
+                  />
+                </div>
+              )}
+
+              {booking.workerCompletionPhotoUrl && (
+                <div className="space-y-1">
+                  <p className="text-[10px] uppercase text-[#047857] font-semibold">Worker Completion Proof</p>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={booking.workerCompletionPhotoUrl}
+                    alt="Completion proof"
+                    className="w-full h-28 object-cover rounded-md border border-[#E5E7EB]"
+                  />
+                </div>
+              )}
+
+              <div className="pt-2 border-t border-[#E5E7EB] space-y-1.5">
                 <div className="flex justify-between">
-                  <span className="text-[#737373]">Service Charge</span>
+                  <span className="text-[#6B7280]">Service Charge</span>
                   <span>{formatCurrency(booking.totalAmount)}</span>
                 </div>
-                <div className="flex justify-between font-bold text-sm text-[#111111] pt-1 border-t border-[#E5E5E5]">
+                <div className="flex justify-between font-bold text-sm text-[#142D52] pt-1 border-t border-[#E5E7EB]">
                   <span>Total Amount</span>
                   <span>{formatCurrency(booking.totalAmount)}</span>
                 </div>
@@ -348,23 +372,23 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
       </div>
 
       <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
-        <DialogContent className="max-w-md bg-white border border-[#E5E5E5]">
+        <DialogContent className="max-w-md bg-white border border-[#E5E7EB]">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold">Simulated Cooperative Payment</DialogTitle>
+            <DialogTitle className="text-base font-bold text-[#142D52]">Simulated Cooperative Payment</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2 text-xs">
-            <div className="p-3 bg-[#F8F8F8] rounded-md border border-[#E5E5E5]">
-              <div className="flex justify-between font-semibold text-[#111111]">
+            <div className="p-3 bg-[#F9FAF7] rounded-md border border-[#E5E7EB]">
+              <div className="flex justify-between font-semibold text-[#142D52]">
                 <span>Total Amount Due</span>
                 <span className="text-sm">{formatCurrency(booking.totalAmount)}</span>
               </div>
-              <p className="text-[10px] text-[#737373] mt-1">
+              <p className="text-[10px] text-[#6B7280] mt-1">
                 88% direct worker share, 7% Cooperative Welfare, 5% Platform.
               </p>
             </div>
 
             <div>
-              <label className="font-bold text-[#111111] block mb-2">Select Mock Payment Method</label>
+              <label className="font-bold text-[#142D52] block mb-2">Select Mock Payment Method</label>
               <div className="space-y-2">
                 {[
                   { id: "MOCK_UPI", label: "Mock UPI (GPay / PhonePe / Paytm)" },
@@ -375,8 +399,8 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
                     key={m.id}
                     className={`flex items-center gap-2 p-2.5 rounded border cursor-pointer ${
                       paymentMethod === m.id
-                        ? "border-[#111111] bg-[#F8F8F8] font-bold"
-                        : "border-[#E5E5E5] hover:bg-[#F8F8F8]"
+                        ? "border-[#047857] bg-[#047857]/5 text-[#142D52] font-bold"
+                        : "border-[#E5E7EB] hover:bg-[#F9FAF7]"
                     }`}
                   >
                     <input
@@ -399,7 +423,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
             <Button
               onClick={handleExecutePayment}
               size="sm"
-              className="bg-[#16A34A] hover:bg-[#15803D] text-white gap-1"
+              className="bg-[#047857] hover:bg-[#065F46] text-white gap-1"
             >
               Pay {formatCurrency(booking.totalAmount)} <CheckCircle2 className="w-3.5 h-3.5" />
             </Button>
@@ -408,13 +432,13 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
       </Dialog>
 
       <Dialog open={isRatingOpen} onOpenChange={setIsRatingOpen}>
-        <DialogContent className="max-w-md bg-white border border-[#E5E5E5]">
+        <DialogContent className="max-w-md bg-white border border-[#E5E7EB]">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold">Rate & Review Worker</DialogTitle>
+            <DialogTitle className="text-base font-bold text-[#142D52]">Rate & Review Worker</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2 text-xs">
-            <div className="flex flex-col items-center justify-center p-3 bg-[#F8F8F8] rounded-md">
-              <span className="font-bold text-sm text-[#111111] mb-2">Overall Experience</span>
+            <div className="flex flex-col items-center justify-center p-3 bg-[#F9FAF7] border border-[#E5E7EB] rounded-md">
+              <span className="font-bold text-sm text-[#142D52] mb-2">Overall Experience</span>
               <RatingStars
                 rating={ratingVal}
                 size="lg"
@@ -423,7 +447,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 text-[#1F2937]">
               <div className="flex justify-between items-center">
                 <span>Technical Skill & Quality</span>
                 <RatingStars rating={skillRatingVal} interactive onRatingChange={setSkillRatingVal} />
@@ -439,7 +463,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
             </div>
 
             <div>
-              <label className="font-semibold block mb-1">Written Feedback</label>
+              <label className="font-semibold block mb-1 text-[#142D52]">Written Feedback</label>
               <Textarea
                 rows={3}
                 value={ratingFeedback}
@@ -452,7 +476,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
             <Button variant="outline" size="sm" onClick={() => setIsRatingOpen(false)}>
               Skip
             </Button>
-            <Button onClick={handleExecuteRating} size="sm" className="bg-[#111111] text-white">
+            <Button onClick={handleExecuteRating} size="sm" className="bg-[#047857] hover:bg-[#065F46] text-white">
               Submit Review
             </Button>
           </DialogFooter>
@@ -460,7 +484,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
       </Dialog>
 
       <Dialog open={isDisputeOpen} onOpenChange={setIsDisputeOpen}>
-        <DialogContent className="max-w-md bg-white border border-[#E5E5E5]">
+        <DialogContent className="max-w-md bg-white border border-[#E5E7EB]">
           <DialogHeader>
             <DialogTitle className="text-base font-bold text-[#DC2626] flex items-center gap-1.5">
               <AlertTriangle className="w-4 h-4" /> Raise Cooperative Dispute
@@ -468,7 +492,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
           </DialogHeader>
           <div className="space-y-3 py-2 text-xs">
             <div>
-              <label className="font-semibold block mb-1">Dispute Reason</label>
+              <label className="font-semibold block mb-1 text-[#142D52]">Dispute Reason</label>
               <Input
                 value={disputeReason}
                 onChange={(e) => setDisputeReason(e.target.value)}
@@ -476,7 +500,7 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
               />
             </div>
             <div>
-              <label className="font-semibold block mb-1">Detailed Explanation</label>
+              <label className="font-semibold block mb-1 text-[#142D52]">Detailed Explanation</label>
               <Textarea
                 rows={3}
                 value={disputeDesc}
@@ -497,12 +521,12 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
       </Dialog>
 
       <Dialog open={isCancelOpen} onOpenChange={setIsCancelOpen}>
-        <DialogContent className="max-w-md bg-white border border-[#E5E5E5]">
+        <DialogContent className="max-w-md bg-white border border-[#E5E7EB]">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold">Cancel Service Request</DialogTitle>
+            <DialogTitle className="text-base font-bold text-[#142D52]">Cancel Service Request</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2 text-xs">
-            <p className="text-[#525252]">Are you sure you want to cancel this booking?</p>
+            <p className="text-[#4B5563]">Are you sure you want to cancel this booking?</p>
             <Input
               value={cancelReason}
               onChange={(e) => setCancelReason(e.target.value)}

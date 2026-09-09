@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 9%;
-    --card: 0 0% 95%;
-    --card-foreground: 0 0% 9%;
+    --background: 80 20% 97.5%;
+    --foreground: 215 28% 17%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 17%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
-    --primary: 0 0% 7%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 97%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
-    --accent: 0 0% 95%;
-    --accent-foreground: 0 0% 9%;
+    --popover-foreground: 215 28% 17%;
+    --primary: 163 94% 24%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 80 20% 96%;
+    --secondary-foreground: 216 61% 20%;
+    --muted: 80 15% 95%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 158 64% 52%;
+    --accent-foreground: 216 61% 20%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 15%;
+    --border: 215 20% 91%;
+    --input: 215 20% 91%;
+    --ring: 163 94% 24%;
     --radius: 0.5rem;
   }
 
@@ -31,14 +31,14 @@
   }
 
   body {
-    @apply bg-white text-sahyog-text font-sans antialiased;
-    background-color: #FFFFFF;
-    color: #171717;
-    overflow-x: hidden;
+    @apply bg-[#F9FAF7] text-[#1F2937] font-sans antialiased;
+    background-color: #F9FAF7;
+    color: #1F2937;
+    overflow-x: clip;
   }
 
   html {
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   img,
@@ -67,14 +67,14 @@
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F8F8F8;
+  background: #F9FAF7;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4D4D4;
+  background: #D1D5DB;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #A3A3A3;
+  background: #047857;
 }
 
 /* Leaflet container fixes */

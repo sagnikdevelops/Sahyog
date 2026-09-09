@@ -6,26 +6,32 @@ export const APP_TAGLINE = "Connecting Cooperative Skills with Everyday Needs";
 export const APP_DESCRIPTION =
   "A cooperative-owned digital service marketplace connecting skilled workers registered with Labour Cooperative Federations and Societies with households, businesses, institutions, and communities.";
 
-export const MONOCHROME_THEME = {
-  primary: "#111111",
-  primaryHover: "#262626",
-  background: "#FFFFFF",
-  secondaryBg: "#F8F8F8",
-  cardSurface: "#F3F3F3",
-  border: "#E5E5E5",
-  mutedBorder: "#D4D4D4",
-  primaryText: "#171717",
-  secondaryText: "#525252",
-  mutedText: "#737373",
-  disabledText: "#A3A3A3",
+export const SAHYOG_THEME = {
+  primary: "#047857",
+  primaryHover: "#065F46",
+  mint: "#34D399",
+  navy: "#142D52",
+  navyHover: "#0E203B",
+  background: "#F9FAF7",
+  surfaceWhite: "#FFFFFF",
+  secondaryBg: "#F9FAF7",
+  cardSurface: "#FFFFFF",
+  border: "#E5E7EB",
+  mutedBorder: "#D1D5DB",
+  primaryText: "#1F2937",
+  secondaryText: "#4B5563",
+  mutedText: "#6B7280",
+  disabledText: "#9CA3AF",
   inverseText: "#FFFFFF",
 };
 
+export const MONOCHROME_THEME = SAHYOG_THEME;
+
 export const FUNCTIONAL_COLORS = {
-  success: "#16A34A",
+  success: "#047857",
   warning: "#D97706",
   error: "#DC2626",
-  info: "#2563EB",
+  info: "#142D52",
 };
 
 export const SERVICE_CATEGORIES: ServiceCategory[] = [
@@ -400,3 +406,143 @@ export const COMMISSION_RATES = {
   cooperativeFeePercent: 7, // 7% Cooperative Welfare & Training Fund
   workerSharePercent: 88,  // 88% Direct to Cooperative Worker
 };
+
+export interface CityOption {
+  id: string;
+  name: string;
+  state: string;
+  lat: number;
+  lng: number;
+  popularLocalities: string[];
+}
+
+export const INDIAN_CITIES: CityOption[] = [
+  {
+    id: "noida",
+    name: "Noida / Greater Noida",
+    state: "Uttar Pradesh",
+    lat: 28.628,
+    lng: 77.3649,
+    popularLocalities: ["Sector 62", "Sector 18", "Sector 137", "Knowledge Park III", "Pari Chowk"],
+  },
+  {
+    id: "delhi",
+    name: "Delhi (NCR)",
+    state: "Delhi",
+    lat: 28.6139,
+    lng: 77.209,
+    popularLocalities: ["Connaught Place", "Dwarka Sector 10", "Saket", "Lajpat Nagar", "Rohini"],
+  },
+  {
+    id: "gurugram",
+    name: "Gurugram (Gurgaon)",
+    state: "Haryana",
+    lat: 28.4595,
+    lng: 77.0266,
+    popularLocalities: ["DLF Phase 3", "Cyber City", "Golf Course Road", "Sohna Road", "Sector 56"],
+  },
+  {
+    id: "ghaziabad",
+    name: "Ghaziabad",
+    state: "Uttar Pradesh",
+    lat: 28.6692,
+    lng: 77.4538,
+    popularLocalities: ["Indirapuram", "Vaishali", "Raj Nagar Extension", "Vasundhara", "Crossings Republik"],
+  },
+  {
+    id: "mumbai",
+    name: "Mumbai",
+    state: "Maharashtra",
+    lat: 19.076,
+    lng: 72.8777,
+    popularLocalities: ["Andheri West", "Bandra Kurla Complex", "Powai", "Dadar", "Thane West"],
+  },
+  {
+    id: "bengaluru",
+    name: "Bengaluru",
+    state: "Karnataka",
+    lat: 12.9716,
+    lng: 77.5946,
+    popularLocalities: ["Koramangala", "Indiranagar", "HSR Layout", "Whitefield", "Jayanagar"],
+  },
+  {
+    id: "pune",
+    name: "Pune",
+    state: "Maharashtra",
+    lat: 18.5204,
+    lng: 73.8567,
+    popularLocalities: ["Kothrud", "Baner", "Viman Nagar", "Hinjawadi", "Wakad"],
+  },
+  {
+    id: "hyderabad",
+    name: "Hyderabad",
+    state: "Telangana",
+    lat: 17.385,
+    lng: 78.4867,
+    popularLocalities: ["Gachibowli", "Hitec City", "Madhapur", "Jubilee Hills", "Banjara Hills"],
+  },
+  {
+    id: "kolkata",
+    name: "Kolkata",
+    state: "West Bengal",
+    lat: 22.5726,
+    lng: 88.3639,
+    popularLocalities: ["Salt Lake Sector V", "New Town", "Park Street", "Ballygunge", "Dum Dum"],
+  },
+  {
+    id: "chennai",
+    name: "Chennai",
+    state: "Tamil Nadu",
+    lat: 13.0827,
+    lng: 80.2707,
+    popularLocalities: ["T. Nagar", "Adyar", "Velachery", "Anna Nagar", "OMR"],
+  },
+  {
+    id: "ahmedabad",
+    name: "Ahmedabad",
+    state: "Gujarat",
+    lat: 23.0225,
+    lng: 72.5714,
+    popularLocalities: ["Satellite", "Bodakdev", "Navrangpura", "Vastrapur", "Prahlad Nagar"],
+  },
+  {
+    id: "lucknow",
+    name: "Lucknow",
+    state: "Uttar Pradesh",
+    lat: 26.8467,
+    lng: 80.9462,
+    popularLocalities: ["Gomti Nagar", "Hazratganj", "Aliganj", "Indira Nagar", "Mahanagar"],
+  },
+  {
+    id: "jaipur",
+    name: "Jaipur",
+    state: "Rajasthan",
+    lat: 26.9124,
+    lng: 75.7873,
+    popularLocalities: ["Malviya Nagar", "Vaishali Nagar", "C-Scheme", "Mansarovar", "Raja Park"],
+  },
+  {
+    id: "chandigarh",
+    name: "Chandigarh",
+    state: "Chandigarh",
+    lat: 30.7333,
+    lng: 76.7794,
+    popularLocalities: ["Sector 17", "Sector 35", "Sector 22", "IT Park", "Mohali Phase 7"],
+  },
+];
+
+export const STANDARD_TRADE_SKILLS = [
+  { id: "electrician", name: "Electrician & Wiring Expert", category: "Electrical" },
+  { id: "plumber", name: "Plumber & Pipe Technician", category: "Plumbing" },
+  { id: "carpenter", name: "Carpenter & Furniture Craftsman", category: "Carpentry" },
+  { id: "painter", name: "House Painter & Whitewash Specialist", category: "Painting" },
+  { id: "ac_repair", name: "AC & Refrigeration Technician", category: "Appliance" },
+  { id: "appliance_repair", name: "Home Appliance Repair (Washing Machine/Geyser)", category: "Appliance" },
+  { id: "deep_cleaning", name: "Deep Cleaning & Sanitation Specialist", category: "Cleaning" },
+  { id: "mason", name: "Mason & Tile Fitting Specialist", category: "Construction" },
+  { id: "elder_care", name: "Elder & Patient Care Attendant", category: "Healthcare" },
+  { id: "gardener", name: "Gardener & Landscaping Expert", category: "Gardening" },
+  { id: "pest_control", name: "Pest Control & Fumigation Operator", category: "Pest Control" },
+  { id: "welder", name: "Welder & Metal Fabrication Specialist", category: "Fabrication" },
+  { id: "domestic_help", name: "Domestic Helper & Household Assistant", category: "Household" },
+];
