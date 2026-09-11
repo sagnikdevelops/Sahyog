@@ -1,9 +1,19 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import { SahyogLogo } from "./Logo";
 import { ShieldCheck, HeartHandshake, MapPin, Phone, Mail } from "lucide-react";
 
+import { useAppState } from "@/lib/store/stateContext";
+
 export function Footer() {
+  const { currentUser, currentRole } = useAppState();
+  const isSuperOrFederationAdmin =
+    currentRole === "SUPER_ADMIN" ||
+    currentRole === "FEDERATION_ADMIN" ||
+    currentUser?.role === "SUPER_ADMIN" ||
+    currentUser?.role === "FEDERATION_ADMIN";
+
   return (
     <footer className="border-t border-[#E5E7EB] bg-[#F9FAF7] text-[#4B5563] text-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -40,9 +50,13 @@ export function Footer() {
             <h4 className="font-bold text-[#142D52] mb-3">Cooperative Ecosystem</h4>
             <ul className="space-y-2 text-[#4B5563]">
               <li><Link href="/cooperatives" className="hover:text-[#047857] transition-colors">Labour Cooperative Federations</Link></li>
-              <li><Link href="/cooperatives" className="hover:text-[#047857] transition-colors">Member Societies Directory</Link></li>
-              <li><Link href="/worker" className="hover:text-[#047857] transition-colors">Worker Welfare & Insurance</Link></li>
-              <li><Link href="/admin" className="hover:text-[#047857] transition-colors">Cooperative Admin Portal</Link></li>
+              {isSuperOrFederationAdmin ? (
+                <>
+                  <li><Link href="/cooperatives" className="hover:text-[#047857] transition-colors">Member Societies Directory</Link></li>
+                  <li><Link href="/worker" className="hover:text-[#047857] transition-colors">Worker Welfare & Insurance</Link></li>
+                  <li><Link href="/admin" className="hover:text-[#047857] transition-colors">Cooperative Admin Portal</Link></li>
+                </>
+              ) : null}
               <li><Link href="/about" className="hover:text-[#047857] transition-colors">Fair Wage Standards</Link></li>
             </ul>
           </div>
@@ -75,9 +89,9 @@ export function Footer() {
         <div className="border-t border-[#E5E7EB] mt-8 pt-6 flex flex-col sm:flex-row items-center justify-between text-[#6B7280] text-[11px]">
           <p>© 2026 Sahyog Cooperative Digital Marketplace. Built for National Labour Cooperative Federation.</p>
           <div className="flex gap-4 mt-2 sm:mt-0">
-            <span className="hover:text-[#047857] cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-[#047857] cursor-pointer">Terms of Service</span>
-            <span className="hover:text-[#047857] cursor-pointer">Cooperative By-Laws</span>
+            <Link href="/privacy" className="hover:text-[#047857] transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="hover:text-[#047857] transition-colors">Terms of Service</Link>
+            <Link href="/terms" className="hover:text-[#047857] transition-colors">Cooperative By-Laws</Link>
           </div>
         </div>
       </div>

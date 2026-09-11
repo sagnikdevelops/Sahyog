@@ -28,7 +28,11 @@ export function RatingStars({
   }[size];
 
   return (
-    <div className="flex items-center gap-1">
+    <div
+      className="flex items-center gap-1"
+      role={!interactive ? "img" : undefined}
+      aria-label={!interactive ? `Rating: ${rating.toFixed(1)} out of ${maxRating} stars` : undefined}
+    >
       <div className="flex items-center">
         {Array.from({ length: maxRating }).map((_, index) => {
           const starValue = index + 1;
@@ -38,13 +42,17 @@ export function RatingStars({
               key={index}
               type="button"
               disabled={!interactive}
+              aria-label={interactive ? `Rate ${starValue} out of ${maxRating} stars` : undefined}
+              aria-pressed={interactive ? starValue <= rating : undefined}
+              tabIndex={interactive ? 0 : -1}
               onClick={() => interactive && onRatingChange?.(starValue)}
               className={cn(
                 "p-0.5 transition-transform",
-                interactive ? "hover:scale-110 cursor-pointer" : "cursor-default"
+                interactive ? "hover:scale-110 cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[#047857]" : "cursor-default"
               )}
             >
               <Star
+                aria-hidden="true"
                 className={cn(
                   sizeClass,
                   isFilled

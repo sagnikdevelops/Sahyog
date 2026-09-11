@@ -184,13 +184,14 @@ interface StateContextType {
   resetToSeedData: () => void;
 }
 
-const StateContext = createContext<StateContextType | undefined>(undefined);
+export const StateContext = createContext<StateContextType | undefined>(undefined);
 
 const STORAGE_KEY = "sahyog_state_v1";
 
 export function StateProvider({ children }: { children: React.ReactNode }) {
   const [realUser, setRealUser] = useState<Profile | null>(null);
-  const [isDemoMode, setIsDemoMode] = useState(false);
+  // Demo mode can be toggled via environment variable NEXT_PUBLIC_DEMO_MODE.
+  const [isDemoMode, setIsDemoMode] = useState(() => process.env.NEXT_PUBLIC_DEMO_MODE === "true");
   const [demoUser, setDemoUser] = useState<Profile>(INITIAL_CUSTOMERS[0]);
   const [demoRole, setDemoRole] = useState<UserRole>("CUSTOMER");
   const [customers, setCustomers] = useState<Profile[]>(INITIAL_CUSTOMERS);
@@ -211,9 +212,20 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   const currentRole = isDemoMode ? demoRole : realUser?.role ?? "CUSTOMER";
   const authenticatedUser = realUser;
 
+  const setDemoCookie = (val: boolean) => {
+    if (typeof document !== "undefined") {
+      if (val) {
+        document.cookie = "sahyog_demo=1; path=/; max-age=86400; SameSite=Lax";
+      } else {
+        document.cookie = "sahyog_demo=; path=/; max-age=0; SameSite=Lax";
+      }
+    }
+  };
+
   const clearDemoPersistence = () => {
     if (typeof window !== "undefined") {
       window.localStorage.removeItem(STORAGE_KEY);
+      setDemoCookie(false);
     }
   };
 
@@ -283,6 +295,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
           if (parsed.notifications) setNotifications(parsed.notifications);
           if (parsed.auditLogs) setAuditLogs(parsed.auditLogs);
           setIsDemoMode(true);
+          setDemoCookie(true);
           if (parsed.demoUser) setDemoUser(parsed.demoUser);
           if (parsed.demoRole) setDemoRole(parsed.demoRole);
         }
@@ -357,10 +370,12 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
     setIsDemoMode(true);
     setDemoRole(role);
     setDemoUser(demoProfileForRole(role));
+    setDemoCookie(true);
   };
 
   const exitDemoMode = () => {
     setIsDemoMode(false);
+    setDemoCookie(false);
   };
 
   const switchDemoUser = (role: UserRole) => {
@@ -521,14 +536,21 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
 
     let assignedWorker: WorkerProfile | undefined;
     if (params.preferredWorkerId) {
-      assignedWorker = workers.find((w) => w.id === params.preferredWorkerId);
+      assignedWorker = workers.find(
+        (w) =>
+          w.id === params.preferredWorkerId &&
+          (w.verificationStatus === "APPROVED" || w.verificationStatus === "COOPERATIVE_VERIFIED")
+      );
     } else {
       assignedWorker = workers.find(
         (w) =>
           w.isAvailable &&
           (w.verificationStatus === "APPROVED" || w.verificationStatus === "COOPERATIVE_VERIFIED") &&
-          Array.isArray(w.skills) && w.skills.some((s) => s?.serviceId === service.id)
-      ) || workers[0];
+          Array.isArray(w.skills) &&
+          w.skills.some((s) => s?.serviceId === service.id)
+      ) || workers.find(
+        (w) => w.verificationStatus === "APPROVED" || w.verificationStatus === "COOPERATIVE_VERIFIED"
+      );
     }
 
     const newBooking: Booking = {
@@ -702,17 +724,66 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
   };
 
   const rejectBookingJob = (bookingId: string, reason?: string) => {
-    updateBookingStatus(bookingId, "MATCHING", reason);
     const booking = bookings.find((b) => b.id === bookingId);
-    if (booking) {
+    const rejectedWorkerId = booking?.workerId;
+
+    // Find next eligible available verified worker with matching skill
+    const replacementWorker = workers.find(
+      (w) =>
+        w.id !== rejectedWorkerId &&
+        w.isAvailable &&
+        (w.verificationStatus === "APPROVED" || w.verificationStatus === "COOPERATIVE_VERIFIED") &&
+        Array.isArray(w.skills) &&
+        (!booking || w.skills.some((s) => s?.serviceId === booking.serviceId))
+    );
+
+    if (replacementWorker && booking) {
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.id === bookingId
+            ? {
+                ...b,
+                status: "ASSIGNED",
+                workerId: replacementWorker.id,
+                workerName: replacementWorker.profile.fullName,
+                workerPhone: replacementWorker.profile.phone,
+                workerAvatarUrl: replacementWorker.profile.avatarUrl,
+                updatedAt: new Date().toISOString(),
+              }
+            : b
+        )
+      );
+
       addNotification({
-        userId: "admin_demo_1",
-        role: "SOCIETY_ADMIN",
-        title: "Worker Declined Job - Re-matching Needed",
-        message: `Booking ${booking.bookingNumber} was declined: ${reason || "Worker unavailable"}.`,
-        type: "WARNING",
-        link: `/admin/bookings`,
+        userId: replacementWorker.id,
+        role: "WORKER",
+        title: "New Dispatch Request (Reassigned)",
+        message: `Booking ${booking.bookingNumber} (${booking.serviceName}) has been reassigned to you.`,
+        type: "INFO",
+        link: `/worker/jobs/${booking.id}`,
       });
+
+      addAuditLog({
+        actorId: currentUser.id,
+        actorName: currentUser.fullName,
+        actorRole: currentRole,
+        action: "AUTO_REASSIGN_WORKER",
+        entityType: "BOOKING",
+        entityId: bookingId,
+        details: `Worker declined (${reason || "Unavailable"}). Auto-reassigned to ${replacementWorker.profile.fullName}.`,
+      });
+    } else {
+      updateBookingStatus(bookingId, "MATCHING", reason);
+      if (booking) {
+        addNotification({
+          userId: "admin_demo_1",
+          role: "SOCIETY_ADMIN",
+          title: "Worker Declined Job - Re-matching Needed",
+          message: `Booking ${booking.bookingNumber} was declined: ${reason || "Worker unavailable"}.`,
+          type: "WARNING",
+          link: `/admin/bookings`,
+        });
+      }
     }
   };
 
@@ -1163,12 +1234,19 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         // Real User flow with Supabase + Base64 fallback
         try {
           const result = await uploadAvatarFile(realUser.id, file);
+          console.log('uploadAvatarFile result:', result);
+          if (result.error) {
+            console.error('Avatar upload error:', result.error);
+            resolve({ error: result.error });
+            return;
+          }
           const finalUrl = result.url || dataUrl;
           await applyRealUser({ ...realUser, avatarUrl: finalUrl });
           resolve({ url: finalUrl });
-        } catch {
+        } catch (e) {
+          console.error('Unexpected error during avatar upload:', e);
           await applyRealUser({ ...realUser, avatarUrl: dataUrl });
-          resolve({ url: dataUrl });
+          resolve({ error: e instanceof Error ? e.message : 'Upload failed' });
         }
       };
       reader.onerror = () => resolve({ error: "Error reading image file." });

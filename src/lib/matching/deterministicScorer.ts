@@ -116,7 +116,7 @@ export function rankMatchingWorkers(
   criteria: MatchCriteria
 ): WorkerMatchCandidate[] {
   const scored = workers
-    .filter((w) => w.verificationStatus !== "SUSPENDED")
+    .filter((w) => w.verificationStatus === "APPROVED" || w.verificationStatus === "COOPERATIVE_VERIFIED")
     .map((worker) => calculateDeterministicWorkerScore(worker, criteria));
 
   // Sort descending by score, and then by distance

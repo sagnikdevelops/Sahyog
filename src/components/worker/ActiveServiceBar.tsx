@@ -25,6 +25,7 @@ export function ActiveServiceBar({ booking }: ActiveServiceBarProps) {
 
   const [isCompleteOpen, setIsCompleteOpen] = useState(false);
   const [completionNotes, setCompletionNotes] = useState("");
+  const [notesError, setNotesError] = useState<string | null>(null);
   const [photoUrl, setPhotoUrl] = useState("");
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,9 +40,10 @@ export function ActiveServiceBar({ booking }: ActiveServiceBarProps) {
 
   const handleCompleteSubmit = () => {
     if (!completionNotes.trim()) {
-      alert("Please provide completion notes describing what was fixed.");
+      setNotesError("Please provide completion notes describing what was fixed.");
       return;
     }
+    setNotesError(null);
     completeServiceExecution(booking.id, completionNotes, photoUrl || undefined);
     setIsCompleteOpen(false);
   };
@@ -124,12 +126,20 @@ export function ActiveServiceBar({ booking }: ActiveServiceBarProps) {
             <DialogTitle className="text-base font-bold text-[#142D52]">Complete Service Job</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2 text-xs">
+            {notesError ? (
+              <div role="alert" className="p-2 rounded bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+                {notesError}
+              </div>
+            ) : null}
             <div>
               <label className="font-semibold block mb-1 text-[#142D52]">Work Completion Summary *</label>
               <Textarea
                 rows={3}
                 value={completionNotes}
-                onChange={(e) => setCompletionNotes(e.target.value)}
+                onChange={(e) => {
+                  setCompletionNotes(e.target.value);
+                  if (notesError) setNotesError(null);
+                }}
                 placeholder="e.g. Replaced faulty washer and brass valve, tested water flow at 4 bar, left site clean."
                 className="border-[#E5E7EB]"
               />

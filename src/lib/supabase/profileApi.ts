@@ -113,18 +113,39 @@ export async function persistWorkerBio(workerId: string, bio: string): Promise<{
 }
 
 export async function uploadAvatarFile(userId: string, file: File): Promise<{ url?: string; error?: string }> {
-  if (!isSupabaseConfigured || !supabase) return { error: "Supabase is not configured" };
-  if (!IMAGE_TYPES.includes(file.type)) return { error: "Use JPG, PNG, or WEBP images only." };
-  if (file.size > AVATAR_MAX_BYTES) return { error: "Avatar must be 2 MB or smaller." };
+  if (!isSupabaseConfigured || !supabase) {
+    console.error('Supabase is not configured');
+    return { error: "Supabase is not configured" };
+  }
+  if (!IMAGE_TYPES.includes(file.type)) {
+    const msg = "Use JPG, PNG, or WEBP images only.";
+    console.error(msg);
+    return { error: msg };
+  }
+  if (file.size > AVATAR_MAX_BYTES) {
+    const msg = "Avatar must be 2 MB or smaller.";
+    console.error(msg);
+    return { error: msg };
+  }
 
   const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
   const path = `${userId}/avatar.${ext}`;
-  const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
-  if (error) return { error: error.message };
+  const { error: uploadError } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
+  if (uploadError) {
+    console.error('Supabase storage upload error:', uploadError.message);
+    return { error: uploadError.message };
+  }
 
   const { data } = supabase.storage.from("avatars").getPublicUrl(path);
   const url = `${data.publicUrl}?t=${Date.now()}`;
-  await supabase.from("profiles").update({ avatar_url: url, updated_at: new Date().toISOString() }).eq("id", userId);
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({ avatar_url: url, updated_at: new Date().toISOString() })
+    .eq("id", userId);
+  if (profileError) {
+    console.error('Supabase profile update error:', profileError.message);
+    return { error: profileError.message };
+  }
   return { url };
 }
 

@@ -44,15 +44,21 @@ export function BookingWizard() {
   const { workers, createBooking, currentUser, ratings } = useAppState();
   const { language } = useI18n();
 
-  const initialCategory = searchParams.get("category") || "cat_plumbing";
+  const initialServiceParam = searchParams.get("service");
+  const targetService = initialServiceParam ? SERVICES.find((s) => s.id === initialServiceParam) : null;
+  const initialCategory = targetService
+    ? targetService.categoryId
+    : searchParams.get("category") || "cat_plumbing";
   const initialUrgency = (searchParams.get("urgency") as UrgencyLevel) || "NORMAL";
   const initialWorkerId = searchParams.get("worker") || "";
 
   const [step, setStep] = useState<number>(1);
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
-  const [selectedServiceId, setSelectedServiceId] = useState<string>(
-    SERVICES.find((s) => s.categoryId === initialCategory)?.id || SERVICES[0].id
-  );
+  const [selectedServiceId, setSelectedServiceId] = useState<string>(() => {
+    if (targetService) return targetService.id;
+    return SERVICES.find((s) => s.categoryId === initialCategory)?.id || SERVICES[0].id;
+  });
+  const [stepError, setStepError] = useState<string | null>(null);
   const [urgency, setUrgency] = useState<UrgencyLevel>(initialUrgency);
   const [scheduledDate, setScheduledDate] = useState<string>(
     new Date().toISOString().split("T")[0]
@@ -74,7 +80,13 @@ export function BookingWizard() {
   const [previewWorker, setPreviewWorker] = useState<WorkerProfile | null>(null);
 
   useEffect(() => {
-    if (initialWorkerId) {
+    if (initialServiceParam) {
+      const svc = SERVICES.find((s) => s.id === initialServiceParam);
+      if (svc) {
+        setSelectedCategory(svc.categoryId);
+        setSelectedServiceId(svc.id);
+      }
+    } else if (initialWorkerId) {
       const foundWorker = workers.find((w) => w.id === initialWorkerId);
       if (foundWorker) {
         setPreferredWorkerId(foundWorker.id);
@@ -88,7 +100,7 @@ export function BookingWizard() {
         }
       }
     }
-  }, [initialWorkerId, workers]);
+  }, [initialServiceParam, initialWorkerId, workers]);
 
   const filteredServices = SERVICES.filter((s) => s.categoryId === selectedCategory);
   const selectedService = SERVICES.find((s) => s.id === selectedServiceId) || SERVICES[0];
@@ -121,12 +133,13 @@ export function BookingWizard() {
   };
 
   const handleNextStep = () => {
+    setStepError(null);
     if (step === 1 && !selectedServiceId) {
-      alert("Please select a service.");
+      setStepError("Please select a service before proceeding.");
       return;
     }
     if (step === 2 && description.trim().length < 5) {
-      alert("Please enter a short description of the problem.");
+      setStepError("Please enter a short description of the problem (at least 5 characters).");
       return;
     }
     setStep((prev) => prev + 1);
@@ -193,6 +206,11 @@ export function BookingWizard() {
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
+            {stepError ? (
+              <div role="alert" className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+                {stepError}
+              </div>
+            ) : null}
             <div className="flex flex-wrap gap-2">
               {SERVICE_CATEGORIES.map((cat) => (
                 <button
@@ -214,14 +232,24 @@ export function BookingWizard() {
               ))}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2" role="group" aria-label="Available services">
               {filteredServices.map((service) => {
                 const isSelected = selectedServiceId === service.id;
                 return (
                   <div
                     key={service.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-pressed={isSelected}
+                    aria-label={`${service.name}, ${formatCurrency(service.basePrice)}`}
                     onClick={() => setSelectedServiceId(service.id)}
-                    className={`p-3.5 rounded-lg border cursor-pointer transition-all ${
+                    onKeyDown={(e) => {
+                      if (e.key === " " || e.key === "Enter") {
+                        e.preventDefault();
+                        setSelectedServiceId(service.id);
+                      }
+                    }}
+                    className={`p-3.5 rounded-lg border cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#047857] ${
                       isSelected
                         ? "border-[#047857] bg-[#047857]/5 ring-1 ring-[#047857] shadow-sm"
                         : "border-[#E5E7EB] bg-white hover:border-[#047857]/50 hover:bg-[#F9FAF7]"
@@ -265,12 +293,27 @@ export function BookingWizard() {
             </p>
           </CardHeader>
           <CardContent className="space-y-4">
+            {stepError ? (
+              <div role="alert" className="p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+                {stepError}
+              </div>
+            ) : null}
             <div>
               <label className="text-xs font-semibold text-[#142D52] block mb-2">Urgency Mode</label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3" role="group" aria-label="Urgency level">
                 <div
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={urgency === "NORMAL"}
+                  aria-label="Standard Visit, scheduled time slot"
                   onClick={() => setUrgency("NORMAL")}
-                  className={`p-3 rounded-lg border cursor-pointer ${
+                  onKeyDown={(e) => {
+                    if (e.key === " " || e.key === "Enter") {
+                      e.preventDefault();
+                      setUrgency("NORMAL");
+                    }
+                  }}
+                  className={`p-3 rounded-lg border cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#047857] ${
                     urgency === "NORMAL"
                       ? "border-[#047857] bg-[#047857]/5 ring-1 ring-[#047857]"
                       : "border-[#E5E7EB] bg-white hover:bg-[#F9FAF7]"
@@ -280,8 +323,18 @@ export function BookingWizard() {
                   <p className="text-[11px] text-[#6B7280]">Scheduled time slot</p>
                 </div>
                 <div
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={urgency === "EMERGENCY"}
+                  aria-label="Emergency Dispatch, fastest response"
                   onClick={() => setUrgency("EMERGENCY")}
-                  className={`p-3 rounded-lg border cursor-pointer ${
+                  onKeyDown={(e) => {
+                    if (e.key === " " || e.key === "Enter") {
+                      e.preventDefault();
+                      setUrgency("EMERGENCY");
+                    }
+                  }}
+                  className={`p-3 rounded-lg border cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#DC2626] ${
                     urgency === "EMERGENCY"
                       ? "border-[#DC2626] bg-[#DC2626]/5 ring-1 ring-[#DC2626]"
                       : "border-[#E5E7EB] bg-white hover:bg-[#F9FAF7]"
@@ -445,15 +498,25 @@ export function BookingWizard() {
                 </Badge>
               </div>
 
-              <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+              <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1" role="group" aria-label="Available cooperative workers">
                 {matchingCandidates.map((c, index) => {
                   const w = c.worker;
                   const isSelected = preferredWorkerId === w.id || (!preferredWorkerId && index === 0);
                   return (
                     <div
                       key={w.id}
+                      role="button"
+                      tabIndex={0}
+                      aria-pressed={isSelected}
+                      aria-label={`${w.profile.fullName}, ${w.cooperativeName}`}
                       onClick={() => setPreferredWorkerId(w.id)}
-                      className={`p-3.5 rounded-lg border cursor-pointer transition-all ${
+                      onKeyDown={(e) => {
+                        if (e.key === " " || e.key === "Enter") {
+                          e.preventDefault();
+                          setPreferredWorkerId(w.id);
+                        }
+                      }}
+                      className={`p-3.5 rounded-lg border cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#047857] ${
                         isSelected
                           ? "border-[#047857] bg-[#047857]/5 ring-2 ring-[#047857] shadow-sm"
                           : "border-[#E5E7EB] bg-white hover:border-[#047857]/40 hover:bg-[#F9FAF7]"

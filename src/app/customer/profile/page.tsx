@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { INDIAN_CITIES } from "@/constants";
 import { MapPin, User, Phone, Mail, Building, CheckCircle2 } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 
 export default function CustomerProfilePage() {
   const { currentUser, isDemoMode, updateOwnProfile, uploadOwnAvatar, removeOwnAvatar } = useAppState();
@@ -98,7 +99,7 @@ export default function CustomerProfilePage() {
             <div className="mt-2 flex flex-wrap gap-2">
               <Badge variant="secondary">Verified Customer</Badge>
               <Badge variant="outline" className="border-[#E5E7EB] text-[#142D52]">
-                Member since {new Date(currentUser.createdAt || Date.now()).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
+                Member since {formatDate(currentUser.createdAt || "2026-01-01", "MMM yyyy")}
               </Badge>
             </div>
           </div>

@@ -8,8 +8,15 @@ export function LanguageSwitcher() {
   const { language, setLanguage } = useI18n();
 
   return (
-    <div className="flex items-center rounded-md border border-[#E5E7EB] bg-white p-0.5 text-[10px] sm:text-xs">
+    <div
+      role="group"
+      aria-label="Language selection"
+      className="flex items-center rounded-md border border-[#E5E7EB] bg-white p-0.5 text-[10px] sm:text-xs"
+    >
       <button
+        type="button"
+        aria-label="Select English language"
+        aria-pressed={language === "en"}
         onClick={() => setLanguage("en")}
         className={`rounded px-1.5 py-1 font-medium transition-colors sm:px-2 ${
           language === "en"
@@ -20,6 +27,9 @@ export function LanguageSwitcher() {
         EN
       </button>
       <button
+        type="button"
+        aria-label="Select Hindi language (हिन्दी)"
+        aria-pressed={language === "hi"}
         onClick={() => setLanguage("hi")}
         className={`rounded px-1.5 py-1 font-medium transition-colors sm:px-2 ${
           language === "hi"

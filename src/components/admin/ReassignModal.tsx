@@ -18,12 +18,14 @@ interface ReassignModalProps {
 export function ReassignModal({ isOpen, onClose, booking }: ReassignModalProps) {
   const { workers, assignWorkerToBooking } = useAppState();
   const [selectedWorkerId, setSelectedWorkerId] = useState<string>(booking.workerId || "");
+  const [error, setError] = useState<string | null>(null);
 
   const handleReassign = () => {
     if (!selectedWorkerId) {
-      alert("Please select a worker.");
+      setError("Please select a worker before dispatching.");
       return;
     }
+    setError(null);
     assignWorkerToBooking(booking.id, selectedWorkerId);
     onClose();
   };
@@ -39,6 +41,11 @@ export function ReassignModal({ isOpen, onClose, booking }: ReassignModalProps) 
         </DialogHeader>
 
         <div className="space-y-3 py-2 text-xs">
+          {error ? (
+            <p role="alert" className="text-xs text-red-600 bg-red-50 p-2 rounded border border-red-200 font-medium">
+              {error}
+            </p>
+          ) : null}
           <p className="text-[#4B5563]">
             Booking #{booking.bookingNumber} • {booking.serviceName}
           </p>

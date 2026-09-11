@@ -22,7 +22,6 @@ export default function RegisterPage() {
 
   const [role, setRole] = useState<RegisterRole>("CUSTOMER");
   const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -34,7 +33,7 @@ export default function RegisterPage() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
 
-  const formValues = { fullName, phone, email, password, confirmPassword, role };
+  const formValues = { fullName, email, password, confirmPassword, role };
   const validation = useMemo(() => demoRegistrationSchema.safeParse(formValues), [formValues]);
   
   const fieldErrors = validation.success ? {} : validation.error.flatten().fieldErrors;
@@ -55,7 +54,6 @@ export default function RegisterPage() {
     setSubmitError(null);
     const registration = await registerAccount({
       fullName: validation.data.fullName,
-      phone: validation.data.phone,
       email: validation.data.email,
       password: validation.data.password,
       role: validation.data.role,

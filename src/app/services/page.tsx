@@ -15,6 +15,25 @@ export default function ServicesPage() {
   const { language } = useI18n();
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
   const [search, setSearch] = useState<string>("");
+  // Sync active category with URL hash for footer navigation
+  React.useEffect(() => {
+    const updateFromHash = () => {
+      const hash = window.location.hash.replace(/^#/, "");
+      if (hash) {
+        const cat = SERVICE_CATEGORIES.find((c) => c.slug === hash);
+        if (cat) setActiveCategory(cat.id);
+      } else {
+        setActiveCategory("ALL");
+      }
+    };
+    // Initial load
+    updateFromHash();
+    // Listen for hash changes (e.g., user clicks footer links)
+    window.addEventListener("hashchange", updateFromHash);
+    return () => {
+      window.removeEventListener("hashchange", updateFromHash);
+    };
+  }, []);
 
   const filteredServices = SERVICES.filter((s) => {
     const matchesCategory = activeCategory === "ALL" || s.categoryId === activeCategory;
@@ -39,6 +58,10 @@ export default function ServicesPage() {
       </div>
 
       {/* Filter & Search Bar */}
+      {/* Anchor points for footer links */}
+      {SERVICE_CATEGORIES.map((cat) => (
+        <div key={cat.id} id={cat.slug} />
+      ))}
       <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
         <div className="flex flex-wrap gap-1.5 w-full md:w-auto">
           <button

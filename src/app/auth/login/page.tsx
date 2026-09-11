@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAppState } from "@/lib/store/stateContext";
 import { useI18n } from "@/lib/i18n";
 import { UserRole } from "@/types";
@@ -13,8 +13,10 @@ import { SahyogLogo } from "@/components/shared/Logo";
 import { User, HardHat, Building2, Landmark, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams.get("redirect");
   const { switchDemoUser, loginAccount } = useAppState();
   const { t } = useI18n();
   const [email, setEmail] = useState("");
@@ -25,7 +27,7 @@ export default function LoginPage() {
 
   const handleDemoLogin = (role: UserRole, targetUrl: string) => {
     switchDemoUser(role);
-    router.push(targetUrl);
+    router.push(redirectParam || targetUrl);
   };
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
@@ -35,7 +37,7 @@ export default function LoginPage() {
     const result = await loginAccount(email, password);
     setSubmitting(false);
     if (result.error) { setError(result.error); return; }
-    router.push(result.targetUrl ?? "/customer");
+    router.push(redirectParam || result.targetUrl || "/customer");
   };
 
   return (
@@ -149,5 +151,13 @@ export default function LoginPage() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[80vh] flex items-center justify-center text-xs text-[#6B7280]">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

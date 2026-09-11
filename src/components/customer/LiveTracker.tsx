@@ -54,6 +54,8 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
 
   const [disputeReason, setDisputeReason] = useState<string>("");
   const [disputeDesc, setDisputeDesc] = useState<string>("");
+  const [disputeError, setDisputeError] = useState<string | null>(null);
+  const [ratingError, setRatingError] = useState<string | null>(null);
   const [cancelReason, setCancelReason] = useState<string>("");
 
   const existingRating = ratings.find((r) => r.bookingId === booking.id);
@@ -110,9 +112,10 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
 
   const handleExecuteRating = () => {
     if (!ratingFeedback.trim()) {
-      alert("Please write a short review.");
+      setRatingError("Please write a short review to submit.");
       return;
     }
+    setRatingError(null);
     submitRating({
       bookingId: booking.id,
       rating: ratingVal,
@@ -125,14 +128,15 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
   };
 
   const handleExecuteDispute = () => {
-    if (!disputeReason || !disputeDesc) {
-      alert("Please enter dispute reason and description.");
+    if (!disputeReason.trim() || !disputeDesc.trim()) {
+      setDisputeError("Please enter both a dispute reason and a detailed description.");
       return;
     }
+    setDisputeError(null);
     createDispute({
       bookingId: booking.id,
-      reason: disputeReason,
-      description: disputeDesc,
+      reason: disputeReason.trim(),
+      description: disputeDesc.trim(),
     });
     setIsDisputeOpen(false);
   };
@@ -467,10 +471,18 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
               <Textarea
                 rows={3}
                 value={ratingFeedback}
-                onChange={(e) => setRatingFeedback(e.target.value)}
+                onChange={(e) => {
+                  setRatingFeedback(e.target.value);
+                  if (ratingError) setRatingError(null);
+                }}
                 placeholder="Share your experience to help the cooperative maintain quality standards..."
               />
             </div>
+            {ratingError ? (
+              <p role="alert" className="text-xs text-red-600 font-medium">
+                {ratingError}
+              </p>
+            ) : null}
           </div>
           <DialogFooter>
             <Button variant="outline" size="sm" onClick={() => setIsRatingOpen(false)}>
@@ -491,11 +503,19 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2 text-xs">
+            {disputeError ? (
+              <div role="alert" className="p-2 rounded bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+                {disputeError}
+              </div>
+            ) : null}
             <div>
               <label className="font-semibold block mb-1 text-[#142D52]">Dispute Reason</label>
               <Input
                 value={disputeReason}
-                onChange={(e) => setDisputeReason(e.target.value)}
+                onChange={(e) => {
+                  setDisputeReason(e.target.value);
+                  if (disputeError) setDisputeError(null);
+                }}
                 placeholder="e.g. Work left incomplete, pricing mismatch"
               />
             </div>
@@ -504,7 +524,10 @@ export function LiveTracker({ booking }: LiveTrackerProps) {
               <Textarea
                 rows={3}
                 value={disputeDesc}
-                onChange={(e) => setDisputeDesc(e.target.value)}
+                onChange={(e) => {
+                  setDisputeDesc(e.target.value);
+                  if (disputeError) setDisputeError(null);
+                }}
                 placeholder="Describe the issue in detail. A cooperative society supervisor will investigate..."
               />
             </div>

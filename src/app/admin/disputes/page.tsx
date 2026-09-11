@@ -15,14 +15,16 @@ export default function AdminDisputesPage() {
   const { disputes, resolveDisputeAction } = useAppState();
   const [selectedDispute, setSelectedDispute] = useState<Dispute | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
+  const [notesError, setNotesError] = useState<string | null>(null);
   const [actionType, setActionType] = useState<"REFUND_FULL" | "REFUND_PARTIAL" | "RE_SERVICE" | "REJECTED">("REFUND_PARTIAL");
 
   const handleResolve = () => {
     if (!selectedDispute) return;
     if (!adminNotes.trim()) {
-      alert("Please provide supervisor audit notes.");
+      setNotesError("Please provide supervisor audit notes before confirming resolution.");
       return;
     }
+    setNotesError(null);
     resolveDisputeAction(selectedDispute.id, actionType, adminNotes);
     setSelectedDispute(null);
     setAdminNotes("");
@@ -120,10 +122,18 @@ export default function AdminDisputesPage() {
               <Textarea
                 rows={3}
                 value={adminNotes}
-                onChange={(e) => setAdminNotes(e.target.value)}
+                onChange={(e) => {
+                  setAdminNotes(e.target.value);
+                  if (notesError) setNotesError(null);
+                }}
                 placeholder="Detail the investigation and resolution agreed upon..."
                 className="border-[#E5E7EB]"
               />
+              {notesError ? (
+                <p role="alert" className="text-xs text-red-600 mt-1 font-medium">
+                  {notesError}
+                </p>
+              ) : null}
             </div>
           </div>
           <DialogFooter>

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { initialsFromName } from "@/lib/auth/guest";
+import { formatDate } from "@/lib/utils";
 import {
   ArrowLeft,
   ShieldCheck,
@@ -207,7 +208,7 @@ export default function PublicWorkerProfilePage() {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-xs font-bold text-[#142D52]">{r.customerName}</p>
-                        <p className="text-[10px] text-[#6B7280]">{new Date(r.createdAt).toLocaleDateString()}</p>
+                        <p className="text-[10px] text-[#6B7280]">{formatDate(r.createdAt)}</p>
                       </div>
                       <RatingStars rating={r.rating} size="sm" showNumber />
                     </div>

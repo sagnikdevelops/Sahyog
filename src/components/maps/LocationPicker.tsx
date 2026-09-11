@@ -24,17 +24,21 @@ export function LocationPicker({
   const [address, setAddress] = useState(initialAddress);
   const [isLocating, setIsLocating] = useState(false);
 
+  const [geoError, setGeoError] = useState<string | null>(null);
+
   const handleMapClick = (newLat: number, newLng: number) => {
     setLat(newLat);
     setLng(newLng);
+    setGeoError(null);
     const mockAddress = `Coordinates: ${newLat.toFixed(4)}, ${newLng.toFixed(4)} (Sector Zone, NCR)`;
     setAddress(mockAddress);
     onLocationChange(newLat, newLng, mockAddress);
   };
 
   const handleUseCurrentLocation = () => {
+    setGeoError(null);
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
+      setGeoError("Geolocation is not supported by your browser. Please select location on map.");
       return;
     }
     setIsLocating(true);
@@ -66,6 +70,11 @@ export function LocationPicker({
 
   return (
     <div className="space-y-3">
+      {geoError ? (
+        <p role="alert" className="text-xs text-amber-700 bg-amber-50 p-2 rounded border border-amber-200">
+          {geoError}
+        </p>
+      ) : null}
       <div className="flex gap-2">
         <div className="relative flex-1">
           <MapPin className="absolute left-3 top-2.5 w-4 h-4 text-[#047857]" />
