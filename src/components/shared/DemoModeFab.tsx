@@ -8,7 +8,7 @@ import { User, HardHat, Building2, Landmark, RefreshCw, ChevronDown, Theater } f
 import { Badge } from "@/components/ui/badge";
 
 export function DemoModeFab() {
-  const { isDemoMode, demoRole, currentRole, realUser, switchDemoUser, exitDemoMode, resetToSeedData } = useAppState();
+  const { isDemoMode, demoRole, currentRole, realUser, workers, switchDemoUser, exitDemoMode, resetToSeedData } = useAppState();
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const activeRole = isDemoMode ? currentRole : null;
@@ -84,6 +84,28 @@ export function DemoModeFab() {
                 );
               })}
             </div>
+            {isDemoMode ? (
+              <div className="mt-2 border-t border-[#E5E7EB] pt-2">
+                <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-[#6B7280]">
+                  Worker Profiles
+                </p>
+                <div className="max-h-36 space-y-1 overflow-y-auto">
+                  {workers.map((worker) => (
+                    <button
+                      key={worker.id}
+                      onClick={() => {
+                        setOpen(false);
+                        router.push(`/workers/${worker.id}`);
+                      }}
+                      className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-xs text-[#1F2937] hover:bg-[#F9FAF7]"
+                    >
+                      <span className="truncate">{worker.profile.fullName}</span>
+                      <span className="ml-2 shrink-0 text-[10px] text-[#6B7280]">View profile</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
             {isDemoMode ? (
               <button
                 className="mt-2 w-full rounded-md border border-[#E5E7EB] px-3 py-2 text-xs font-semibold text-[#1F2937] hover:bg-[#F9FAF7]"
