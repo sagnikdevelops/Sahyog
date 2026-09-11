@@ -37,11 +37,11 @@ export function Footer() {
           <div>
             <h4 className="font-bold text-[#142D52] mb-3">Service Sectors</h4>
             <ul className="space-y-2 text-[#4B5563]">
-              <li><Link href="/services#electrical" className="hover:text-[#047857] transition-colors">Electrical Services</Link></li>
-              <li><Link href="/services#plumbing" className="hover:text-[#047857] transition-colors">Plumbing & Drainage</Link></li>
-              <li><Link href="/services#carpentry" className="hover:text-[#047857] transition-colors">Carpentry & Furniture</Link></li>
-              <li><Link href="/services#cleaning" className="hover:text-[#047857] transition-colors">Deep Cleaning & Sanitization</Link></li>
-              <li><Link href="/services#caregiving" className="hover:text-[#047857] transition-colors">Elderly & Patient Care</Link></li>
+              <li><a href="/services#electrical" className="hover:text-[#047857] transition-colors">Electrical Services</a></li>
+              <li><a href="/services#plumbing" className="hover:text-[#047857] transition-colors">Plumbing & Drainage</a></li>
+              <li><a href="/services#carpentry" className="hover:text-[#047857] transition-colors">Carpentry & Furniture</a></li>
+              <li><a href="/services#cleaning" className="hover:text-[#047857] transition-colors">Deep Cleaning & Sanitization</a></li>
+              <li><a href="/services#caregiving" className="hover:text-[#047857] transition-colors">Elderly & Patient Care</a></li>
             </ul>
           </div>
 
