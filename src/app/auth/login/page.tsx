@@ -17,13 +17,19 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
-  const { switchDemoUser, loginAccount } = useAppState();
+  const { isDemoMode, switchDemoUser, loginAccount } = useAppState();
   const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!isDemoMode) return;
+    switchDemoUser("CUSTOMER");
+    router.replace(redirectParam || "/customer");
+  }, [isDemoMode, redirectParam, router, switchDemoUser]);
 
   const handleDemoLogin = (role: UserRole, targetUrl: string) => {
     switchDemoUser(role);
