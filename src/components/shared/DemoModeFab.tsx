@@ -8,7 +8,7 @@ import { User, HardHat, Building2, Landmark, RefreshCw, ChevronDown, Theater } f
 import { Badge } from "@/components/ui/badge";
 
 export function DemoModeFab() {
-  const { isDemoMode, demoRole, currentRole, realUser, workers, switchDemoUser, exitDemoMode, resetToSeedData } = useAppState();
+  const { isDemoMode, demoRole, currentRole, realUser, workers, switchDemoUser, switchDemoWorker, exitDemoMode, resetToSeedData } = useAppState();
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const activeRole = isDemoMode ? currentRole : null;
@@ -94,13 +94,14 @@ export function DemoModeFab() {
                     <button
                       key={worker.id}
                       onClick={() => {
+                        switchDemoWorker(worker.id);
                         setOpen(false);
-                        router.push(`/workers/${worker.id}`);
+                        router.push("/worker");
                       }}
                       className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-xs text-[#1F2937] hover:bg-[#F9FAF7]"
                     >
                       <span className="truncate">{worker.profile.fullName}</span>
-                      <span className="ml-2 shrink-0 text-[10px] text-[#6B7280]">View profile</span>
+                      <span className="ml-2 shrink-0 text-[10px] text-[#6B7280]">Open dashboard</span>
                     </button>
                   ))}
                 </div>

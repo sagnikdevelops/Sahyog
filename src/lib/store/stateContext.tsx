@@ -74,6 +74,7 @@ interface StateContextType {
   authReady: boolean;
   setCurrentRole: (role: UserRole) => void;
   switchDemoUser: (role: UserRole) => void;
+  switchDemoWorker: (workerId: string) => void;
   enterDemoMode: (role: UserRole) => void;
   exitDemoMode: () => void;
   registerDemoUser: (params: {
@@ -380,6 +381,15 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
 
   const switchDemoUser = (role: UserRole) => {
     enterDemoMode(role);
+  };
+
+  const switchDemoWorker = (workerId: string) => {
+    const worker = workers.find((item) => item.id === workerId);
+    if (!worker) return;
+    setIsDemoMode(true);
+    setDemoRole("WORKER");
+    setDemoUser({ ...worker.profile, role: "WORKER" });
+    setDemoCookie(true);
   };
 
   const setCurrentRole = (role: UserRole) => {
@@ -1443,6 +1453,7 @@ export function StateProvider({ children }: { children: React.ReactNode }) {
         authReady,
         setCurrentRole,
         switchDemoUser,
+        switchDemoWorker,
         enterDemoMode,
         exitDemoMode,
         registerDemoUser,
