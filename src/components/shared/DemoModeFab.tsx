@@ -16,7 +16,7 @@ export function DemoModeFab() {
   const handleRoleSelect = (role: UserRole, targetRoute: string) => {
     switchDemoUser(role);
     setOpen(false);
-    router.push(targetRoute);
+    router.push(`${targetRoute}?demo=1`);
   };
 
   const roleConfigs = [
@@ -96,7 +96,7 @@ export function DemoModeFab() {
                       onClick={() => {
                         switchDemoWorker(worker.id);
                         setOpen(false);
-                        router.push("/worker");
+                        router.push("/worker?demo=1");
                       }}
                       className="flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-xs text-[#1F2937] hover:bg-[#F9FAF7]"
                     >
