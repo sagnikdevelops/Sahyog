@@ -33,7 +33,8 @@ function LoginForm() {
 
   const handleDemoLogin = (role: UserRole, targetUrl: string) => {
     switchDemoUser(role);
-    router.push(redirectParam || targetUrl);
+    const destination = redirectParam || targetUrl;
+    router.push(`${destination}${destination.includes("?") ? "&" : "?"}demo=1`);
   };
 
   const handleEmailSignIn = async (e: React.FormEvent) => {
