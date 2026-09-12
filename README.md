@@ -1,10 +1,10 @@
-# Sahyog
+# Sahyog 🤝
 
 Sahyog is a cooperative-first digital service marketplace that connects verified skilled workers from labour cooperative societies and federations with households, businesses, institutions, and communities. It transforms informal service access into a trusted, transparent, and worker-centric system designed around dignity, fair wages, and local economic empowerment.
 
 > Built for the Smart India Hackathon 2026: a digital transformation for cooperative labour ecosystems and community service delivery.
 
-## Why Sahyog?
+## Why Sahyog? 💡
 
 Across India, skilled workers such as electricians, plumbers, carpenters, caregivers, drivers, cleaners, and repair technicians are often part of cooperative networks but remain disconnected from digital demand. Many households and institutions still depend on fragmented, unreliable, or commission-heavy informal channels.
 
@@ -16,7 +16,7 @@ Sahyog solves this by creating a single, cooperative-owned platform where:
 - supervisors can track demand, quality, and operational performance
 - workers retain a larger share of the value they generate
 
-## Product vision
+## Product vision 🌍
 
 Sahyog is designed to make essential services more discoverable, safer, and more accountable while strengthening the cooperative movement in India. The platform is built on four principles:
 
@@ -25,9 +25,9 @@ Sahyog is designed to make essential services more discoverable, safer, and more
 3. Local relevance: location-aware matching and community-level service coordination
 4. Scalability: role-based dashboards, analytics, and API-ready architecture for future integration
 
-## Key capabilities
+## Key capabilities 🚀
 
-### For customers
+### For customers 👥
 
 - search and browse services by category and urgency
 - request emergency or scheduled jobs from verified local workers
@@ -36,7 +36,7 @@ Sahyog is designed to make essential services more discoverable, safer, and more
 - pay through a mock digital payment flow and receive generated invoices
 - leave feedback, review worker ratings, and build trust over time
 
-### For workers
+### For workers 🛠️
 
 - maintain a profile with skills, experience, and service radius
 - receive booking alerts and accept or reject opportunities
@@ -95,7 +95,7 @@ A cooperative value model is also built into the product:
 - cooperative welfare / accident fund: 7%
 - platform infrastructure and maintenance: 5%
 
-## Demo workflow
+## Demo workflow 🧭
 
 A complete user journey in the app looks like this:
 
@@ -120,7 +120,7 @@ The app includes a built-in demo-role switcher so the platform can be demonstrat
 | Federation Admin | Dr. Rajeshwar Patil | Analytics and oversight | `/admin/analytics` |
 | Super Admin | System Administrator | Platform governance | `/admin` |
 
-## Tech stack
+## Tech stack ⚙️
 
 The webapp is built on a modern JavaScript/TypeScript stack for rapid product development and hackathon demos:
 
@@ -235,8 +235,8 @@ If you want to connect the app to Supabase or external service infrastructure, a
 | Pratik Saha | Team Member | https://github.com/Pratik-saha-2007 | https://www.linkedin.com/in/pratiksaha-codes/ |
 | Satwika Majumdar | Team Member | https://github.com/satwika-coder | https://www.linkedin.com/in/satwika-majumdar-a282053a0/ |
 | Samragnyi Bhowmick | Team Member | https://github.com/samragnyibhowmick | https://www.linkedin.com/in/samragnyi-bhowmick-4a56b542a/ |
-| Pritam Karmakar | Team Member | TBD | TBD |
-| Manoswita Datta | Team Member | TBD | TBD |
+| Pritam Karmakar | Team Member | https://github.com/Pritam-Karmakar-2006 | https://www.linkedin.com/in/pritam-karmakar-50ab492a1/ |
+| Manoswita Datta | Team Member | https://github.com/CipheranoX | https://www.linkedin.com/in/manoswita-datta-2033a3430 |
 
 ## Links
 
