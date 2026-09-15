@@ -76,7 +76,7 @@ export function Navbar() {
         {/* Right Action Bar */}
         <div className="flex items-center justify-end gap-1.5 sm:gap-2 lg:gap-3">
           {/* Emergency Quick Action */}
-          <Link href="/customer/book?urgency=EMERGENCY" className="hidden sm:inline-flex">
+          <Link href={isDemoMode ? "/customer/book?urgency=EMERGENCY&demo=1" : "/customer/book?urgency=EMERGENCY"} className="hidden sm:inline-flex">
             <Button
               variant="emergency"
               size="sm"
@@ -108,13 +108,15 @@ export function Navbar() {
 
           {/* Portal Switcher Button */}
           <Link
-            href={
-              currentRole === "WORKER"
-                ? "/worker"
-                : currentRole === "SOCIETY_ADMIN" || currentRole === "FEDERATION_ADMIN"
-                ? "/admin"
-                : "/customer"
-            }
+            href={(() => {
+              const base =
+                currentRole === "WORKER"
+                  ? "/worker"
+                  : currentRole === "SOCIETY_ADMIN" || currentRole === "FEDERATION_ADMIN"
+                  ? "/admin"
+                  : "/customer";
+              return isDemoMode ? `${base}?demo=1` : base;
+            })()}
           >
             <Button variant="default" size="sm" className="text-[10px] sm:text-xs">
               {currentRole === "WORKER"
@@ -140,19 +142,23 @@ export function Navbar() {
       {mobileMenuOpen && (
         <div className="lg:hidden border-b border-[#E5E7EB] bg-white p-4 space-y-3">
           <div className="grid grid-cols-2 gap-2">
-            {navLinks.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 text-xs font-medium rounded-md bg-[#F9FAF7] text-[#1F2937] hover:bg-[#047857]/10 hover:text-[#047857]"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {navLinks.map((item) => {
+              const isProtected = ["/customer", "/worker", "/admin"].some((p) => item.href.startsWith(p));
+              const href = isDemoMode && isProtected ? `${item.href}${item.href.includes("?") ? "&" : "?"}demo=1` : item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-3 py-2 text-xs font-medium rounded-md bg-[#F9FAF7] text-[#1F2937] hover:bg-[#047857]/10 hover:text-[#047857]"
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </div>
           <Link
-            href="/customer/book?urgency=EMERGENCY"
+            href={isDemoMode ? "/customer/book?urgency=EMERGENCY&demo=1" : "/customer/book?urgency=EMERGENCY"}
             onClick={() => setMobileMenuOpen(false)}
             className="block"
           >
